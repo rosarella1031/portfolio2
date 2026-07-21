@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume — Faye Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .resume-doc {
+      font-family: var(--ff-body);
+      max-width: 900px;
+    }
+
+    .resume-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.75rem 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 2px solid var(--text);
+      margin-bottom: 0;
+    }
+
+    .resume-name-group {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .resume-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .resume-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .resume-contact {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-2);
+    }
+    .resume-contact a { transition: color 0.2s; }
+    .resume-contact a:hover { color: var(--accent); }
+
+    .resume-row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 2rem;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .resume-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .resume-row-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .resume-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .resume-entry-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .resume-date {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      margin-top: 0.1rem;
+    }
+
+    .resume-entry ul {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+      padding-left: 1.1rem;
+    }
+
+    .resume-entry li {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text-2);
+    }
+    .resume-entry li strong { color: var(--text); font-weight: 700; }
+
+    .resume-entry p {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: var(--text-2);
+      margin-top: 0.4rem;
+    }
+    .resume-entry p strong { color: var(--text); font-weight: 700; }
+
+    .resume-expertise-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+    }
+
+    .resume-expertise-col h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .resume-expertise-col p {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--text-2);
+    }
+
+    @media (max-width: 768px) {
+      .resume-row { grid-template-columns: 1fr; gap: 0.5rem; }
+      .resume-expertise-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+    }
+
+    /* Clean print output for "Print → Save as PDF" — condensed to fit one page */
+    @media print {
+      header, footer { display: none; }
+      main { padding: 0; }
+      html { font-size: 13px; }
+      .resume-contact a[href$=".pdf"] { display: none; }
+      .fade-in { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .resume-row { grid-template-columns: 130px 1fr !important; padding: 0.6rem 0 !important; }
+      .resume-expertise-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      .resume-top { padding-bottom: 0.5rem; }
+      .resume-entries { gap: 0.55rem !important; }
+      .resume-entry-title { font-size: 0.9rem !important; }
+      .resume-date { font-size: 0.7rem !important; margin-top: 0 !important; }
+      .resume-entry ul { gap: 0.15rem !important; margin-top: 0.2rem !important; }
+      .resume-entry li, .resume-entry p { font-size: 0.74rem !important; line-height: 1.32 !important; }
+      .resume-expertise-col p { font-size: 0.74rem !important; line-height: 1.4 !important; }
+      .resume-expertise-col h4 { font-size: 0.82rem !important; margin-bottom: 0.25rem !important; }
+    }
+  </style>
+</head>
+<body class="nav-always-visible">
+
+  <header>
+    <a href="index.html" class="logo">
+      <span class="logo-name">XUEFEI WANG</span>
+      <span class="logo-title">PRODUCT DESIGNER</span>
+    </a>
+
+    <nav>
+      <a href="index.html#work">Work</a>
+      <a href="builds.html">Builds</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <div class="social">
+      <a href="https://github.com/rosarella1031" target="_blank" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 18c-4.51 2-5-2-7-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </a>
+      <a href="mailto:xuefeiw1031@gmail.com" aria-label="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="https://drive.google.com/file/d/1R-6XYLMESzTFHvufosS5Qlpzj49i8aeM/view?usp=drive_link" target="_blank" aria-label="Resume">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="8" y1="17" x2="16" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="resume-doc">
+
+    <div class="resume-top">
+      <div class="resume-name-group">
+        <div class="resume-name">Faye Wang</div>
+        <div class="resume-title">Product Designer</div>
+      </div>
+      <div class="resume-contact">
+        <a href="tel:3122733554">312.273.7554</a>
+        <a href="mailto:xuefeiw1031@gmail.com">xuefeiw1031@gmail.com</a>
+        <a href="assets/faye-wang-resume.pdf" target="_blank">Download PDF ↓</a>
+      </div>
+    </div>
+
+    <div class="resume-row">
+      <div class="resume-row-label">Experience</div>
+      <div class="resume-entries">
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Founding Product Designer, FitX Lab</h3>
+          <div class="resume-date">Feb 2026 - Present</div>
+          <ul>
+            <li>Led <strong>end-to-end design</strong> of an AI-powered intelligent footwear platform integrating computer vision foot scanning, fit intelligence, personalization, and continuous feedback learning loop</li>
+            <li>Designed and tested the core scan-to-order experience, achieving a <strong>~90% first-time scan completion rate</strong> and <strong>~90% pilot-user retention</strong> across follow-up testing; improved scan guidance and structured fit feedback, increasing usable scan and fit <strong>data accuracy by 18%</strong>.</li>
+            <li>Built the product's <strong>scalable design system</strong> across mobile and web, including variables, responsive patterns, reusable components, and interaction guidelines; also shaped the brand, packaging, and NFC-enabled unboxing experience.</li>
+          </ul>
+        </div>
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Product Designer, Brix</h3>
+          <div class="resume-date">Dec 2024 - May 2025</div>
+          <ul>
+            <li>Led the <strong>AI transformation</strong> of Brix's Talent Search tool into the Mapping and Search Agents, introducing AI-driven profile generation based on user research and workflow analysis, accelerating decision-making by <strong>28%</strong>.</li>
+            <li>Built transparent and explainable UX flows with visual feedback systems that strengthened user trust and drove a <strong>95% satisfaction</strong> across enterprise clients.</li>
+            <li><strong>Partnered with founders and engineering teams</strong> to align product vision and design strategy with business growth, contributing to <strong>$10M in new funding</strong> and new customer acquisition.</li>
+          </ul>
+        </div>
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Product Designer, OpusClip</h3>
+          <div class="resume-date">Dec 2024 - Mar 2025</div>
+          <ul>
+            <li>Designed <strong>OpusClip Mobile MVP</strong>, extending the web-based AI video editor to a creator-first mobile experience <strong>launched on the App Store with 4.9 stars.</strong></li>
+            <li>Prioritized and refined key features for mobile workflows, reducing drop-offs during AI generation and achieving <strong>26% day-1 retention</strong> and <strong>12% desktop-to-mobile shift</strong>.</li>
+            <li>Defined mobile UI patterns, motion, and visual craft to maintain brand consistency while optimizing for speed, clarity, and touch interaction.</li>
+          </ul>
+        </div>
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Product Designer, Moka HR</h3>
+          <div class="resume-date">Jul 2024 - Dec 2024</div>
+          <ul>
+            <li>Redesigned core interview scheduling and coordination workflows, introducing automated availability collection and calendar sync, <strong>reducing manual HR effort by ~40%</strong> and <strong>shortening scheduling time by ~30%</strong>.</li>
+            <li>Improved candidate information display and interview feedback structure, enabling faster comparison and decision-making for hiring managers, contributing to a <strong>~20% reduction in time-to-decision</strong>.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="resume-row">
+      <div class="resume-row-label">Education</div>
+      <div class="resume-entries">
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">University of Chicago, MA</h3>
+          <div class="resume-date">Sep 2022 - Jun 2024, IL</div>
+          <ul>
+            <li>Focus on <strong>Human-Computer Interaction</strong></li>
+            <li>Courses: Inclusive Technology Design, Deep Learning Systems, Machine Learning, etc.</li>
+          </ul>
+        </div>
+
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Peking University, BA</h3>
+          <div class="resume-date">Sep 2016 - Jul 2021, Beijing, China</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="resume-row">
+      <div class="resume-row-label">Awards</div>
+      <div class="resume-entries">
+        <div class="resume-entry">
+          <h3 class="resume-entry-title">Red Dot Design Award, iF Design Award Gold</h3>
+          <div class="resume-date">2024 Winner, 2025 Winner</div>
+          <p>Recognized with <strong>6 Red Dot Design Awards</strong> and iF Design Award Gold prize, with winning projects featured in the official Yearbook and exhibited at the Red Dot Design Museum Berlin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-row">
+      <div class="resume-row-label">Expertise</div>
+      <div class="resume-expertise-grid">
+        <div class="resume-expertise-col">
+          <h4>Design Skills</h4>
+          <p>UI/UX Design, Web Design, Interaction Design, Product Strategy, Design Systems, Visual Design, B2B/B2C/Mobile App Design, Branding, Prototyping, Information Architecture, Vibe Coding, etc.</p>
+        </div>
+        <div class="resume-expertise-col">
+          <h4>Research Skills</h4>
+          <p>Qualitative &amp; Quantitative Research, Competitive Analysis, Market Research, User Interviews, Usability Testing, User Journey, Survey, Data Analysis, Project Management, etc.</p>
+        </div>
+        <div class="resume-expertise-col">
+          <h4>Tools &amp; Softwares</h4>
+          <p>Figma, FigJam, Framer, Sketch, Adobe Creative Suite (Ps, Ai, Ae, Id), Principle, Rive, Storyboard, Notion, Miro, HTML/CSS/Javascript, Python, R, C, Git/GitHub, Excel, Jira, Generative AI Tools, etc.</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
+    <nav class="footer-nav">
+      <a href="index.html#work">Work</a>
+      <a href="builds.html">Builds</a>
+      <a href="about.html">About</a>
+    </nav>
+  </footer>
+
+  <script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Xuefei Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .about-photo {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+    }
+
+    /* Hero-style hover grid, used as the background behind the collage — fades out on the right instead of the bottom */
+    .about-photo-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      z-index: 0;
+      mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+    }
+
+    .about-photo-grid-cell {
+      position: relative;
+      border-right: 1px solid rgba(33, 33, 33, 0.06);
+      border-bottom: 1px solid rgba(33, 33, 33, 0.06);
+    }
+
+    .about-photo-grid-cell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--cell-color, transparent);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .about-photo-grid-cell.active::before {
+      opacity: 0.55;
+    }
+
+    .about-photo-grid-cell-hex {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      margin-top: 4px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--ff-label);
+      font-size: var(--hex-font-size, 0.6rem);
+      letter-spacing: 0;
+      color: var(--text);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .about-photo-grid-cell.active .about-photo-grid-cell-hex {
+      opacity: 1;
+    }
+    .about-photo-item img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+    .about-photo-item {
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+    .about-photo-item.dragging {
+      cursor: grabbing;
+      z-index: 5;
+    }
+
+    /* Circular photo — polaroid-style frame, same treatment as the rectangular one */
+    .about-photo-1 {
+      position: absolute;
+      width: 62%;
+      aspect-ratio: 1 / 1;
+      top: 0;
+      left: 4%;
+      transform: rotate(-4deg);
+      z-index: 2;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 5px solid var(--bg);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+    }
+    .about-photo-1 img { object-fit: cover; }
+
+    /* Rectangular photo — polaroid-style frame */
+    .about-photo-2 {
+      position: absolute;
+      width: 58%;
+      aspect-ratio: 4 / 5;
+      bottom: 2%;
+      right: 0;
+      transform: rotate(5deg);
+      z-index: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 5px solid var(--bg);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+    }
+    .about-photo-2 img { object-fit: cover; }
+
+    /* Snail — transparent cutout, sticker-style outline + shadow hugging its own silhouette */
+    .about-photo-3 {
+      position: absolute;
+      width: 30%;
+      aspect-ratio: 329 / 308;
+      top: 4%;
+      right: 4%;
+      transform: rotate(8deg);
+      z-index: 3;
+    }
+    .about-photo-3 img {
+      object-fit: contain;
+      filter:
+        drop-shadow(5px 0 0 var(--bg))
+        drop-shadow(-5px 0 0 var(--bg))
+        drop-shadow(0 5px 0 var(--bg))
+        drop-shadow(0 -5px 0 var(--bg))
+        drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+    }
+
+    .about-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      padding-top: 0.5rem;
+    }
+
+    .about-intro {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .about-bio {
+      font-family: var(--ff-body);
+      max-width: 680px;
+    }
+    .about-bio p {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: 0;
+      color: #767676;
+      margin-bottom: 1.75rem;
+    }
+
+    .about-bio p:first-child {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.75rem;
+      color: var(--text);
+    }
+
+    .about-bio-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin: 0.8rem 0 0.75rem;
+      padding-left: 1.25rem;
+    }
+    .about-bio-list li {
+      position: relative;
+      font-size: 1rem;
+      color: #767676;
+      line-height: 1.5;
+    }
+    .about-bio-list li::before {
+      content: '';
+      position: absolute;
+      left: -1.25rem;
+      top: 0.65em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-3);
+    }
+
+    .about-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .about-section-label {
+      font-family: var(--ff-label);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .about-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .about-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+    .about-link:hover { color: var(--accent); }
+    .about-link span { color: var(--text-3); font-size: 0.85rem; }
+
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .skill-tag {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+    }
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .about-photo {
+        aspect-ratio: 3 / 4;
+        max-width: 380px;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .about-photo {
+        aspect-ratio: 3 / 4;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .about-content { gap: 2rem; }
+    }
+  </style>
+</head>
+<body class="nav-always-visible">
+
+  <header>
+    <a href="index.html" class="logo">
+      <span class="logo-name">XUEFEI WANG</span>
+      <span class="logo-title">PRODUCT DESIGNER</span>
+    </a>
+
+    <nav>
+      <a href="index.html#work">Work</a>
+      <a href="builds.html">Builds</a>
+      <a href="about.html" class="active">About</a>
+    </nav>
+
+    <div class="social">
+      <a href="https://github.com/rosarella1031" target="_blank" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 18c-4.51 2-5-2-7-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </a>
+      <a href="mailto:xuefeiw1031@gmail.com" aria-label="Email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="https://drive.google.com/file/d/1R-6XYLMESzTFHvufosS5Qlpzj49i8aeM/view?usp=drive_link" target="_blank" aria-label="Resume">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="8" y1="17" x2="16" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="about-grid fade-in">
+
+      <div class="about-photo">
+        <div class="about-photo-grid" id="aboutPhotoGrid"></div>
+        <div class="about-photo-item about-photo-1">
+          <img src="assets/about1.png" alt="Xuefei Wang" />
+        </div>
+        <div class="about-photo-item about-photo-2">
+          <img src="assets/about2.png" alt="Xuefei Wang" />
+        </div>
+        <div class="about-photo-item about-photo-3">
+          <img src="assets/snail.png" alt="Snail" />
+        </div>
+      </div>
+
+      <div class="about-content">
+
+        <div class="about-intro">
+          <div class="about-bio">
+            <p>Hi, I'm Faye!</p>
+            <p>My name is Xuefei Wang, and I usually go by Faye. I'm a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
+            <p>Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
+            <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+            <p>Outside of design, I'm usually:</p>
+            <ul class="about-bio-list">
+              <li>listening to music and playing drums</li>
+              <li>playing games and overthinking their systems and interactions</li>
+              <li>making something delicious in the kitchen</li>
+              <li>playing with my cat</li>
+            </ul>
+            <p>Currently based in New York. Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <div class="about-section-label">Contact</div>
+          <div class="about-links">
+            <a href="mailto:xuefeiw1031@gmail.com" class="about-link">
+              xuefeiw1031@gmail.com <span>↗</span>
+            </a>
+            <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" class="about-link">
+              LinkedIn <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
+    <nav class="footer-nav">
+      <a href="index.html#work">Work</a>
+      <a href="builds.html">Builds</a>
+      <a href="about.html">About</a>
+    </nav>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Photo area hover grid — same interaction as the homepage hero, mirrored here
+    (function () {
+      const grid = document.getElementById('aboutPhotoGrid');
+      if (!grid) return;
+
+      // match the hero grid's cell size (hero spans ~full viewport width at 24 cols)
+      const palette = [
+        '#FF6B6B', '#FF922B', '#FFD43B', '#94D82D',
+        '#2FBF71', '#20C997', '#22B8CF', '#4DABF7',
+        '#339AF0', '#5C7CFA', '#845EF7', '#CC5DE8',
+        '#F06595', '#FF8787', '#FCC419', '#69DB7C'
+      ];
+
+      function makeCell() {
+        const cell = document.createElement('div');
+        cell.className = 'about-photo-grid-cell';
+
+        const hex = document.createElement('span');
+        hex.className = 'about-photo-grid-cell-hex';
+        cell.appendChild(hex);
+
+        let touchHideTimer;
+        const reveal = () => {
+          const color = palette[Math.floor(Math.random() * palette.length)];
+          cell.style.setProperty('--cell-color', color);
+          hex.textContent = color;
+          cell.classList.add('active');
+        };
+
+        cell.addEventListener('mouseenter', reveal);
+        cell.addEventListener('mouseleave', () => {
+          cell.classList.remove('active');
+        });
+
+        // touch devices have no hover — tap to reveal, auto-hide after a beat
+        cell.addEventListener('touchstart', () => {
+          reveal();
+          clearTimeout(touchHideTimer);
+          touchHideTimer = setTimeout(() => cell.classList.remove('active'), 1800);
+        }, { passive: true });
+
+        return cell;
+      }
+
+      function buildGrid() {
+        const heroCellSize = window.innerWidth / 24;
+        const cols = Math.max(1, Math.round(grid.clientWidth / heroCellSize));
+        const cellSize = grid.clientWidth / cols;
+        const rows = Math.max(1, Math.round(grid.clientHeight / cellSize));
+
+        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        grid.style.setProperty('--hex-font-size', Math.max(6, Math.min(11, cellSize / 4.2)) + 'px');
+
+        grid.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < cols * rows; i++) {
+          fragment.appendChild(makeCell());
+        }
+        grid.appendChild(fragment);
+      }
+
+      buildGrid();
+      window.addEventListener('load', buildGrid);
+
+      // Watch the container itself (not just window resize) so breakpoint
+      // changes, font swaps, and orientation changes all trigger a rebuild.
+      let gridResizeTimer;
+      const scheduleRebuild = () => {
+        clearTimeout(gridResizeTimer);
+        gridResizeTimer = setTimeout(buildGrid, 150);
+      };
+      if (window.ResizeObserver) {
+        new ResizeObserver(scheduleRebuild).observe(grid.parentElement);
+      } else {
+        window.addEventListener('resize', scheduleRebuild);
+      }
+    })();
+
+    // Draggable collage photos, constrained to the .about-photo frame
+    (function () {
+      const container = document.querySelector('.about-photo');
+      if (!container) return;
+
+      container.querySelectorAll('.about-photo-item').forEach(item => {
+        let dragging = false;
+        let startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+        item.addEventListener('pointerdown', e => {
+          const containerRect = container.getBoundingClientRect();
+          const itemRect = item.getBoundingClientRect();
+
+          item.style.left = (itemRect.left - containerRect.left) + 'px';
+          item.style.top = (itemRect.top - containerRect.top) + 'px';
+          item.style.right = 'auto';
+          item.style.bottom = 'auto';
+
+          startX = e.clientX;
+          startY = e.clientY;
+          startLeft = parseFloat(item.style.left);
+          startTop = parseFloat(item.style.top);
+          dragging = true;
+
+          item.classList.add('dragging');
+          item.setPointerCapture(e.pointerId);
+          e.preventDefault();
+        });
+
+        item.addEventListener('pointermove', e => {
+          if (!dragging) return;
+          const containerRect = container.getBoundingClientRect();
+          const itemRect = item.getBoundingClientRect();
+
+          let newLeft = startLeft + (e.clientX - startX);
+          let newTop = startTop + (e.clientY - startY);
+          newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemRect.width));
+          newTop = Math.max(0, Math.min(newTop, containerRect.height - itemRect.height));
+
+          item.style.left = newLeft + 'px';
+          item.style.top = newTop + 'px';
+        });
+
+        const endDrag = () => {
+          dragging = false;
+          item.classList.remove('dragging');
+        };
+        item.addEventListener('pointerup', endDrag);
+        item.addEventListener('pointercancel', endDrag);
+      });
+    })();
+  </script>
+
+</body>
+</html>
