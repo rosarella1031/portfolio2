@@ -332,6 +332,12 @@ footer {
 @media (max-width: 640px) {
   :root { --nav-h: 52px; }
 
+  .project-name-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+  }
+
   header {
     padding: 0 1.25rem;
     grid-template-columns: 1fr auto;
