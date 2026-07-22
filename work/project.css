@@ -58,8 +58,9 @@
 }
 
 .sidebar-project-name {
-  font-size: 0.9rem;
-  font-weight: 300;
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  font-weight: 400;
   color: var(--text);
   line-height: 1.4;
 }
