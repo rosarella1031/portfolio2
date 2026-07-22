@@ -61,6 +61,7 @@
   font-family: 'EB Garamond', serif;
   font-size: 1rem;
   font-weight: 400;
+  letter-spacing: 0;
   color: var(--text);
   line-height: 1.4;
 }
