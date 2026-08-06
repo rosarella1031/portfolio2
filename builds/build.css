@@ -1,0 +1,113 @@
+/* ===== Build detail pages =====
+   Shares the case-study shell (sidebar + content) from work/project.css.
+   Only the build-specific pieces live here. */
+
+/* Sidebar info block — sits under the meta, above the external link */
+.build-sidebar-desc {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #767676;
+}
+
+/* Reuses .pill from the case-study header, sized down so tags sit
+   two-per-row in the 280px sidebar instead of one per line */
+.build-sidebar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.build-sidebar-tags .pill {
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  padding: 0.18rem 0.45rem;
+}
+
+.build-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.build-sidebar-link .arrow { color: var(--text-3); }
+.build-sidebar-link:hover { color: var(--text-2); }
+
+/* Pushes the link to the bottom of the sidebar column */
+.sidebar .build-sidebar-spacer { flex: 1; }
+
+/* ===== Media column ===== */
+.build-media {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Image / placeholder block.
+   Empty blocks hold a 16:10 placeholder; once a real image is in there the
+   block takes the image's own ratio so nothing gets cropped. */
+.build-media-block {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--tag-bg);
+  overflow: hidden;
+}
+.build-media-block img,
+.build-media-block video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.build-media-block:has(img),
+.build-media-block:has(video) {
+  aspect-ratio: auto;
+}
+
+/* Bento: one tall image beside a stacked pair.
+   Column ratio is tuned so both sides land at nearly the same height. */
+.build-media-bento {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.build-media-bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .build-media-bento { grid-template-columns: 1fr; }
+}
+.build-media-block:has(img) img,
+.build-media-block:has(video) video {
+  height: auto;
+  object-fit: contain;
+}
+
+/* Live embed block — taller, since it holds a real page */
+.build-media-embed {
+  width: 100%;
+  height: 78vh;
+  min-height: 520px;
+  background: var(--tag-bg);
+  overflow: hidden;
+}
+.build-media-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .build-media-embed {
+    height: 60vh;
+    min-height: 380px;
+  }
+}

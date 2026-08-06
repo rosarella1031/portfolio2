@@ -1,11 +1,25 @@
+// Nav: shown at the top of the page, hides on scroll down, returns on scroll up.
 const header = document.querySelector('header');
 if (header && !document.body.classList.contains('nav-always-visible')) {
+  const TOP_ZONE = 80;   // always visible within this distance of the top
+  const DEADZONE = 6;    // ignore sub-pixel / momentum jitter
   let lastY = window.scrollY;
-  window.addEventListener('scroll', () => {
+
+  const updateNav = () => {
     const y = window.scrollY;
-    if (y < lastY) header.classList.add('nav--visible');
-    lastY = y;
-  });
+    const delta = y - lastY;
+
+    if (y <= TOP_ZONE || delta < -DEADZONE) {
+      header.classList.add('nav--visible');
+    } else if (delta > DEADZONE) {
+      header.classList.remove('nav--visible');
+    }
+
+    if (Math.abs(delta) > DEADZONE) lastY = y;
+  };
+
+  updateNav(); // set correct state before first paint
+  window.addEventListener('scroll', updateNav, { passive: true });
 }
 
 document.querySelectorAll('a[href*="#"]').forEach(link => {

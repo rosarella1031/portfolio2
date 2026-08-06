@@ -11,6 +11,37 @@
   <link rel="stylesheet" href="css/style.css" />
   <style>
     /* Filter tabs */
+    .builds-filters {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .builds-filter {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-3);
+      font-family: var(--ff-label);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.4rem 1rem;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .builds-filter:hover {
+      border-color: var(--text-2);
+      color: var(--text-2);
+    }
+    .builds-filter.active {
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
+    }
+
+    .build-card.hidden { display: none; }
+
     .builds-intro {
       font-family: var(--ff-body);
       font-size: 1.05rem;
@@ -31,7 +62,6 @@
     .build-card {
       position: relative;
       aspect-ratio: 4 / 3;
-      border-radius: 12px;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid #f3f3f3;
@@ -89,82 +119,9 @@
       .builds-grid { grid-template-columns: 1fr; }
     }
 
-    /* Embed preview modal */
-    .build-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 500;
-      padding: 3rem;
-    }
-    .build-modal.active { display: flex; }
-    .build-modal-inner {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 1100px;
-      height: 85vh;
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    .build-modal-header {
-      padding: 1.25rem 3.25rem 1rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      flex: 0 0 auto;
-    }
-    .build-modal-header.hidden { display: none; }
-    .build-modal-title {
-      font-family: 'EB Garamond', serif;
-      font-size: 1.15rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 0.25rem;
-    }
-    .build-modal-desc {
-      font-size: 0.85rem;
-      color: var(--text-2);
-      line-height: 1.5;
-    }
-    .build-modal-frame {
-      width: 100%;
-      flex: 1;
-      border: none;
-      display: block;
-    }
-    .build-modal-close {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0,0,0,0.55);
-      color: #fff;
-      font-size: 1rem;
-      line-height: 1;
-      cursor: pointer;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-    .build-modal-close:hover { background: rgba(0,0,0,0.8); }
-
-    @media (max-width: 640px) {
-      .build-modal { padding: 0; }
-      .build-modal-inner { height: 100vh; border-radius: 0; max-width: 100%; }
-    }
   </style>
 </head>
-<body class="nav-always-visible">
+<body>
 
   <header>
     <a href="index.html" class="logo">
@@ -214,9 +171,16 @@
 
     <p class="builds-intro">Things I've designed and built across award-winning concepts, visuals, flows, videos, illustrations, code, packaging, and more.</p>
 
+    <div class="builds-filters">
+      <button class="builds-filter active" data-filter="all">All</button>
+      <button class="builds-filter" data-filter="awards">Awards</button>
+      <button class="builds-filter" data-filter="web">Web</button>
+      <button class="builds-filter" data-filter="xr">XR</button>
+    </div>
+
     <div class="builds-grid">
 
-      <a href="https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529" target="_blank" class="build-card fade-in" data-category="awards">
+      <a href="builds/negotiabbles.html" class="build-card fade-in" data-category="awards">
         <div class="build-card-media">
           <video src="assets/negotiabbles-thumb.webm" autoplay loop muted playsinline></video>
         </div>
@@ -226,7 +190,7 @@
         </div>
       </a>
 
-      <div class="build-card fade-in" data-category="web" data-embed="https://rosarella1031.github.io/pretext-book/sec-section-name.html" data-embed-title="Pretext Book" data-embed-desc="Try the pen and sticker on the text.">
+      <a href="builds/pretext-book.html" class="build-card fade-in" data-category="web">
         <div class="build-card-media">
           <video src="assets/pretext-thumb.webm" autoplay loop muted playsinline></video>
         </div>
@@ -234,9 +198,9 @@
           <span class="build-card-cat">Web</span>
           <span class="build-card-name">Pretext Book</span>
         </div>
-      </div>
+      </a>
 
-      <a href="https://www.red-dot.org/project/heartie-smart-companion-for-kids-with-heart-conditions-85163" target="_blank" class="build-card fade-in" data-category="awards">
+      <a href="builds/heartie.html" class="build-card fade-in" data-category="awards">
         <div class="build-card-media">
           <img src="assets/heartie.gif" alt="Heartie" />
         </div>
@@ -246,9 +210,9 @@
         </div>
       </a>
 
-      <a href="https://www.red-dot.org/project/hive-ai-84885" target="_blank" class="build-card fade-in" data-category="awards">
+      <a href="builds/hive-ai.html" class="build-card fade-in" data-category="awards">
         <div class="build-card-media">
-          <img src="assets/hive.gif" alt="Hive AI" />
+          <video src="assets/hive-1.webm" poster="assets/hive-1-poster.png" data-rest-time="1.66" loop muted playsinline preload="metadata"></video>
         </div>
         <div class="build-card-overlay">
           <span class="build-card-cat">Awards</span>
@@ -256,7 +220,7 @@
         </div>
       </a>
 
-      <a href="https://devpost.com/software/chase-against-time" target="_blank" class="build-card fade-in" data-category="xr">
+      <a href="builds/chase-against-time.html" class="build-card fade-in" data-category="xr">
         <div class="build-card-media">
           <img src="assets/race-against-time.gif" alt="Chase Against Time" />
         </div>
@@ -269,17 +233,6 @@
     </div>
   </main>
 
-  <div class="build-modal" id="buildModal">
-    <div class="build-modal-inner">
-      <button class="build-modal-close" aria-label="Close preview">✕</button>
-      <div class="build-modal-header">
-        <div class="build-modal-title"></div>
-        <div class="build-modal-desc"></div>
-      </div>
-      <iframe class="build-modal-frame" src="" title="Live preview"></iframe>
-    </div>
-  </div>
-
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
@@ -291,37 +244,37 @@
 
   <script src="js/main.js"></script>
   <script>
-    // Embed preview modal
-    const buildModal = document.getElementById('buildModal');
-    const buildModalFrame = buildModal.querySelector('.build-modal-frame');
-    const buildModalClose = buildModal.querySelector('.build-modal-close');
-    const buildModalHeader = buildModal.querySelector('.build-modal-header');
-    const buildModalTitle = buildModal.querySelector('.build-modal-title');
-    const buildModalDesc = buildModal.querySelector('.build-modal-desc');
+    // Hover-to-play previews (cards whose video has a poster stay paused until hover)
+    document.querySelectorAll('.build-card video[poster]').forEach(video => {
+      const card = video.closest('.build-card');
 
-    function closeBuildModal() {
-      buildModal.classList.remove('active');
-      buildModalFrame.src = '';
-    }
+      card.addEventListener('mouseenter', () => {
+        video.play().catch(() => {});
+      });
 
-    document.querySelectorAll('.build-card[data-embed]').forEach(card => {
-      card.addEventListener('click', () => {
-        const title = card.dataset.embedTitle || '';
-        const desc = card.dataset.embedDesc || '';
-        buildModalTitle.textContent = title;
-        buildModalDesc.textContent = desc;
-        buildModalHeader.classList.toggle('hidden', !title && !desc);
-        buildModalFrame.src = card.dataset.embed;
-        buildModal.classList.add('active');
+      // park on the same frame the poster was cut from, so idle state never jumps
+      const restTime = parseFloat(video.dataset.restTime) || 0;
+
+      card.addEventListener('mouseleave', () => {
+        video.pause();
+        video.currentTime = restTime;
       });
     });
 
-    buildModalClose.addEventListener('click', closeBuildModal);
-    buildModal.addEventListener('click', e => {
-      if (e.target === buildModal) closeBuildModal();
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeBuildModal();
+    // Category filter
+    const filters = document.querySelectorAll('.builds-filter');
+    const buildCards = document.querySelectorAll('.build-card');
+
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const f = btn.dataset.filter;
+        buildCards.forEach(card => {
+          card.classList.toggle('hidden', f !== 'all' && card.dataset.category !== f);
+        });
+      });
     });
   </script>
 
