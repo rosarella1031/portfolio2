@@ -191,6 +191,105 @@
       color: var(--text-3);
     }
 
+
+    /* ===== side panel — mirrors the detail page layout, two thirds wide ===== */
+    .scrim {
+      position: fixed; inset: 0;
+      background: rgba(26, 24, 23, 0.18);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 380;
+    }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+
+    .panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(75vw, 1400px);
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      z-index: 390;
+      transform: translateX(100%);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: -24px 0 60px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: 272px 1fr;
+    }
+    .panel.open { transform: translateX(0); }
+
+    /* left column = the case study sidebar */
+    .panel-side {
+      border-right: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .panel-label {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.7rem; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+    }
+    .panel-title {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.25rem; font-weight: 400; line-height: 1.3;
+      margin-top: 0.4rem;
+    }
+    .panel-desc {
+      font-size: 0.9rem; line-height: 1.55; color: #767676;
+    }
+    .panel-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .panel-tags span {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--text-3); border: 1px solid var(--border);
+      padding: 0.18rem 0.45rem; white-space: nowrap;
+    }
+    .panel-spacer { flex: 1; }
+    .panel-links { display: flex; flex-direction: column; gap: 0.6rem; }
+    .panel-links a {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.85rem; color: var(--text); transition: color 0.2s;
+    }
+    .panel-links a:hover { color: var(--text-2); }
+    .panel-links .arrow { color: var(--text-3); }
+
+    /* right column = the media stack */
+    .panel-body {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 2.5rem 2rem;
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    .panel-body img, .panel-body video {
+      width: 100%; display: block; background: var(--tag-bg);
+    }
+    .panel-body .ph { width: 100%; aspect-ratio: 16/10; background: var(--tag-bg); }
+    .panel-body iframe {
+      width: 100%; height: calc(100vh - 5rem); border: 1px solid var(--border);
+    }
+    .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+
+    .panel-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 30px; height: 30px;
+      border: 1px solid var(--border); background: var(--bg);
+      cursor: pointer; font-size: 0.85rem; line-height: 1; color: var(--text-2);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      z-index: 2;
+    }
+    .panel-close:hover { background: var(--tag-bg); color: var(--text); }
+
+    @media (max-width: 1100px) {
+      .panel { width: 92vw; grid-template-columns: 240px 1fr; }
+    }
+    @media (max-width: 760px), (pointer: coarse) {
+      .panel, .scrim { display: none; }
+    }
+
     /* touch / small screens fall back to a plain scrollable grid */
     @media (max-width: 760px), (pointer: coarse) {
       html, body { overflow: auto; height: auto; }
@@ -310,6 +409,27 @@
 
     </div>
   </div>
+
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="panel" id="panel" aria-hidden="true">
+    <button class="panel-close" id="pClose" aria-label="Close">✕</button>
+
+    <div class="panel-side">
+      <div>
+        <div class="panel-label" id="pLabel"></div>
+        <h2 class="panel-title" id="pTitle"></h2>
+      </div>
+      <p class="panel-desc" id="pDesc"></p>
+      <div class="panel-tags" id="pTags"></div>
+      <div class="panel-spacer"></div>
+      <div class="panel-links">
+        <a id="pLink" href="#" target="_blank"><span id="pLinkText"></span> <span class="arrow">↗</span></a>
+      </div>
+    </div>
+
+    <div class="panel-body" id="pBody"></div>
+  </aside>
 
   <div class="minimap" id="minimap"><div class="minimap-view" id="minimapView"></div></div>
 
@@ -556,6 +676,153 @@
       refresh();
     }
 
+
+
+    // ================= side panel =================
+    const BUILDS = {
+      'negotiabbles': {
+        label: 'Awards', title: 'Negotiabbles',
+        desc: 'Description goes here.', tags: [],
+        link: 'https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529',
+        linkText: 'View on iF Design',
+        media: ['negotiabbles-cover.png','negotiabbles-1.png','negotiabbles-2.png','negotiabbles-3.png',
+                'negotiabbles-4.png','negotiabbles-5.png','negotiabbles-6.png','negotiabbles-7.png','negotiabbles-8.png']
+      },
+      'pretext-book': {
+        label: 'Web', title: 'Pretext Book',
+        desc: 'Try the pen and sticker on the text.', tags: [],
+        link: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html',
+        linkText: 'Open in new tab',
+        embed: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html'
+      },
+      'heartie': {
+        label: 'Awards', title: 'Heartie',
+        desc: 'Description goes here.', tags: [],
+        link: 'https://www.red-dot.org/project/heartie-smart-companion-for-kids-with-heart-conditions-85163',
+        linkText: 'View on Red Dot', placeholders: 3
+      },
+      'hive-ai': {
+        label: 'Awards', title: 'Hive AI',
+        desc: 'Description goes here.',
+        tags: ['Branding','Brand Strategy','Brand Guidelines','Motion'],
+        link: 'https://www.red-dot.org/project/hive-ai-84885',
+        linkText: 'View on Red Dot',
+        media: ['hive-00.png','hive-1.webm','hive-0.png','hive-3.png'],
+        pair: ['hive-2-1.png','hive-4.png','hive-2.jpg']
+      },
+      'chase-against-time': {
+        label: 'XR', title: 'Chase Against Time',
+        desc: 'Description goes here.', tags: [],
+        link: 'https://devpost.com/software/chase-against-time',
+        linkText: 'View on Devpost', placeholders: 3
+      }
+    };
+
+    const scrim = document.getElementById('scrim');
+    const panel = document.getElementById('panel');
+    const pBody = document.getElementById('pBody');
+    let panelOpen = false;
+
+    function mediaEl(f) {
+      if (f.endsWith('.webm') || f.endsWith('.mp4')) {
+        const v = document.createElement('video');
+        v.src = 'assets/' + f;
+        v.autoplay = v.loop = v.muted = v.playsInline = true;
+        return v;
+      }
+      const i = document.createElement('img');
+      i.src = 'assets/' + f;
+      i.loading = 'lazy';
+      i.alt = '';
+      return i;
+    }
+
+    function openPanel(slug) {
+      const d = BUILDS[slug];
+      if (!d) return;
+
+      document.getElementById('pLabel').textContent = d.label;
+      document.getElementById('pTitle').textContent = d.title;
+      document.getElementById('pDesc').textContent = d.desc;
+      document.getElementById('pTags').innerHTML =
+        (d.tags || []).map(t => `<span>${t}</span>`).join('');
+
+      const lk = document.getElementById('pLink');
+      lk.href = d.link;
+      document.getElementById('pLinkText').textContent = d.linkText;
+
+      pBody.innerHTML = '';
+      pBody.scrollTop = 0;
+
+      if (d.embed) {
+        const f = document.createElement('iframe');
+        f.src = d.embed;
+        f.title = d.title;
+        pBody.appendChild(f);
+      }
+      (d.media || []).forEach(f => pBody.appendChild(mediaEl(f)));
+      if (d.pair) {
+        const row = document.createElement('div');
+        row.className = 'panel-row';
+        row.appendChild(mediaEl(d.pair[0]));
+        const col = document.createElement('div');
+        col.style.display = 'grid';
+        col.style.gap = '1rem';
+        col.appendChild(mediaEl(d.pair[1]));
+        col.appendChild(mediaEl(d.pair[2]));
+        row.appendChild(col);
+        pBody.appendChild(row);
+      }
+      for (let i = 0; i < (d.placeholders || 0); i++) {
+        const p = document.createElement('div');
+        p.className = 'ph';
+        pBody.appendChild(p);
+      }
+
+      panel.classList.add('open');
+      scrim.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+      panelOpen = true;
+      document.getElementById('pClose').focus();
+    }
+
+    function closePanel(push) {
+      if (!panelOpen) return;
+      panel.classList.remove('open');
+      scrim.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+      panelOpen = false;
+      // stop any video in the panel from playing on in the background
+      setTimeout(() => { if (!panelOpen) pBody.innerHTML = ''; }, 500);
+      if (push !== false) history.pushState({}, '', location.pathname);
+    }
+
+    // intercept canvas clicks — only when it was a click, not a drag
+    canvas.addEventListener('click', e => {
+      const a = e.target.closest('.item[href]');
+      if (!a || moved) return;
+      const m = a.getAttribute('href').match(/builds\/([\w-]+)\.html/);
+      if (!m || !BUILDS[m[1]]) return;      // fall through to a normal navigation
+      e.preventDefault();
+      openPanel(m[1]);
+      history.pushState({ slug: m[1] }, '', '?p=' + m[1]);
+    });
+
+    document.getElementById('pClose').addEventListener('click', () => closePanel());
+    scrim.addEventListener('click', () => closePanel());
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+    // back button closes the panel instead of leaving the page
+    window.addEventListener('popstate', e => {
+      const slug = new URLSearchParams(location.search).get('p');
+      if (slug && BUILDS[slug]) openPanel(slug); else closePanel(false);
+    });
+
+    // deep link: ?p=hive-ai opens straight into the panel
+    (function () {
+      const slug = new URLSearchParams(location.search).get('p');
+      if (slug && BUILDS[slug]) openPanel(slug);
+    })();
 
     window.addEventListener('resize', measure);
 
