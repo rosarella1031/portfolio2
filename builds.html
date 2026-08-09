@@ -370,7 +370,7 @@
     <div class="canvas" id="canvas">
 
       <!-- hero 1 — largest, top-left anchor -->
-      <a class="item item--hero" href="builds/negotiabbles.html"
+      <a class="item item--hero" href="?p=negotiabbles"
          style="--w: 460px; --ar: 16/10; left: 650px; top: 730px;">
         <div class="item-media">
           <video src="assets/negotiabbles-thumb.webm" autoplay loop muted playsinline></video>
@@ -379,7 +379,7 @@
         <div class="item-desc">iF Design Award winner. Master life's negotiations.</div>
       </a>
 
-      <a class="item" href="builds/pretext-book.html"
+      <a class="item" href="?p=pretext-book"
          style="--w: 340px; --ar: 4/3; left: 1610px; top: 370px;">
         <div class="item-media">
           <video src="assets/pretext-thumb.webm" autoplay loop muted playsinline></video>
@@ -389,7 +389,7 @@
       </a>
 
       <!-- hero 2 — largest on the right -->
-      <a class="item item--hero" href="builds/hive-ai.html"
+      <a class="item item--hero" href="?p=hive-ai"
          style="--w: 400px; --ar: 1/1; left: 1340px; top: 840px;">
         <div class="item-media">
           <video src="assets/hive-1.webm" autoplay loop muted playsinline></video>
@@ -398,7 +398,7 @@
         <div class="item-desc">Red Dot winner. Branding, guidelines and motion.</div>
       </a>
 
-      <a class="item" href="builds/heartie.html"
+      <a class="item" href="?p=heartie"
          style="--w: 340px; --ar: 16/9; left: 400px; top: 220px;">
         <div class="item-media">
           <img src="assets/heartie.gif" alt="Heartie" />
@@ -407,7 +407,7 @@
         <div class="item-desc">Red Dot winner. A companion for kids with heart conditions.</div>
       </a>
 
-      <a class="item" href="builds/chase-against-time.html"
+      <a class="item" href="?p=chase-against-time"
          style="--w: 330px; --ar: 1/1; left: 440px; top: 1250px;">
         <div class="item-media">
           <video src="assets/race-against-time.webm" autoplay loop muted playsinline></video>
@@ -602,7 +602,7 @@
     canvas.addEventListener('click', e => {
       const a = e.target.closest('.item[href]');
       if (!a || moved) return;
-      const m = a.getAttribute('href').match(/builds\/([\w-]+)\.html/);
+      const m = a.getAttribute('href').match(/[?&]p=([\w-]+)/);
       if (!m || !BUILDS[m[1]]) return;      // fall through to a normal navigation
       e.preventDefault();
       openPanel(m[1]);
