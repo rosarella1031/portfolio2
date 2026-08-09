@@ -327,7 +327,7 @@
   </div>
 
   <div class="canvas-hint" id="hint">
-    <span>05 Builds</span>
+    <span>Builds</span>
     <span class="sep">/</span>
     <span><b>Drag</b> or <b>scroll</b> to move</span>
   </div>
@@ -397,23 +397,35 @@
     // ---- drag to pan ----
     let dragging = false, moved = false, sx0 = 0, sy0 = 0, ox = 0, oy = 0;
 
+    // Capture is deferred until the pointer actually travels. Capturing on
+    // pointerdown retargets the click to the viewport, so the anchor underneath
+    // never fires and the case study won't open.
+    let pending = false;
+
     vp.addEventListener('pointerdown', e => {
-      dragging = true; moved = false;
+      if (e.button !== 0) return;
+      pending = true; dragging = false; moved = false;
       sx0 = e.clientX; sy0 = e.clientY; ox = x; oy = y;
       canvas.classList.remove('glide');
-      vp.classList.add('dragging');
-      vp.setPointerCapture(e.pointerId);
     });
 
     vp.addEventListener('pointermove', e => {
-      if (!dragging) return;
+      if (!pending && !dragging) return;
       const dx = e.clientX - sx0, dy = e.clientY - sy0;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+
+      if (!dragging) {
+        if (Math.abs(dx) <= 3 && Math.abs(dy) <= 3) return;   // still a click
+        dragging = true; moved = true;
+        vp.classList.add('dragging');
+        try { vp.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+
       x = ox + dx; y = oy + dy;
       clamp(); apply();
     });
 
     function endDrag(e) {
+      pending = false;
       if (!dragging) return;
       dragging = false;
       vp.classList.remove('dragging');
@@ -425,6 +437,7 @@
     // a drag shouldn't trigger the link underneath
     canvas.addEventListener('click', e => {
       if (moved) { e.preventDefault(); e.stopPropagation(); }
+      moved = false;
     }, true);
 
     // ---- arrow keys ----
