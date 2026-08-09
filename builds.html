@@ -286,8 +286,23 @@
     @media (max-width: 1100px) {
       .panel { width: 92vw; grid-template-columns: 240px 1fr; }
     }
+    /* on touch the panel takes the whole screen and stacks: header, then media */
     @media (max-width: 760px), (pointer: coarse) {
-      .panel, .scrim { display: none; }
+      .panel {
+        width: 100vw; border-left: none;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      .panel-side {
+        border-right: none; border-bottom: 1px solid var(--border);
+        padding: 3.25rem 1.25rem 1.5rem;
+        gap: 1rem; overflow: visible;
+      }
+      .panel-spacer { display: none; }
+      .panel-body { padding: 1.5rem 1.25rem 4rem; gap: 1rem; }
+      .panel-row { grid-template-columns: 1fr; }
+      .panel-body iframe { height: 60vh; }
+      body.panel-open { overflow: hidden; }
     }
 
     /* touch / small screens fall back to a plain scrollable grid */
@@ -460,6 +475,157 @@
     const mini   = document.getElementById('minimap');
     const miniView = document.getElementById('minimapView');
 
+    // `moved` is set by the drag handler below, but the panel's click
+    // interception reads it, and that runs on touch too — so it lives up here.
+    let moved = false;
+
+    // ================= side panel =================
+    const BUILDS = {
+      'negotiabbles': {
+        label: 'Awards', tags: [],
+        link: 'https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529',
+        linkText: 'View on iF Design',
+        media: ['negotiabbles-cover.png','negotiabbles-1.png','negotiabbles-2.png','negotiabbles-3.png',
+                'negotiabbles-4.png','negotiabbles-5.png','negotiabbles-6.png','negotiabbles-7.png','negotiabbles-8.png']
+      },
+      'pretext-book': {
+        label: 'Web', tags: [],
+        desc: 'Try the pen and sticker on the text.',   // overrides the card blurb
+        link: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html',
+        linkText: 'Open in new tab',
+        embed: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html'
+      },
+      'heartie': {
+        label: 'Awards', tags: [],
+        link: 'https://www.red-dot.org/project/heartie-smart-companion-for-kids-with-heart-conditions-85163',
+        linkText: 'View on Red Dot', placeholders: 3
+      },
+      'hive-ai': {
+        label: 'Awards',
+        tags: ['Branding','Brand Strategy','Brand Guidelines','Motion'],
+        link: 'https://www.red-dot.org/project/hive-ai-84885',
+        linkText: 'View on Red Dot',
+        media: ['hive-00.png','hive-1.webm','hive-0.png','hive-3.png'],
+        pair: ['hive-2-1.png','hive-4.png','hive-2.jpg']
+      },
+      'chase-against-time': {
+        label: 'XR', tags: [],
+        link: 'https://devpost.com/software/chase-against-time',
+        linkText: 'View on Devpost', placeholders: 3
+      }
+    };
+
+    const scrim = document.getElementById('scrim');
+    const panel = document.getElementById('panel');
+    const pBody = document.getElementById('pBody');
+    let panelOpen = false;
+
+    function mediaEl(f) {
+      if (f.endsWith('.webm') || f.endsWith('.mp4')) {
+        const v = document.createElement('video');
+        v.src = 'assets/' + f;
+        v.autoplay = v.loop = v.muted = v.playsInline = true;
+        return v;
+      }
+      const i = document.createElement('img');
+      i.src = 'assets/' + f;
+      i.loading = 'lazy';
+      i.alt = '';
+      return i;
+    }
+
+    function openPanel(slug) {
+      const d = BUILDS[slug];
+      if (!d) return;
+
+      // title and blurb come off the canvas card, so there's only one copy
+      const card = document.querySelector('.item[href*="' + slug + '"]');
+      document.getElementById('pLabel').textContent = d.label;
+      document.getElementById('pTitle').textContent = card.querySelector('.item-name').textContent;
+      document.getElementById('pDesc').textContent = d.desc || card.querySelector('.item-desc').textContent;
+      document.getElementById('pTags').innerHTML =
+        (d.tags || []).map(t => `<span>${t}</span>`).join('');
+
+      const lk = document.getElementById('pLink');
+      lk.href = d.link;
+      document.getElementById('pLinkText').textContent = d.linkText;
+
+      pBody.innerHTML = '';
+      pBody.scrollTop = 0;
+
+      if (d.embed) {
+        const f = document.createElement('iframe');
+        f.src = d.embed;
+        f.title = d.title;
+        pBody.appendChild(f);
+      }
+      (d.media || []).forEach(f => pBody.appendChild(mediaEl(f)));
+      if (d.pair) {
+        const row = document.createElement('div');
+        row.className = 'panel-row';
+        row.appendChild(mediaEl(d.pair[0]));
+        const col = document.createElement('div');
+        col.style.display = 'grid';
+        col.style.gap = '1rem';
+        col.appendChild(mediaEl(d.pair[1]));
+        col.appendChild(mediaEl(d.pair[2]));
+        row.appendChild(col);
+        pBody.appendChild(row);
+      }
+      for (let i = 0; i < (d.placeholders || 0); i++) {
+        const p = document.createElement('div');
+        p.className = 'ph';
+        pBody.appendChild(p);
+      }
+
+      panel.classList.add('open');
+      scrim.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+      panelOpen = true;
+      document.body.classList.add('panel-open');
+      document.getElementById('pClose').focus();
+    }
+
+    function closePanel(push) {
+      if (!panelOpen) return;
+      panel.classList.remove('open');
+      scrim.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+      panelOpen = false;
+      document.body.classList.remove('panel-open');
+      // stop any video in the panel from playing on in the background
+      setTimeout(() => { if (!panelOpen) pBody.innerHTML = ''; }, 500);
+      if (push !== false) history.pushState({}, '', location.pathname);
+    }
+
+    // intercept canvas clicks — only when it was a click, not a drag
+    canvas.addEventListener('click', e => {
+      const a = e.target.closest('.item[href]');
+      if (!a || moved) return;
+      const m = a.getAttribute('href').match(/builds\/([\w-]+)\.html/);
+      if (!m || !BUILDS[m[1]]) return;      // fall through to a normal navigation
+      e.preventDefault();
+      openPanel(m[1]);
+      history.pushState({ slug: m[1] }, '', '?p=' + m[1]);
+    });
+
+    document.getElementById('pClose').addEventListener('click', () => closePanel());
+    scrim.addEventListener('click', () => closePanel());
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+    // back button closes the panel instead of leaving the page
+    window.addEventListener('popstate', e => {
+      const slug = new URLSearchParams(location.search).get('p');
+      if (slug && BUILDS[slug]) openPanel(slug); else closePanel(false);
+    });
+
+    // deep link: ?p=hive-ai opens straight into the panel
+    (function () {
+      const slug = new URLSearchParams(location.search).get('p');
+      if (slug && BUILDS[slug]) openPanel(slug);
+    })();
+
+    // the canvas itself is pointer-driven; touch gets the CSS grid instead
     // bail out on touch / narrow — the CSS already falls back to a grid
     const isCoarse = window.matchMedia('(pointer: coarse), (max-width: 760px)').matches;
     if (isCoarse) { mini.remove(); document.getElementById('hint').remove(); return; }
@@ -515,7 +681,7 @@
     }, { passive: false });
 
     // ---- drag to pan ----
-    let dragging = false, moved = false, sx0 = 0, sy0 = 0, ox = 0, oy = 0;
+    let dragging = false, sx0 = 0, sy0 = 0, ox = 0, oy = 0;
 
     // Capture is deferred until the pointer actually travels. Capturing on
     // pointerdown retargets the click to the viewport, so the anchor underneath
@@ -677,152 +843,6 @@
     }
 
 
-
-    // ================= side panel =================
-    const BUILDS = {
-      'negotiabbles': {
-        label: 'Awards', title: 'Negotiabbles',
-        desc: 'Description goes here.', tags: [],
-        link: 'https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529',
-        linkText: 'View on iF Design',
-        media: ['negotiabbles-cover.png','negotiabbles-1.png','negotiabbles-2.png','negotiabbles-3.png',
-                'negotiabbles-4.png','negotiabbles-5.png','negotiabbles-6.png','negotiabbles-7.png','negotiabbles-8.png']
-      },
-      'pretext-book': {
-        label: 'Web', title: 'Pretext Book',
-        desc: 'Try the pen and sticker on the text.', tags: [],
-        link: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html',
-        linkText: 'Open in new tab',
-        embed: 'https://rosarella1031.github.io/pretext-book/sec-section-name.html'
-      },
-      'heartie': {
-        label: 'Awards', title: 'Heartie',
-        desc: 'Description goes here.', tags: [],
-        link: 'https://www.red-dot.org/project/heartie-smart-companion-for-kids-with-heart-conditions-85163',
-        linkText: 'View on Red Dot', placeholders: 3
-      },
-      'hive-ai': {
-        label: 'Awards', title: 'Hive AI',
-        desc: 'Description goes here.',
-        tags: ['Branding','Brand Strategy','Brand Guidelines','Motion'],
-        link: 'https://www.red-dot.org/project/hive-ai-84885',
-        linkText: 'View on Red Dot',
-        media: ['hive-00.png','hive-1.webm','hive-0.png','hive-3.png'],
-        pair: ['hive-2-1.png','hive-4.png','hive-2.jpg']
-      },
-      'chase-against-time': {
-        label: 'XR', title: 'Chase Against Time',
-        desc: 'Description goes here.', tags: [],
-        link: 'https://devpost.com/software/chase-against-time',
-        linkText: 'View on Devpost', placeholders: 3
-      }
-    };
-
-    const scrim = document.getElementById('scrim');
-    const panel = document.getElementById('panel');
-    const pBody = document.getElementById('pBody');
-    let panelOpen = false;
-
-    function mediaEl(f) {
-      if (f.endsWith('.webm') || f.endsWith('.mp4')) {
-        const v = document.createElement('video');
-        v.src = 'assets/' + f;
-        v.autoplay = v.loop = v.muted = v.playsInline = true;
-        return v;
-      }
-      const i = document.createElement('img');
-      i.src = 'assets/' + f;
-      i.loading = 'lazy';
-      i.alt = '';
-      return i;
-    }
-
-    function openPanel(slug) {
-      const d = BUILDS[slug];
-      if (!d) return;
-
-      document.getElementById('pLabel').textContent = d.label;
-      document.getElementById('pTitle').textContent = d.title;
-      document.getElementById('pDesc').textContent = d.desc;
-      document.getElementById('pTags').innerHTML =
-        (d.tags || []).map(t => `<span>${t}</span>`).join('');
-
-      const lk = document.getElementById('pLink');
-      lk.href = d.link;
-      document.getElementById('pLinkText').textContent = d.linkText;
-
-      pBody.innerHTML = '';
-      pBody.scrollTop = 0;
-
-      if (d.embed) {
-        const f = document.createElement('iframe');
-        f.src = d.embed;
-        f.title = d.title;
-        pBody.appendChild(f);
-      }
-      (d.media || []).forEach(f => pBody.appendChild(mediaEl(f)));
-      if (d.pair) {
-        const row = document.createElement('div');
-        row.className = 'panel-row';
-        row.appendChild(mediaEl(d.pair[0]));
-        const col = document.createElement('div');
-        col.style.display = 'grid';
-        col.style.gap = '1rem';
-        col.appendChild(mediaEl(d.pair[1]));
-        col.appendChild(mediaEl(d.pair[2]));
-        row.appendChild(col);
-        pBody.appendChild(row);
-      }
-      for (let i = 0; i < (d.placeholders || 0); i++) {
-        const p = document.createElement('div');
-        p.className = 'ph';
-        pBody.appendChild(p);
-      }
-
-      panel.classList.add('open');
-      scrim.classList.add('open');
-      panel.setAttribute('aria-hidden', 'false');
-      panelOpen = true;
-      document.getElementById('pClose').focus();
-    }
-
-    function closePanel(push) {
-      if (!panelOpen) return;
-      panel.classList.remove('open');
-      scrim.classList.remove('open');
-      panel.setAttribute('aria-hidden', 'true');
-      panelOpen = false;
-      // stop any video in the panel from playing on in the background
-      setTimeout(() => { if (!panelOpen) pBody.innerHTML = ''; }, 500);
-      if (push !== false) history.pushState({}, '', location.pathname);
-    }
-
-    // intercept canvas clicks — only when it was a click, not a drag
-    canvas.addEventListener('click', e => {
-      const a = e.target.closest('.item[href]');
-      if (!a || moved) return;
-      const m = a.getAttribute('href').match(/builds\/([\w-]+)\.html/);
-      if (!m || !BUILDS[m[1]]) return;      // fall through to a normal navigation
-      e.preventDefault();
-      openPanel(m[1]);
-      history.pushState({ slug: m[1] }, '', '?p=' + m[1]);
-    });
-
-    document.getElementById('pClose').addEventListener('click', () => closePanel());
-    scrim.addEventListener('click', () => closePanel());
-    window.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-
-    // back button closes the panel instead of leaving the page
-    window.addEventListener('popstate', e => {
-      const slug = new URLSearchParams(location.search).get('p');
-      if (slug && BUILDS[slug]) openPanel(slug); else closePanel(false);
-    });
-
-    // deep link: ?p=hive-ai opens straight into the panel
-    (function () {
-      const slug = new URLSearchParams(location.search).get('p');
-      if (slug && BUILDS[slug]) openPanel(slug);
-    })();
 
     window.addEventListener('resize', measure);
 
