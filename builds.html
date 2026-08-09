@@ -278,7 +278,7 @@
       <a class="item item--hero" href="builds/hive-ai.html"
          style="--w: 400px; --ar: 1/1; left: 1340px; top: 840px;">
         <div class="item-media">
-          <video src="assets/hive-1.webm" poster="assets/hive-1-poster.png" data-rest-time="1.66" loop muted playsinline preload="metadata"></video>
+          <video src="assets/hive-1.webm" autoplay loop muted playsinline></video>
         </div>
         <div class="item-name">Hive AI</div>
         <div class="item-desc">Red Dot winner. Branding, guidelines and motion.</div>
@@ -556,14 +556,6 @@
       refresh();
     }
 
-
-    // Hive: still frame until hovered
-    canvas.querySelectorAll('video[data-rest-time]').forEach(v => {
-      const rest = parseFloat(v.dataset.restTime) || 0;
-      const item = v.closest('.item');
-      item.addEventListener('mouseenter', () => { v.play().catch(() => {}); });
-      item.addEventListener('mouseleave', () => { v.pause(); v.currentTime = rest; });
-    });
 
     window.addEventListener('resize', measure);
 
