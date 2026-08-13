@@ -112,7 +112,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: clamp(3rem, 8vh, 5.5rem) var(--pad-x) 0 var(--left);
+      /* Symmetric, not offset by the rail: the hero centres on the window.
+         The rail is a fixed overlay at the edge and the centred column never
+         reaches it, so there is nothing to clear. */
+      padding: clamp(3rem, 8vh, 5.5rem) var(--pad-x) 0;
       overflow: hidden;
     }
     /* the rule is gone but its space is not — removing the element would pull
