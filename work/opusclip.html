@@ -3,224 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>OpusClip AI Video Clipping Mobile MVP — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="project.css" />
-  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
-  <script>
-    /* The half-and-half layout is the default. ?plain switches it off for
-       side-by-side comparison; disabling the sheet leaves project.css alone,
-       so the fallback is exactly the previous design. */
-    if (new URLSearchParams(location.search).has('plain')) {
-      document.getElementById('split-sheet').disabled = true;
+  <style>
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
     }
-  </script>
+    .gate { width: min(22rem, 100%); text-align: left; }
+    .gate .kicker {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 0.75rem;
+    }
+    .gate h1 {
+      font-family: 'EB Garamond', serif; font-weight: 400;
+      font-size: 1.75rem; letter-spacing: -0.008em; line-height: 1.15;
+      color: var(--text); margin: 0 0 0.75rem;
+    }
+    .gate p { font-size: 0.9rem; line-height: 1.6; color: #747474; margin: 0 0 1.5rem; }
+    .row { display: flex; gap: 0.5rem; }
+    .gate input {
+      flex: 1; min-width: 0;
+      font: inherit; font-size: 0.9rem;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: #fff; color: var(--text);
+    }
+    .gate input:focus { outline: 2px solid var(--text); outline-offset: -1px; }
+    .gate button {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0 1rem; border: 0; border-radius: 8px;
+      background: var(--text); color: #fff; cursor: pointer;
+    }
+    .gate button:disabled { opacity: 0.45; cursor: default; }
+    .note {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.7rem; letter-spacing: 0.04em;
+      color: var(--text-3); margin-top: 0.85rem; min-height: 1.2em;
+    }
+    .note.bad { color: #B3402A; }
+    .back {
+      display: inline-block; margin-top: 2rem;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-3); border-bottom: 1px solid var(--border); padding-bottom: 2px;
+    }
+    .back:hover { color: var(--text); }
+  </style>
 </head>
 <body>
+  <main class="gate">
+    <div class="kicker">Protected</div>
+    <h1>OpusClip is password protected</h1>
+    <p>Company policy keeps this case study off the open web. If you were sent here, the password came with the link.</p>
+    <form class="row" id="f">
+      <input id="pw" type="password" placeholder="Password" autocomplete="current-password"
+             autofocus aria-label="Password" />
+      <button id="go" type="submit">Enter</button>
+    </form>
+    <div class="note" id="note"></div>
+    <a class="back" href="../index.html">&larr; Back to work</a>
+  </main>
 
-  <div class="page-body">
-
-    <aside class="sidebar">
-      <a href="../index.html" class="back-link" aria-label="Back to projects">
-
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-
-          <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-
-        </svg>
-
-      </a>
-      <div class="sidebar-meta">
-        <div class="sidebar-label">CASE STUDY</div>
-        <div class="sidebar-project-name">OpusClip AI Video Clipping Mobile MVP</div>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="#overview" class="nav-item active">
-          <span class="sidebar-dot"></span><span class="sidebar-text">OVERVIEW</span>
-        </a>
-        <a href="#impact" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">IMPACT</span>
-        </a>
-        <a href="#background" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">BACKGROUND</span>
-        </a>
-        <a href="#process" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN PROCESS</span>
-        </a>
-        <a href="#challenge1" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN CHALLENGE 01</span>
-        </a>
-        <a href="#challenge2" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN CHALLENGE 02</span>
-        </a>
-        <a href="#next" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">NEXT STEPS</span>
-        </a>
-      </nav>
-    </aside>
-
-    <main class="content">
-
-      <div class="content-header">
-        <div class="content-header-top">
-          <h1 class="project-title">OpusClip AI Video Clipping Mobile MVP</h1>
-          <div class="content-header-tags">
-            <span class="pill">Mobile</span>
-            <span class="pill">Creator Tool</span>
-          </div>
-        </div>
-        <p class="project-summary">Mobile MVP design for AI-powered video editing — bringing OpusClip's viral clip generation to iOS for the first time.</p>
-      </div>
-
-      <div class="hero-image">
-        <img src="../assets/opushero.png" alt="OpusClip AI Video Clipping Mobile MVP" />
-      </div>
-
-      <section id="overview" class="content-section">
-        <div class="section-label">Overview</div>
-        <h2 class="section-title" data-e="1">A mobile MVP for OpusClip, built to expand its reach and meet creators' on-the-go needs.</h2>
-        <p data-e="2">OpusClip is a fast-growing AI video editing startup. To expand its reach and meet creators' on-the-go needs, we designed a mobile experience that makes clipping and publishing videos accessible without a desktop.</p>
-        <a href="https://apps.apple.com/us/app/opusclip-ai-video-clipping/id6743615403" target="_blank" class="project-link">
-          Visit OpusClip on the App Store <span>↗</span>
-        </a>
-        <div class="meta-row">
-          <div>
-            <div class="meta-k">Role</div>
-            <div class="meta-v" data-e="28">Product Designer</div>
-          </div>
-          <div>
-            <div class="meta-k">Time</div>
-            <div class="meta-v" data-e="29">Dec 2024 &ndash; Mar 2025</div>
-          </div>
-          <div>
-            <div class="meta-k">Team</div>
-            <div class="meta-v" data-e="30">PD &middot; PM &middot; Eng</div>
-          </div>
-        </div>
-      </section>
-
-      <section id="impact" class="content-section">
-        <div class="section-label">Impact</div>
-        <h2 class="section-title" data-e="4">Results across retention, adoption, and publish rate.</h2>
-        <p data-e="5">The mobile MVP moved the needle across the metrics we scoped it for, giving creators a reason to stay in the product and publish more often.</p>
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-number" data-e="6">4.9 ★</div>
-            <div class="stat-label" data-e="7">App Store rating at launch</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number" data-e="8">26%</div>
-            <div class="stat-label" data-e="9">Day-1 retention</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number" data-e="10">12%</div>
-            <div class="stat-label" data-e="11">Desktop-to-mobile shift</div>
-          </div>
-        </div>
-      </section>
-
-      <section id="background" class="content-section">
-        <div class="section-label">Background</div>
-        <h2 class="section-title" data-e="12">As creators increasingly film, edit, and publish on their phones, OpusClip needed a mobile experience to support their full workflow.</h2>
-        <p data-e="13">OpusClip's AI clip-generation engine only lived on the web. As more creators started filming and editing entirely from their phones, the product needed a mobile presence to meet them where they already were — without waiting to get back to a desktop.</p>
-
-        <div class="img-block"><img src="../assets/opus-background-new.png" alt="Why OpusClip needed a mobile experience" /></div>
-
-        <div class="detail-problems">
-          <div class="detail-problem-item">
-            <h3>Business Goal</h3>
-            <ul class="detail-list">
-              <li data-e="14">Increase retention and expand the user base</li>
-              <li data-e="15">Empower creators with on-the-go tools</li>
-              <li data-e="16">Drive organic growth from the app store</li>
-            </ul>
-          </div>
-          <div class="detail-problem-item">
-            <h3>User Needs</h3>
-            <ul class="detail-list">
-              <li data-e="17">Eliminates the need to transfer mobile-recorded content to a web platform.</li>
-              <li data-e="18">No need to wait and monitor AI progress — preview clips and publish directly on mobile without returning to desktop.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section id="process" class="content-section">
-        <div class="section-label">Design Process</div>
-        <h2 class="section-title" data-e="19">Let's define the scope and create a lean but impactful mobile MVP.</h2>
-        <p data-e="20">We scoped the mobile experience around the product's core value — transforming long videos into short clips and publishing them across platforms in one click. To deliver on this, we focused on four essential flows: video upload and preset selection, AI-powered clip generation, preview, and sharing, resulting in a lean yet impactful mobile MVP.</p>
-        <p data-e="21">On the web, these flows were already well-defined but heavily desktop-oriented. When translating this flow into mobile, two key design challenges emerged.</p>
-      </section>
-
-      <section id="challenge1" class="content-section">
-        <div class="section-label">Design Challenge 01</div>
-        <h2 class="section-title" data-e="22">HMW help mobile users select presets effortlessly?</h2>
-        <p data-e="23">We explored three directions before landing on the final flow. An all-in-one page gave users full control but caused information overload. A step-by-step wizard reduced cognitive load by presenting one choice at a time, but forced users through every option and made it hard to revisit earlier choices. The final direction — a one-page summary with a single-tap entry point — kept the flow fast and clean while still letting users jump back to any choice.</p>
-        <div class="img-block"><img src="../assets/opus-challenge1-1.png" alt="Design Challenge 01 exploration 1" /></div>
-        <div class="img-block"><img src="../assets/opus-challenge1-2.png" alt="Design Challenge 01 exploration 2" /></div>
-        <div class="img-block"><img src="../assets/opus-challenge1-3.png" alt="Design Challenge 01 exploration 3" /></div>
-        <div class="img-block"><img src="../assets/opus-challenge1-4.png" alt="Design Challenge 01 exploration 4" /></div>
-      </section>
-
-      <section id="challenge2" class="content-section">
-        <div class="section-label">Design Challenge 02</div>
-        <h2 class="section-title" data-e="24">HMW help mobile users easily preview and compare AI-generated clips?</h2>
-        <p data-e="25">Our first pass let users click into a clip and scroll through duration, preview, transcript, and scoring rationale — easy to compare, but slow, and switching clips meant going back to the list. We then tried swiping left and right between clips, which sped up switching but conflicted with the system's back gesture. The final design kept the fast switching of swiping while resolving the gesture conflict, so comparing clips finally felt as quick as scrolling a feed.</p>
-        <div class="img-block"><img src="../assets/opus-challenge2-1-new.png" alt="Design Challenge 02 final design" /></div>
-      </section>
-
-      <section id="next" class="content-section">
-        <div class="section-label">Next Steps</div>
-        <h2 class="section-title" data-e="26">Bring advanced editing tools to mobile.</h2>
-        <p data-e="27">The launched version currently focuses on the core flows defined in our mobile MVP. As the next step, we plan to bring advanced video-editing capabilities from the web to mobile — including editing tools, caption customization, and more. This will empower users with greater flexibility and truly enable on-the-go video creation.</p>
-        <div class="img-block"><img src="../assets/next-step.png" alt="Next steps for OpusClip mobile" /></div>
-      </section>
-
-      <div class="project-nav">
-        <div class="prev-project">
-          <span class="next-label">PREVIOUS PROJECT</span>
-          <a href="brix.html" class="next-title">← Brix AI Agentic Talent Search</a>
-        </div>
-        <div class="next-project">
-          <span class="next-label">NEXT PROJECT</span>
-          <a href="fitx.html" class="next-title">FitX Lab Fit Intelligence 0->1 →</a>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <footer>
-    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
-    <nav class="footer-nav">
-      <a href="../index.html">Work</a>
-      <a href="../builds.html">Builds</a>
-      <a href="../about.html">About</a>
-    </nav>
-  </footer>
-
-  <script src="project.js"></script>
-  <script src="../js/edit-prose.js" defer></script>
   <script>
-  /* toc-open: hover opens the contents rail on a mouse, but a touch screen has
-     no hover — tapping the ticks has to work too. */
   (function () {
-    const rail = document.querySelector('.sidebar');
-    if (!rail) return;
-    rail.addEventListener('click', e => {
-      if (e.target.closest('.nav-item')) { rail.classList.remove('is-open'); return; }
-      e.stopPropagation();
-      rail.classList.toggle('is-open');
+    var SALT = "7vBpgvW9h60tqKLgFpVdkg==", IV = "xxVnsgOt00e4Sr2B", DATA = "vTunw712bdzb83MlnmTNhOz8ECHqbAJpYbtei7kFqcMiwuCWL2nYpGxs1q082EZvDKVneYrIh7yqXUUyWFPug3K50Z7pzfszpy/RCcgBzfwpXNQl1XJBQO2YURwRAZlv5Hsc6oMiHXTH6gN9hubM6VR8HLZdieqnmE65LqNnPGhoKCv2VE2CqMdHp8OqzqiwW3ozmuECRkOtxjWBhLdWgQTxXzDB9DRZ5tjpdztKv3P7NEyFJkLHSy19RUvPECHv+48AktVJMOSARKw/C5qyVvgeTMYmv3BIpkIFIY5u7WwA9fHqsOasrN4gWx/dqL3JEPtcyf4FzcaZbW+YVk6sg3wc+lH+LOgxuebr0NvNbyy/4eZBPCtfhNq2/UruwRzaYy4PfL6VaAPKSgExrrvPhHfNn4SUH4crF63kjkJxg+HHqpOUSmfqKs4/nZmui1Ja6kQIQpkjbvajGRRDGnil9x/VttLb3ri2blN0vafrl4CeST++6usHqD/gmIEBnQZ5e0hKM8rybV/omxQK7LbL9IMHBH0kcgnQnR+EzhGMntmKoD9dbP2c/J5NGgqSkiRZPrpd/hvOYLRbSM2bqgmqAWW+LoOTtrcYHg+ZtUVmn1CjvvJqsbz0BqKqeM5AC/aSFGpOGKFsXlOdYJzHVta6Uc7RBKOCi0k0NMjEwOp00ftoQ/fDqTMcvreTmd9t+XxHr8wBAxeiXiLJq+H480iqxW7Nw3IUs6zSo2N60tcxnUq9iUYZGyJuVue8hszoULBuA/wXHjOOKmQKSmHlZ043uW7F05/+gMw5XQYqjB3IrAlUEVOBrPmG7GaYijDIhc2zigfukvJ2xL7vYFsWssTOLQTLM92J1ZEMjEuBK56+hTScMxd+VY7VDYR+91Wt//ldDGtreLstP3ZDv3kkx6RNxlFucP6tcEjnU2ip+n4o7yfZwyHcaVckyph2Y/kXAlXgqsf65i0tr4CJqeMV8TLw7PTHd1q+tM1sB6UrvYd3uFBYYgupGh7GoIZf6CPmLDGj7q39Y/BPNuhlUjF/bPfB24v7Cc84GKBWErdLtlcGVBfWnjIDTzy6RZVdY1f17dSUUtsX7JYQuC9wIzy1Ncr4LHGngsWh47UJu6aFvbEpweh3eajhGsgYKt8kKCfeRuYKgIRxeisdh/QXDT/01sgJv4tN+bL14VGdlwFV7ezTw70ZJAwNdZ4IYXA/fzddNGU8R7T9tOjkJRz/6Gm8PJqq1l8nLhk0hXD/C9QQLVcBv5i24fXXxD7abc4RrECmJHDt1hlUZSbjgOHPWE7M8W0weZYYDOYFqUPuDqQOVQ8NdOPAdj+hR7vGmdwS9fFrMc8o2CqF8niH2vzK48gHRfnjeopsLfGT5CwA9ZNSwhcf5nyiQwvhn8oJ3+6mk5emm2AcK5+pYGJUtXqIm+Sa0aSY4xJvATW6CNNTbGNMuAE7v263Cw/++MwnfejuL+KG89aIP91cqlrP5zUdabh1FN7W/JAL3lqqJQ2qP3Z29AiAoaObE9K0prZAg4dazz6Y/tkIa8Kh2Jp24v6TFCEwZ3FD1tNh4et+pYbfLv1sFQRBqltXxqXw0AM4vvr1OI2+T/c3OPOqtwlP3LtnNZcQ+cit02VMRLKkAZFRcn99lo5ZhiPV3qldOQsujWdBjosXKxvZCO29lNZsT5vDc64BacgLB25ODezw6kW3T/MQ4Vn8JR8cGe8xo/8LhlTu5esLz5jOmFfNENgbJ1yOaefPlv+4uucfIq8MT0/N6vPcRpRTFV9gTzsTq8kIeAhzTgmXWNbCRGwD7ny39Ic4NwCUNbEL4lZkjVFvwZ/3ytFDaepqTD1s6qYsuKCYfw9Hdq5n43x7r+OAMoFFQD2e2/Kw82CBjGazxrBeh2ynUljkKZ9SZXyOmh6nkkTqgHoWC9Vkze/J2HTT6OtZ2mB1rnvXlgzhinCRrCnWVE+HePsDY6u+h6X6W99bCEw6Wfm85T5NLsVrYEzwcrDY4Asm416y/Qk51zIcVZ5TdC0b/I+0/rjBVjok2BIhyQpfHGCGavv+dJFFjNBsw5hvWSQxZ0txuPV5T0DanC2LQr6WFPFJW27RUGHfhc/dNvuIobSWyWnpcpkB4ZND4dG20uO+9I3aoZlx1xVUF0hc8QwxBfL48fhE6odGkvKbDwDR+O9d9FgL9ggPkzJhyxZOHYgJhih6d3aWMYOVWQ1qXbzeqSCsFfNhF9JnM9z9/H6cSmf2PQXdX8DPpokTe+17/NHnulos/2kQGqmqPE7aOSDMi8m6fL88wiG9x+jOIFJPrLz7ja4Co2AWlaW/C6ZKKbghZCndzaA43cRzyQwUDXy5WbALDkxLgMpLQYmlW0S51iSod7VlBATL2RnZViYEpxCCvifa/m00fOcieQh3TsYKLgzdC2g7Av8cQUWVfox2aDYCHug3YCznpmWe3Dhzk6x+OZskOj3I4XKOQa5kV2rtdyKXot8ljqs+kzCYM9qrGbXEdZyOZOHwBGrLQPScFwE9Kj3QsX4V9BqUkC8lEY8pTZDOOmytE2+94EvkojrOANMM0+5iBecva9Mfge4I8OA0TS2f8QPRsECMI9UipyvelXQCCST7//mjfmcOYhWRJ3wqIkPL1oosllNj6qRdRUiUVs4GWrp9xqqGQo0E2o3zU8rJlr0kAoKAMkWAFRGj+BMXXCu6pDwqJsu+3ZTaIkJumvV5hzA4rLwkWTjCrE7LzI7dge4XJzLNTjwIJaNPV+D+2vE3LcRckq48xL4Rr8UlCD+k9b0arwlTEU5m8YtTn+mvHnJ2o1BiPNEePTVleDsSY3LhtwelYv12KIBWRCREM0135V4fjeEteO9zhDVTJ9W4t6ISYhA/RtThFskdnaWazSS4G9oRsZp6zi9udR3dRN2tHFRSL40901ewLY62+6VInp/ARi134aQpGtly1ZWErfILS9H9m+SBZFU4o3EfTjIZmxgW2oa36sVBE/5xG1awsi2neBkADkM7GNQXRE8itrAUL2Hq5cfUuch8j+32kjjbPu02amP0y9m7h5gQ350ApIgfTISABP+F3jpci1R/B9OxS2v/ARYXNDopCflieNAsMJdPCXuskDLvJps0u/3NIP+7Yv02Hs4mk3THDdcI/E0Y/JfqOhcy1Dy12A+0UjYPl0xvhF5ULAYlzblN1Syw/V453LMWjhlmfApp04uK6T1mJEiNeHY7TroKRgCiK53Xtmkis37W2jP3JtJ50MSG1LThGHb4U3NTkmYrruGQTeWzhXJbjdzn6RARwIxfQKosIF2zop4fGcBMZkSvqszJ5HJ3m6dm5pHH4ll1fdKYES8zTex2gEUYt/Q28S2HVjLX5pIeEkaT9FTyQIoDu/oOK59d0UnvNJdkwEIX1VQHA4Z20/dgMOAG+ezYmXFs8NUF54MDAQbwGZF+4pvQsdJ8IkN68r272PmcZM+aRN7/b61r+acXkLU8sUB+sjg//OwnVIP8ot5/pUd/Iir7bigx4vY81mo0fj1I8wuZWM5+ceLxWXeUGTTZaYQ5U8xnM7MjCgAA15C5wPj0aIATcouDVem2y+mOUmVbwuQ4GLJog+88ws8rhbBnph6cuoeOJrhLRkoCjUPk/NuCBN4I/KnnHS+mJVlSetgkmdTRGVxegvzlDTo9X7fe9r95FGskbU1oBBMxa5jh0BRgh/Cl/G/WBWpIXLC8ugtiqRJy71pEEuaQeY/VdGJ4B8NlNvu+NlwtTNCuksV9ELkXiZ0KEJXcs8QQ+MOr2WL/Y0VGNkXI87eJYxWtbIzJQrLi4YRykEVTljwg27Eb9inzFCMgYMKC7t22MGSnnwCUxXA1jA17Yol7YWLP3XsOFYxxzVgafuaVdQh2PwpWpBtAYhGUbsuh/iOYs8Yq0YyhikipiQBN6rjEb3AsGJLAWYafXB03Is/jSgBnOPuTG5C3oMyxUB8x9C2wCL4HsrkZZT2j15Fy03BvFy8iAyeOGlzW/HXg8o8AMxV+JzqUkP/0fxVow15A5uPlybofOFJFfzTzt92fod1L5zWCXx0Jb/vXDtNPOdxsZVoYC+ORbfw0/BMlSl1C2SSbb3l+/WJL18jsN7Tdawx5HUQd2uhYCP0TO9wJATk8GdNWO6tCK1KS4uOpOicryNpbCzn8tZpl621m4UkT8paArPft+5beFj9t0G5Ne+0bCcUbEGam/Kv5MFpypgBuXmNI7UeRip/7iH+VJcRSYY5jfI9SFsEs1mUof23Q7cCzQur/YgM3afACx3NwAE1nRkP0RfBNN4gJJdHrpHxS7i6sX+2vHma4lyyBdg3+Ohxe2gCAZ4XsQkf0ET2m/O6wPd/rDyJAaMhLQtsab1pwuaKgzmVrSaNKJ9RFRuSXCwruWxnEEUHYYtHwfMTFyFyF6yDPRmXLPDnHT7fxHbgAyqHXRfIPclYEzyQ/OGFYF06xcwBMCB5oUDGaiSA6yxnk2bcctyuqS28XgclXEAxIYv8Cr+M+MqO+zzwD4XjpBl2y55/3ycWd5vVJfp+UqZfqjrHG8OlopeFJ/w2mdt+3d1GYzIQk6iXQMUmnr1a0gQ+jbQh9iyedTtY4q9jS8DJGYt0aCA90eR70b+QViduBC0sGEj6cXeQyB1C1cI+DJvBwntpzPErS+JKoTGI8p4VNoWHh41tItcEwA5eBLbLvsGhdlMcnMBraps5RIlAPaP5Whdatb+QJb/yTnuKECEuGmubTIFtEyDVqT7JQuE2v2DHAZCkgetscdxkXVC7Dw2Lz0EGeKO+27gHaW5B9l8Qdfok1bKTjjXyCFGXcSAnggW4tLt1yKlFaRaW3P85ZgkEZEa9bkf6K+DYk39/jR5U5T1xEw4tzK5vsaxfoZAJj1a4Y+9g8T7/6K5H1Lp49OA8VHvKq8FTmuLZ02Qd3XQP0RYGVqkwfmLjjdSeSBenpZ2pyudUylNG1jN3f3WY6ivcGpeqTU4Z6FPhgRSqx/eOTAaSKQQauTjU9xsb5sc7xdFyETPMQI985FZi/7mdPHvZ6cNJ0r4hbCtetdJuKByW4fiT+oGIe93KELwukAn4CECrOI7kT4VpaWYTRNCRffuJI+ABHGpSYNKywk6R10zI3maWI8e81kJpS21E6qUoHqE5g+9DTF4U8Bv7RXWvkqjGZnMyfpAP4Ur86VPbInmKfGpHwlXldd3W+z+nsJMYUwmCZU/dvgTO1gDJzCWhuVLGA/QuUmKzSZ1jniI8HtAGiP/0e2gHlCmaIyt03mKVVspNiQaFhDKlKmqouZ9y81l5gtwWsKx6D2Sv68X/loajKXJ3t5/fybMaZoiAgraNmw3rZZUAkvXoblNm+I37Bmq+T8Q47WXvGD0+tMF09LoMpxv+tZH7IH25wbChNdOGsATiwJ+R1hgF0/Vw5G7/lHHmvdVFLwhBfpAw7nZpnIwjrQqvjYv9lS37cWl4r5vZ5gV8VZR5fTmD00ndFoHzZHoaSbs9iGMVCJn3HzLyTMOjtKZ28DrJJ3jBxpSMigYXYoH4Uq+8dntS+jSU7CDrP71DV1UQXGhb8yg4eet+DebLjf7+1c0kWc9KVXgwU9x+BUlju/q2K9g71Yj/IG29GMwto9FVo7T/usIXQysXfpNV/YGRIRgc3rhrFfM6LO5T2U6RdyHL4AVQYvy1rPRPHF4DUK7TTTWI/HdRL6JsK1dzCbQYfx7v1RbO+I9g/FMKTdWw+ihDP4VfbHpH2VW6tOztrSjnC58fHp6LCvnpI4Micn27nx9LOw0IHGKBmm23slWwGwVAln6gglMxDFBBeDpBCuyUNhMWIW8X5Q84PA/gM8MyiAgpP//eZ5jd5jMg68kk21rD1KIbbnZIhI4Y9U7ydUtLLOIsYpt5cSuS12fM/TAKE5M9Ohy4/yojdgkTCQzpOGz/sFMTWn7tnzLk4OAN+Vesc2cXoMoI8MvS+pwYLbf+z1pUnwrq14VPPqPlBr1dgdpzvKl1oNMSBxxxwyNnPwJdgqKDqysh/RO21bYmw4qHGe61I3uf1n40WMEG2lmoopvT/xWFvs5o914uoAKFBGebjrSK/ELGLVk2/cxvTwB81FSQg9Uls4YQ+gPWTQdf+SYhzy0GN4GvKYJCgeAP7KqUYu9HoNsESP7WhLazwnbbGKakiHJ+4A4g5yuPiZ+xUTUCJl3DU+8aJo/Np98SehrZVOuKphUOvy5+SCRKuAOY4qzLtm+l65n1rIHCEkEU8RbHsPG6Em2v7jbtEHzxWRz22EsG8iYgFEjVn23Om/g7XBam8yEtqJGK0aDF6K3qeTCK21BjGEyJbkcNAv7Dz/wGgF7eDfekMzFeyzOwE9PePUaikggjqxCdZQS1clgUMCPUkGvO2m+58v/jnzFmaOOS8/QEahYD/xR4TJJLP/OU0V8kriUgBKZ7Y3IucBtZ19c+VbFaj4EQeoQKl0rpKanBD/RyltHzcNyKW5Mpz3CtO/5FDZGQMnCB3YhoA/NNwAZ240O+AI40efzEWuviGWBYVwWY4yRaIQdmwkhNQm0NhD5kj0DqOMZd8TJsK6Z0FdUa8oqv2ACK8/p5YhpTl9QwzPnmPX1Y5vfpX7srjMOwDQG2lk7eWFvC4jQYMPYd3/toGICTpQd7DJgQdQKX+Y0337eMMe6srFSqoQfRiAioFboKHG59/DH6jXASs4bVMD4YDLKhWKttyv8Ck1BPAHqx/Gfr9iCszYIt32TMwPuTl1prqcohbZgcfy9miiO9EGv4rd19H9xiMnW8fuMhjmYYbSalnAbe23pPE+6EgmWPEL/8MhFtupH6t/KITwv3rC15RKdz52HDd90eSlof/Qc4pFqCtvMGfbnQdXKoyJBgUmvDDTSzPd3flB0fZ7AGaBpf1m4S1+yg98X75b7oe14pWqcyFUEIPNJKZYUHALa3oMadyPYwi6X5aDCq/IS2ed0zhfyNEoiMYrl1L22eyitIu0zrr1YAWxwwCvPKZebG1O445z5PkNjKl+XxFjYJ38EPXQ3ggv+8cRoDbiTI27fHkUjwiYrZk/+s2niZsGk+sOKq2l6tY+Ay2XXCZdWM5w1keGc0J4IrPFi7zG/ozPCsCQBtSRxatJX/d0DcPrD9k46rRh91qPod1RNc9DGG+TrCB++J5ySPkCel9rlElyhUkpNAZRrJSk6Um1EqQKiYiiPvn2jcNUuxqMeKNGmEcOyLl3fPMPJsAm0md4ZwUdiKQHX93/ftx9FwXHFWY2AdsGKBxqUlbYN+1RXcSQ3jHVvXGR0HxsHoSYMeixOrBwD3xBzL12gXan/d2+woZML81qmM6HZkIjAurNa6oUEh0adqUYiT1NPFxXNPY84U5r9lUqbimejvS2OZQqKnEp36Y0n65VjonBp/RZf1NRJpiJQ/D01Ff7uV4PGyVgn3tty7G3pu1/CjyPtz3d5ITVb+/MqmC/J6xmWed/jmtQWLV75YcVuoZ7yJAj65RWvFO8ixY7X8jP2GtwEDABylTvrI5bJyuNnjSP87QkoRe9t5gYAUNVmbG581hrj2Fj/xLaWQW30U1pKmPVspWh2jDAE5yDZu5v3FR6y6MSaKof/8OqsyfyCCCC16//rY1acW/wCnW13ZmC2SH0aTlbioTJeel3gmy7Bovpjlmh3QjYDU3rXoCe67y3Gat8QWlwlM67LnrDaH9uTmT3cKH1QwgS/xKTXg3xse6ognGSCXvv78HRKEle4825lwRqpz6b1wPz1wdBG47mIIeQB8hZb+a7Sa40fhy0K9C2pJY/he+vRkciCeqAdP93tx5PHeah9e6G18078RRDzGW6IBwSxHyFCIIfyW3h9lYS8lW/VRWI8XgSzJroEA0N+sv3rFdyvUcjn/VMED1AJ/0i8bqWKd5BVw64Ki16gO65OAGjxMRUZ/rPwFWN/7UmYoE1LCT2KnrVQVtSUij3won6XpTDWnNHDTakOiUT8w4kztsRklSwKKcqTw3RTx+B/y/HNe1fAlhF/0yCHRQZ89We15M2u2SMF4OdVJTVUTEkMULjug2EaKMfsPg97HZI2ofnnWcDfl+RacvgZ/T2PjInlLTRfTUU1ygBCUNQUw/4p/cSuK5AxAi2wUwrI1uGXdPNoMEJKt3dOZVe0RMVS0Wqro4NE4UwMxBpMB4rkvczFBmVN4SjAcn7lWAFMl2Piicv5jd+vg9gNu1Qgf71jxzKrZ4YoyVuQI6Un6oeRDHUxFm0HOE1rz+/lyyYZYUNrVgxWuYOMdg2jXXwqpog8cM0uv1aTCGsRK8oNoqyMb44CVoi28JDqal7CKazWOzslzyqXCzL/QzCGrkOvT7FzQl75V7mz75i9sBN08E4ojXmGc3elyW47+BahLAWVG/n56LzKM+0Zg8POtXJDyQVvbeU62KBshy0i1+vdupPfMTGYTCjOsuK9Fc+wrt26gJGk7UrFMl1MDWq5RAJNZmIs+ui7hUIcEMNhfjgBJB1LkuLCuG30TibNWAeIDQ9AClMSN3dgd5boPNQd2FqxAquJOGQDf/i4Cpbc9eVUqGRRwE6ZIqRQWllR8xa6ynZY32acpNmrSU+irTuYJrgZY0CsOCC1l0qRzXk1TrgoFZCNMkFELbD+lYjOnx9kEkjg7abeJ8SsF+sLWwAw3keci3je4DNOuat9Wt/BIzxBJpTsHuPQtf0lyZIvAWtffmJErp4nMlWh0bIzFiXaIRZEGrxE120MrwCEHAqA68LYnd2k1pDk5XxcaE1B1Ilzf3HbIcjXHm5qeVHFzy7Mqfo2szfyeU2M6CkEvLXXvN463aLgq9trlu+4us6NOHycZISS49iZ3ar9Fpjah1rLmNEeWhAiROTZoeS7s6zyWTECM6Use/rLiPooiDp6i595fSUxHzTqdrKfP3oC5E3OUC8nSCc0MsRvTpLehuMU5Vi41QchFmh4BhETdl7Ntq1OTbFstuR/i0ZzVxtt0B4aPixYYx5ZSqjWQL6oMZnenEz3D+TTXVkbJ7rp2P4Et77d0iRFyK+LVdXLlrpG0rwtH6xLA98m44jMWGc0sCqvVbbHrB2YkmyMsRBy4KRvfYXoSSNVDfgcCFGDfKWyW3PaZk6eIfoUUD1/iPGbs6L2OYJtkc686jsClD0d6euNNc6HGpE66AvoWrz2RLlH3SFScpxQCjOBTYTYMGioeC0L402tts1Gj1HQLp9fXQDfRcJNIg/YLbSqJq9ezcDGHJjt3muUzma11Usty5VSnEHJ0H9Vv9oRAdnZvbvp6zVlaBAmZiCoB99SF1+fCGnr5EDCQjE2sc/GAqLkmOLjk/K9Fumvc59ANolNFNDD9WWWDNWxoSMM/CvOHKENoJyZLDCstwTfYFFy6kto1p0RaN/HhaAre3qxIuYWHj+Fq5LGZKmgpVZUU6EDNuiVjTvh4KgRAEtOCZJ+ppobXZbvCKkDH1/H+rd5jbhmZhiSlwN4Iblx8eM0HkPPlFrJSo2LjJ/US9HUs0TUuC5FcYMwdCYzItLzGBbWyhQY9DuN23RDeKLcQ06DjJ1/4O+Gb/g65znvtURtp6GnKWC41L+MnAxL/FG4N0ufQzmr64TY/cPGDIBins4yvN/klsHnyO8UgPnPfos8bCtw1HZVtWss97ECfWgRJPBs6AnOprjFM3NwqGPR7b4vdW4uft/JxWuKp59vVn8OGsY01ttQWA5YEc8SLvNIWkVQPHEvAXErBhXD2pTm2+kgQZ6Rk1YSlP7beT/JwxSLkIO6OhVneRloaXF9rlcwWF/jnQzeG9CbMI41F4PTTFKrGM1W6zvleD+iS1Q+dJP5AKWWdwurLyUaGBc6oJ4sqldKKznx8QSY6eYbRY/P8sASfyIXQNCIeBUgy3SfsrpHjmfyGRBiSIMUtcQbCB3Zv73hnYGSGoL0JaVb6Z83WDGwTSA4iZW87ymgBSVjmZhToCGQ3AUXvSV+iiMR69iqVqU9KFA+Wwup7w6BjFSh6pDOHIaKLBE35/JGNXCSDC7lXEz6IscbxbFZocHtycjO5JNMs5RZooSjxfe5wsVP0jStlQSM2r9OaNu5cJZQaeMr+ZRt/dyhJBa2g2Hu3A0SU5iK22uphsn3yKJ1hvhCXnQQIevocr7Y/Nn9QoFlrhSNCXBaPKni/RH0JYKt5mV3KTAugZHX0bJo+0cwHcdHSKZf5KYg49O52VmpVz2SRIh7u+YlxkMkRFz4sF5FL0GZ8KeGSnQFOogyvyVSeL7w4f0Syf0OXKHSlOoCE0QkFSVf5+RPyNY7SmaEuVYj+7UFB34u2HYPTWhf1bl/7uIM8UG36UVYR/K6NVzQwJFrkBYwOOkXt7Vy5fy0GwFxVP1CQwDw4q14o48KEKvzv4RrrZ8MncIBnJI5/NEpxOfu1B/YU0E2cgXyv+mniAwXkGcPIlCtGP1yc8Yceu+Hq2tfZK2J06AOSmFI/4aiDjyiJXDHQhsTipW3E1xWOqY1+9/6ygxxfXz592R2ZKNf97ScA72sRT36SkCeyCymMheqq36kvYM0p6uhxX3EPTY+dwnJGLSGjFzCIdmen0l2fUAYhucb3C/Lp2dq/WtTapfHmPiIdbdAxvhOj+G7s6sUcz7iVz3KNHe1vD1oHpwy+KlTvuIyTBY0WcHokZlOEjaw5RjVnr2nGG5AiyFIxD/uRwlp9LVNWkUxUhMw6ld9dBSTpdZB0PggMW99EaTRddKNzzF+ViKXdX9YRGLXT8hAStTprX8rbTa6sIFRfwD2x/fmRN+bNpZvmcBxVMA8h3ZtIV2f6xgEcUgfNUKhcfzDEcMoTvuOHFSyyn9TquVxuvRajHGkg/em9KgUYpE4xAVhZ4PEo+vRHTlqqe8oa1Tvt8SWihJNG0zX9NNMGu+LDmg5yxOOuPHKCMv7MBo0f3EMVFlr2Ug9XWc2VCwYGxzUAHcp1NHQe0TK6dr7HiQL5cz7ueqmuS/zpOYSzqPw8iiT20YJD/RNmFk1s7dLslbzEgxhGRK6wGeqmQgZsG6OmXSHjDacIXNuNX2Jj0zQKZ7+sjcCIMoICOT5EaC77/+txVHatwNRdOhOdAMfn4+1TSKQmRgxCLqi0eGsivg0h3Ga+Q2YeXyCYgXfvbJzB3V8RTHN+5PGJhPN/xG5X4PEwrrcpGWuNSKbpnznFyRoYF0PgArQLv76wbLQmhjIqmodhRrxM+ddK3Q+faITtDbHVz+YFMcOJe+zWpvzyjm6sLtBMcdmFCVpuNBhsBF2HC9ap3x7ZCdYew1t6r96GaUkTwhXaPgepjzZPwJoSxkE5VNb7dOReujbA0WuEshhNxEbItL1l1DV/nA+NYPuupCVwMTsV764+/0B3TZh2BeMJOFYlWxpN9MgUsWWExXBNr3kk6xO30AqJNFELvZu3hjAZXfqTdWJdc6goIZ7q3VY8c++wcni1VT0T6eLExZRVuH5iGSvrWIysviwOdOmDIZ7uJtBdCJTVbQV6C+FDtnVXLZgpxogW+MT3q/o5pZSAc4slScPaN3gi1DZNVJnBIVGwddwpx6V2jshPFSeCOIrndV8g4HecuJlydJ1dFyhgVuPw/3bUhRLkPC2WDOMD+XLeZ3vl8SImwd14x0InigdEkRABZYlq80qnZFk1KvT/zrP4/FiKm6eyHwe+KQVqOtAHtknYk6mhBnTlpiWYu65OsNbfxZxK4LtS1+HTo/NzmrWv3PBqr6k5VP/evTU0J66HBvLkDZrlIBWt65NpxvaXkLdmwUiVbHbUICiKsvtYP07qCIaiJ43I/Gs6WK6I7eU2TEMponyVeFdF9Gkd/kFqQGuPpNUz+oiYCdlMdzKmfxmn/uT63h69aigAIWNYkQb44QTyi0qngKS5vqw1yG0ZfXJXWCqUfeNhKaHgnJ8qVgz4M4L0vNIjs45tc/8Ll+Wuvh6MxgF731wvCdWhfCXXBHMNvtYTn05PIngzUSBNUPMovNjKqlpVQKBH4NmxKE205fxrIovY8kopJRBkGS8tFxQG1Tcqaj/seuRYziz9CYeYRfMSOMV7OKvCDQo1hj9YyaB787KmoZq8SDnJ76cez3b5A+tPizg0I4wrXV5PRu74KLfa9eZEHJVcVgl2646xAhTR175fFO4clrPJTQU32zgzrrF18nakxKqQfdBy0bTFr2oMYu6XDw2GB4OBTblO7eZDNGa1rHXOXIcY6MD8HxFwmAzXuhLx3At+Zd3edZxm2q9VbMYQiWVAa1NJXR+/E6IbwT1VqZiRpn4KFGX6k6qvIdzYbbETxYJwHw5JPFSNk/8ixBXGnntGf5GQldYXIUXxc/8CN5rMHZwO3ZI5LmhFbJaVDVy8q/P1zJMOHW4FnkLavCG0mU/EcRr0qL8PHOZrpZKVwNkTcQLkHgaQk1qkUEzgBpde7CdWgaBLxRDRemKufP1uOAfqpyRbt3ST1w13YMb+LcRzxrWvaafo7YjIZ5NclQGLCnaj/au+9EGKnalDVHAMp9zagweiyK7t1yG0buhHWmonUCvenpgJUEWYcR2U/isnBhrxoDvK4FdRqpdU0wuLAOycKjdfr8IjFYkNBy9cUx+O++47g1gpK6ejSzTy1iRrRHblM/GQF6mmQ6AQbA0OoxQMhzi6MeKSthDmzPCt2u/VHs2Ku4qcOgsNCU/qBvJSat6FtDpjlq7Sb4g06MAAoEqaTKZgwtm3AvuxnQlEJ6lJ9MH5z0c9VBOU4CU7QxOtVExwLynKy/LaK4bREDvhFwjyHE5yW5+zo0Qib4d6T4QZhqNdb9ecDYHVCxmCuq8iJ7Evc/vmy7fwMQdYh8d5e1a3QTbeHfdQL10fYWhQLh5NfqV5sh8JehWUzikDNNt3XC0PcoCB8vNSYwH672xKu5xJHhQbnss2xtN1ajI/RY2ZitHdoniDoCkJZL1mG5zs91EhAuZobkNc605xGzszdxGpq9FRUBzJb9Cu3TLeVOmTRkwH/X7uD5OILLe1Lof8YAolAIDK/rAwYbNXEyLaOpH6tml6jrAYji5exTZ9kkjLiwYA2GFrWhUO344OQaPu/yYzk6CzifLculP1E8Ehd0GjemwIn09DoYgH4W37BCdPwlg3A/sId1Mbry6k+GW0Cb5UekMAmJ6LSmr9se2saxQ5ltAgzhdnEVDnbF/20Th89Tr0fnp4+O4dmyzntBcR9F9inWY6+PsN4SCrb7SOvsP2FQCGHJ+ECwT1HZOXWE/w5FLkdZT/JK7/xqwq5EkpaOaJS7uXmh8caafvKWZiSgjFOF1LrdQtmMD3sQ0ebdb5a752h0k/E4/taLgVMwISA+hW7Kg3YL2KntchNj3fleeNnBlb447gJAN2jgA+qd2lrRoPJJcQprOSZAUnaTpLRRp/exNy72KaYNhHQ4BJ3P1N8ReezhNaerF1uQvTxbh6800DHiRJ3ZA7DNpuKMZz+/ErdVySu0tg4lkeP4BW82H29mlR4oAUUkppxNsYKuFB4Ym/VdX0T5M8q5v8wJvJSZNCsllV1WOhyA3zboKJXTyJf9C9gB25imQHHRac2G71l0VoU75OtYlMpCeHuPXXu+BG3vBn5HAtewSrmvoASiXHqv/kG5cjJmVu5JmZsHqicxXNJPtRPOQWUIa55PXkGrykguntbCPvSPl6igs6MmANmGtSDkVw5uC95LllvnMag8dir9SHaEq8UKGgRDdcXHA9qzU+iY0kHyDGHzdW7p8W7CNE1yASpZEZ6cQUmJYuymnDFtUSKXyARIm7IAq/yw8IGTsjX0fGVmM0tlNPPZe461nE2upg7bzevqsZn5EJL/PR6x0UtQ4KvgFrOR0Wj+EmJOBHDw1tSpfTZdIAgw6i35A7LMz0fRvjxorYkb3Iawdxw/nYGtsgwfvPeDSm+8/fsr997xRoROCnJoM6fwaK4imUK3n34beOcTO6/2wmhFHixbavOAQTlYgz5m0AmEkldX5XnId30qGdlMffyWKgPPS2Fxnbb/+73qhiEsQWPqSNDET7K9MkfsCQQShnPcjcqH55QqVyCXAZT2k4xZlPojvnLMYxFnEQxd4ANUrxdgcdlQoyMKFt1VnaJ2OaIQoGbw2OQGHusGaUdDJvIphYqi+90BTBvAlcXv5rOKoGqRpZ0Vf4MCrqmJkUJ88a9lXZ+Ps7m0q5mZSBmaFLWb6Cix+KeUL6okf2H+pX1BOZzwzyykqt+frNxCop1C1d6tjdChkJiMc+R5Xk1buRMM+7y/LNgF02wuo4P8y2zbVMkEZgAtHZ4T0/u00ImSQaHipwJ1aDEh15hQBYLJgsHWqxbSUpDLHezojO+ZRpzMQARFLPs68GfFVc81I+qCeJ01NdjyMKeKC+81vZA4W0dNDTYbvlODD4vEY3YJxpoiamSQdXa5Vbml0NHenggr9RpJWI2Sgyauuqm83omuF2D9+mJZNmPw50KJACJGD6c4gG2+yZ8H5SVBnPlqpcEarV4DL2cVnJo1+92oScsBSp+r6t7f3FmUAyeLLbi4Orq5hGcjgJhN7qKn7/ARq+Tkec/hvrRE53+PgRgqS1HTTUbdMKSgR4d83mvXgWXaL1e2/J0qgcxdYQiFaEgvD27T1BzVsLjpgTGrpOBa6Rpk94hU1w1wcO1fn/fHxYBUX0CbYwdEEGrFLIVqTqSnshLhrpH6EeLm6qx56QnlNkoZbBUrO+qCDRXG5mTOLR30QuITRNfrjg3tzEFXVBM03Do+vzDj+qLih8WeNRU+EirQntvnHA8GzzK9opQnXnlkyA+mto6gBw597LdC1o5gcXv/Ok3h4HEGUhTogImCOYFFvnv9xR+RHSTXXUj7BP1//cTs0rXymBBlp9bGASxD6WVIjPsecUp67bhCYAZDV/FdushA5UG0LaasWGXPLtxlz6Xj9S/xdV4RuMgVUONSecUdEYOr6YWH3KwVT4Q2TxewabUavFJCufYENv/uXs4x6epqA7kC5IM8eMnllmSF/nrqW+QIrAeOqYRDQIN1iHZnGnILdqbOzwLAXg5WrquN/RXbYyk8pdnS8OOcclWmRwDybH2uXalKi7XM6RMJZh6bRTNlc96q1fuVA1AiUwfZwmFt6zHJgFs1uhz8WxLG5rfU1livRtfPCRKvvkTr3ZBPapqPyF9xjZGWtSGQMK1Z4zv7wZw7Jrw6/3Q9dp64TJlk3GhBDIhZOlWUWxzaR+g3SdDku26dOfXJemIiDnPIo/Q4vnModaRtfA5BWGp4XjSFvr24wcSMg2yCAclyBkUuyS7GBVejcGNHD7lW/8EhhdCyfIWOJ43vaG57GxIFFVK+JdjiedFiyYqZC8Zh3If6nkRbaaOElNT56wNtguKwcl/S85mGNiaEiOGvPRHgKTua5aOpmnsIiJ+3bQF6UFexFeOrqf9glaCQiZ1gubkbmSVYwkJzs+j+KoeLRkNHwKAZJUbMQEd9UPgjjki/AKhoYwvbH0r3b5JFfgsin5uKGh5/Xw1h9/8fNoMz01ccGKlGYam6m4JQabqL3a7GqdTVoyazJFCx59u58f/FurqBmmrkbwT79NP/QTgzC0UCh2ixzpMRXayY7tixgUrQHIo/c+m9ujXFL+s01yNtPoFQmxvwod6foYWaOHhJx9aZCVAlEnVmm6lVlh48HnFex2zLKzkBqkAAzMRNRpudSrLS5cEiGH84CnhqxWkaa2mNDpkSTkfxuZOZjLGc3pV1qdenkcSQxv94WokAvjYl7zBStZ8TrG1+Og8DM7VGUYx7iRGm1xchGN+XB/+5ckH+5pLQYgnNj6UweZKGE6g3aghuEjZ7Y4nGyI+Z7sV994+tVO/g+hCOq8fahAqBRYji9QlsIKJZkqcGp5kc4gBdc7D69RFhKtUkiEGC/oZjEWXs4wVkY8iQoyKXXMYOaYke2s9y3AoTOiPWZn8YCio9YsYRr+aHcNLLD8+uRvQecgWMQt4r3Mkx5lRT3UGAV/I1DTlF+f24OOLUFTrLxdx2velZMu1aWcZxGPEmRICWqHf2/awEavKmgu1WhKxHvefemuMAGcOxgL9zQvZI8DDr++3nJlMZxdPDqPao4iSAU1+MR0VuYY8D/OkSxCq3jip4huLTPGQx27BNqGl6B7zkWj2/0GmKOUJaMIZIsN73+OFJ2frs7wOqwoRPUV7aHCc3q+BlX4S8YYtCWMNavmf0JcUH5NfyAJoN9EXnBT085Egrs0iC8FiVdZq+FiNa9Idxh6d7zeQtGJrndSD5Ac13rYUT3AAvPY4XDimjf3TZqMJ8NwsOG4aq8meRCVZBlIQgDCGBa7Y42c/VlHxLLFSVheJ49Cbz57w8cZzTEbW4qoZ7deaWwdJeswxAQXf6JobugmngiwCTSmnhA4LwJ2/0ywLfp4CIajth3iNPzVTkvXJt6+vYTXhFmcOizmDQuNB0BExd4/AAi+xGew5ApxESmmESSIw2xCQHs7eGY1J363gvNOWnpVvIqoFm4OhmhAyJMp0sIe1pSyrtGdN7Lar8Do5i12hGKTKRS/3VFyvXnzh4Aoj0GkRT2C00yWMdBX6gl5h724zZE+BA5yhdQX1oiJZXr15wL3O7n3ktjs6ELKLkXL8g5qZgUfC7uCjbjClPVCnNCIUKXZPXS474BymzuW29w0rPI02CTVKXX5fH4gX4fRerK7YJ1ewVvkGu6Sx6NEMhOKMW3j+UhtNtVTDc0gVaRfoke3Zp5WGqBAzTJBMGVkEBnG/HYiZpYsg2n9/fvS1onVrwr0zNCPvbIPr9+Zbb6/gPBk=", ITER = 300000;
+
+    var b64 = function (s) {
+      var raw = atob(s), out = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+      return out;
+    };
+
+    var note = document.getElementById('note');
+    var pw = document.getElementById('pw');
+    var go = document.getElementById('go');
+
+    async function unlock(password, quiet) {
+      if (!password) return false;
+      go.disabled = true;
+      note.className = 'note';
+      note.textContent = 'Unlocking\u2026';
+      try {
+        var enc = new TextEncoder();
+        var base = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+        var key = await crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: b64(SALT), iterations: ITER, hash: 'SHA-256' },
+          base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+        var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(IV) }, key, b64(DATA));
+        try { sessionStorage.setItem('unlock:' + location.pathname, password); } catch (e) {}
+        var html = new TextDecoder().decode(plain);
+        document.open(); document.write(html); document.close();
+        return true;
+      } catch (e) {
+        go.disabled = false;
+        if (!quiet) { note.className = 'note bad'; note.textContent = 'Wrong password'; }
+        else note.textContent = '';
+        pw.select();
+        return false;
+      }
+    }
+
+    document.getElementById('f').addEventListener('submit', function (e) {
+      e.preventDefault();
+      unlock(pw.value, false);
     });
-    addEventListener('click', () => rail.classList.remove('is-open'));
-    addEventListener('keydown', e => { if (e.key === 'Escape') rail.classList.remove('is-open'); });
+
+    // came back from another page in the same tab — do not ask again
+    try {
+      var saved = sessionStorage.getItem('unlock:' + location.pathname);
+      if (saved) unlock(saved, true);
+    } catch (e) {}
   })();
   </script>
-  <script src="../js/reveal.js" defer></script>
-  <script src="../js/count-up.js" defer></script>
 </body>
 </html>

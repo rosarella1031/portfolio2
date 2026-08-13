@@ -42,3 +42,7 @@ assets/pretext.mp4
 # "bak" (.bak, .herobak, .tocbak, .filebak …) or starts a .predelete series.
 *bak
 *.predelete*
+
+# Plaintext sources for password-locked pages — the encrypted shells in work/
+# are what gets published; these must never be.
+private/
