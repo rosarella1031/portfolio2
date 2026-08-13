@@ -48,7 +48,9 @@ SHELL = '''<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="icon" href="../assets/favicon.png" type="image/png" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <!-- Safari ignores SVG icons; same glyph, rasterised. -->
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <style>
     body {
