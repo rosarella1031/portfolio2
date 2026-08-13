@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work 区排版方案对比</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { padding: 0; }
+
+    .opt-header {
+      padding: 4rem max(3rem, calc((100% - var(--max)) / 2)) 1rem;
+    }
+    .opt-header h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .opt-header p {
+      color: var(--text-2);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+      max-width: 60ch;
+    }
+
+    .opt {
+      padding: 3rem max(3rem, calc((100% - var(--max)) / 2)) 5rem;
+      border-top: 1px solid var(--border);
+    }
+    .opt-tag {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .opt-tag h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+    .opt-tag span {
+      font-family: var(--ff-label);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .opt-note {
+      font-size: 0.85rem;
+      color: var(--text-2);
+      margin-bottom: 2rem;
+      max-width: 62ch;
+      line-height: 1.6;
+    }
+
+    /* shared card bits */
+    .c-visual {
+      overflow: hidden;
+      background: #f3f3f3;
+      position: relative;
+    }
+    .c-visual img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.55s var(--ease);
+    }
+    .c:hover .c-visual img { transform: scale(1.04); }
+    .c-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+    .c-desc {
+      font-size: 0.95rem;
+      color: var(--text-2);
+      line-height: 1.55;
+      margin-top: 0.4rem;
+    }
+    .c-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .c-tags span {
+      font-size: 0.75rem; color: var(--text-3);
+      background: var(--tag-bg); padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+    }
+    .c { display: block; }
+
+    /* ===== A — 现状 ===== */
+    .grid-a { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-a .c-visual { aspect-ratio: 4/3; }
+    .grid-a .c-info { margin-top: 1rem; }
+    .grid-a .c-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; }
+
+    /* ===== B — 非对称 bento ===== */
+    .grid-b { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-b .c-visual { aspect-ratio: 4/3; }
+    .grid-b .b-lead { grid-column: 1 / -1; }
+    .grid-b .b-lead .c-visual { aspect-ratio: 21/9; }
+    .grid-b .b-lead .c-name { font-size: 2rem; }
+    .grid-b .c-info { margin-top: 1rem; }
+    .grid-b .c-row { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; }
+
+    /* ===== C — 编辑索引式 ===== */
+    .list-c { border-top: 1px solid var(--border); position: relative; }
+    .row-c {
+      display: grid;
+      grid-template-columns: 3rem 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      padding: 1.75rem 0;
+      border-bottom: 1px solid var(--border);
+      transition: padding-left 0.3s var(--ease);
+    }
+    .row-c:hover { padding-left: 1rem; }
+    .row-c-num {
+      font-family: var(--ff-label);
+      font-size: 0.75rem;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+    }
+    .row-c-name {
+      font-family: 'EB Garamond', serif;
+      font-size: 2.25rem;
+      font-weight: 400;
+      line-height: 1.1;
+      transition: opacity 0.2s;
+    }
+    .list-c:hover .row-c-name { opacity: 0.35; }
+    .row-c:hover .row-c-name { opacity: 1; }
+    .row-c-meta {
+      display: flex; gap: 0.35rem; flex-wrap: wrap;
+      justify-content: flex-end; max-width: 320px;
+    }
+    .row-c-meta span {
+      font-size: 0.72rem; color: var(--text-3);
+      background: var(--tag-bg); padding: 0.1rem 0.5rem; border-radius: 4px;
+    }
+    /* hover preview panel */
+    .c-preview {
+      position: fixed;
+      width: 340px; aspect-ratio: 4/3;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.96);
+      transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+      z-index: 50;
+      overflow: hidden;
+      background: #f3f3f3;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+    }
+    .c-preview.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .c-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ===== D — 全宽交替 ===== */
+    .list-d { display: flex; flex-direction: column; gap: 5rem; }
+    .row-d {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+    .row-d:nth-child(even) .row-d-visual { order: 2; }
+    .row-d .c-visual { aspect-ratio: 4/3; }
+    .row-d .c-name { font-size: 2rem; }
+    .row-d .c-desc { margin-top: 0.75rem; font-size: 1rem; }
+    .row-d .c-tags { margin-top: 1.25rem; }
+
+    /* ===== E — 通栏色带 ===== */
+    .opt-e-wrap { padding-bottom: 0; }
+    .bands { display: block; }
+    .band {
+      display: block;
+      background: var(--band-bg);
+      padding: 4.5rem max(3rem, calc((100% - var(--max)) / 2));
+    }
+    .band-inner {
+      max-width: 880px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .band-img {
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.4);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03);
+    }
+    .band-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.6s var(--ease);
+    }
+    .band:hover .band-img img { transform: scale(1.03); }
+    .band-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-align: center;
+    }
+    .band-title {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.35rem;
+      color: var(--band-fg);
+    }
+    .band-sub {
+      font-family: var(--ff-label);
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--band-fg);
+      opacity: 0.6;
+    }
+
+    @media (max-width: 860px) {
+      .band { padding: 3rem 1.5rem; }
+      .grid-a, .grid-b { grid-template-columns: 1fr; }
+      .grid-b .b-lead .c-visual { aspect-ratio: 4/3; }
+      .row-d { grid-template-columns: 1fr; gap: 1.5rem; }
+      .row-d:nth-child(even) .row-d-visual { order: 0; }
+      .row-c { grid-template-columns: 2rem 1fr; }
+      .row-c-meta { display: none; }
+      .row-c-name { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body class="nav-always-visible">
+
+  <div class="opt-header">
+    <h1>Work 区排版方案对比</h1>
+    <p>用真实项目内容和图片做的四个版本。A 是现状，B/C/D 是替代方案。选定后我把对应版本合并进 index.html。</p>
+  </div>
+
+  <!-- ============ A ============ -->
+  <section class="opt">
+    <div class="opt-tag"><span>方案 A</span><h2>等分网格（现状）</h2></div>
+    <p class="opt-note">2 栏等分，4:3 缩略图，标题在下。四个项目权重完全相同，读者看不出哪个是你最想让人看的。</p>
+
+    <div class="grid-a">
+      <a href="work/brix.html" class="c">
+        <div class="c-visual"><img src="assets/brixpreview.png" alt="Brix" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">Brix AI Agentic Talent Search</h3>
+            <div class="c-tags"><span>B2B SaaS</span><span>AI Agent</span></div>
+          </div>
+          <p class="c-desc">Transforming traditional talent search to an agent-driven workflow that helps recruiters find ideal candidates.</p>
+        </div>
+      </a>
+      <a href="work/opusclip.html" class="c">
+        <div class="c-visual"><img src="assets/opuspreview.png" alt="OpusClip" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">OpusClip AI Video Clipping Mobile MVP</h3>
+            <div class="c-tags"><span>Mobile</span><span>Creator Tool</span></div>
+          </div>
+          <p class="c-desc">Mobile MVP design for AI-powered video editing — bringing OpusClip's viral clip generation to iOS for the first time.</p>
+        </div>
+      </a>
+      <a href="work/fitx.html" class="c">
+        <div class="c-visual"><img src="assets/fitxpreview.png" alt="FitX" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">FitX Lab Fit Intelligence 0-&gt;1</h3>
+            <div class="c-tags"><span>Consumer Hardware</span><span>AI</span></div>
+          </div>
+          <p class="c-desc">Building a footwear system that learns from every user — connecting 3D scanning, fit intelligence, and personalization.</p>
+        </div>
+      </a>
+      <a href="work/moka.html" class="c">
+        <div class="c-visual"><img src="assets/mokapreview.png" alt="Moka HR" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">Moka HR Interview Scheduling</h3>
+            <div class="c-tags"><span>Enterprise SaaS</span></div>
+          </div>
+          <p class="c-desc">Streamlined recruiting operations by designing intelligent scheduling and coordination experiences.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ B ============ -->
+  <section class="opt">
+    <div class="opt-tag"><span>方案 B</span><h2>非对称 Bento</h2></div>
+    <p class="opt-note">主推项目占满整行（21:9 宽幅），其余三个保持 4:3。用尺寸表达优先级——第一眼就知道该看哪个。改动最小，保留了现有卡片语言。</p>
+
+    <div class="grid-b">
+      <a href="work/brix.html" class="c b-lead">
+        <div class="c-visual"><img src="assets/brixpreview.png" alt="Brix" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">Brix AI Agentic Talent Search</h3>
+            <div class="c-tags"><span>B2B SaaS</span><span>AI Agent</span><span>Design System</span></div>
+          </div>
+          <p class="c-desc">Transforming traditional talent search to an agent-driven workflow that helps recruiters find ideal candidates.</p>
+        </div>
+      </a>
+      <a href="work/opusclip.html" class="c">
+        <div class="c-visual"><img src="assets/opuspreview.png" alt="OpusClip" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">OpusClip Mobile MVP</h3>
+            <div class="c-tags"><span>Mobile</span></div>
+          </div>
+          <p class="c-desc">Bringing OpusClip's viral clip generation to iOS for the first time.</p>
+        </div>
+      </a>
+      <a href="work/fitx.html" class="c">
+        <div class="c-visual"><img src="assets/fitxpreview.png" alt="FitX" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">FitX Lab Fit Intelligence</h3>
+            <div class="c-tags"><span>AI</span></div>
+          </div>
+          <p class="c-desc">A footwear system that learns from every user.</p>
+        </div>
+      </a>
+      <a href="work/moka.html" class="c" style="grid-column: 1 / -1;">
+        <div class="c-visual" style="aspect-ratio: 21/9;"><img src="assets/mokapreview.png" alt="Moka HR" /></div>
+        <div class="c-info">
+          <div class="c-row">
+            <h3 class="c-name">Moka HR Interview Scheduling &amp; Coordination</h3>
+            <div class="c-tags"><span>Enterprise SaaS</span></div>
+          </div>
+          <p class="c-desc">Streamlined recruiting operations by designing intelligent scheduling and coordination experiences.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ C ============ -->
+  <section class="opt">
+    <div class="opt-tag"><span>方案 C</span><h2>编辑索引式</h2></div>
+    <p class="opt-note">不铺缩略图，改成大字号项目名列表 + 元信息。鼠标悬停时图片跟随光标浮现。读起来像一份精选档案而不是图墙，也把注意力从"图好不好看"转到"项目名和标签"上。<strong>鼠标移到下面几行试试。</strong></p>
+
+    <div class="list-c" id="listC">
+      <a href="work/brix.html" class="row-c" data-img="assets/brixpreview.png">
+        <span class="row-c-num">01</span>
+        <span class="row-c-name">Brix AI Agentic Talent Search</span>
+        <span class="row-c-meta"><span>B2B SaaS</span><span>AI Agent</span><span>Design System</span></span>
+      </a>
+      <a href="work/opusclip.html" class="row-c" data-img="assets/opuspreview.png">
+        <span class="row-c-num">02</span>
+        <span class="row-c-name">OpusClip AI Video Clipping Mobile MVP</span>
+        <span class="row-c-meta"><span>Mobile</span><span>Creator Tool</span></span>
+      </a>
+      <a href="work/fitx.html" class="row-c" data-img="assets/fitxpreview.png">
+        <span class="row-c-num">03</span>
+        <span class="row-c-name">FitX Lab Fit Intelligence 0-&gt;1</span>
+        <span class="row-c-meta"><span>Consumer Hardware</span><span>AI</span><span>Design System</span></span>
+      </a>
+      <a href="work/moka.html" class="row-c" data-img="assets/mokapreview.png">
+        <span class="row-c-num">04</span>
+        <span class="row-c-name">Moka HR Interview Scheduling &amp; Coordination</span>
+        <span class="row-c-meta"><span>Enterprise SaaS</span></span>
+      </a>
+    </div>
+    <div class="c-preview" id="cPreview"><img src="" alt="" /></div>
+  </section>
+
+  <!-- ============ D ============ -->
+  <section class="opt">
+    <div class="opt-tag"><span>方案 D</span><h2>全宽交替</h2></div>
+    <p class="opt-note">每个项目独占一行，图文左右交替。图更大、描述更完整，适合项目少而精的情况（你正好 4 个）。缺点是首屏只能看到一个项目，需要滚动。</p>
+
+    <div class="list-d">
+      <a href="work/brix.html" class="c row-d">
+        <div class="row-d-visual c-visual"><img src="assets/brixpreview.png" alt="Brix" /></div>
+        <div>
+          <h3 class="c-name">Brix AI Agentic Talent Search</h3>
+          <p class="c-desc">Transforming traditional talent search to an agent-driven workflow that helps recruiters find ideal candidates.</p>
+          <div class="c-tags"><span>B2B SaaS</span><span>AI Agent</span><span>Design System</span></div>
+        </div>
+      </a>
+      <a href="work/opusclip.html" class="c row-d">
+        <div class="row-d-visual c-visual"><img src="assets/opuspreview.png" alt="OpusClip" /></div>
+        <div>
+          <h3 class="c-name">OpusClip AI Video Clipping Mobile MVP</h3>
+          <p class="c-desc">Mobile MVP design for AI-powered video editing — bringing OpusClip's viral clip generation to iOS for the first time.</p>
+          <div class="c-tags"><span>Mobile</span><span>Creator Tool</span></div>
+        </div>
+      </a>
+      <a href="work/fitx.html" class="c row-d">
+        <div class="row-d-visual c-visual"><img src="assets/fitxpreview.png" alt="FitX" /></div>
+        <div>
+          <h3 class="c-name">FitX Lab Fit Intelligence 0-&gt;1</h3>
+          <p class="c-desc">Building a footwear system that learns from every user — connecting 3D scanning, fit intelligence, and personalization across mobile, web, and physical touchpoints.</p>
+          <div class="c-tags"><span>Consumer Hardware</span><span>AI</span><span>Design System</span></div>
+        </div>
+      </a>
+      <a href="work/moka.html" class="c row-d">
+        <div class="row-d-visual c-visual"><img src="assets/mokapreview.png" alt="Moka HR" /></div>
+        <div>
+          <h3 class="c-name">Moka HR Interview Scheduling &amp; Coordination</h3>
+          <p class="c-desc">Streamlined recruiting operations by designing intelligent scheduling and coordination experiences for recruiters, hiring managers, and candidates.</p>
+          <div class="c-tags"><span>Enterprise SaaS</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ E ============ -->
+  <section class="opt opt-e-wrap">
+    <div class="opt-tag"><span>方案 E</span><h2>通栏色带（仿 keeyen.com）</h2></div>
+    <p class="opt-note">每个项目占一条通栏色带，背景色各异，图片居中悬浮，下面一行小字标题 + 元信息。图片被色块托着，观感取决于色彩搭配而不是截图本身的精致度——这点正好对症你说的"图不够好看"。缺点是四条色带会让页面色彩很跳，需要慎选配色。</p>
+  </section>
+
+  <div class="bands">
+    <a href="work/brix.html" class="band" style="--band-bg:#EFEAE2; --band-fg:#5C4B36;">
+      <div class="band-inner">
+        <div class="band-img"><img src="assets/brixpreview.png" alt="Brix" /></div>
+        <div class="band-meta">
+          <span class="band-title">Brix AI Agentic Talent Search</span>
+          <span class="band-sub">B2B SaaS · AI Agent · 2025</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="work/opusclip.html" class="band" style="--band-bg:#E4E9EF; --band-fg:#39506B;">
+      <div class="band-inner">
+        <div class="band-img"><img src="assets/opuspreview.png" alt="OpusClip" /></div>
+        <div class="band-meta">
+          <span class="band-title">OpusClip AI Video Clipping Mobile MVP</span>
+          <span class="band-sub">Mobile · Creator Tool · 2025</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="work/fitx.html" class="band" style="--band-bg:#E7EAE4; --band-fg:#46543C;">
+      <div class="band-inner">
+        <div class="band-img"><img src="assets/fitxpreview.png" alt="FitX" /></div>
+        <div class="band-meta">
+          <span class="band-title">FitX Lab Fit Intelligence 0-&gt;1</span>
+          <span class="band-sub">Consumer Hardware · AI · 2026</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="work/moka.html" class="band" style="--band-bg:#EDE8EA; --band-fg:#5B4450;">
+      <div class="band-inner">
+        <div class="band-img"><img src="assets/mokapreview.png" alt="Moka HR" /></div>
+        <div class="band-meta">
+          <span class="band-title">Moka HR Interview Scheduling &amp; Coordination</span>
+          <span class="band-sub">Enterprise SaaS · 2024</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <script>
+    // Option C — image preview follows the cursor
+    (function () {
+      const list = document.getElementById('listC');
+      const preview = document.getElementById('cPreview');
+      if (!list || !preview) return;
+      const img = preview.querySelector('img');
+
+      list.querySelectorAll('.row-c').forEach(row => {
+        row.addEventListener('mouseenter', () => {
+          img.src = row.dataset.img;
+          preview.classList.add('on');
+        });
+      });
+      list.addEventListener('mouseleave', () => preview.classList.remove('on'));
+      list.addEventListener('mousemove', e => {
+        preview.style.left = e.clientX + 'px';
+        preview.style.top = e.clientY + 'px';
+      });
+    })();
+  </script>
+</body>
+</html>

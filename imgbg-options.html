@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case study 图片底色对照</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      background: var(--bg);
+      padding: 3rem clamp(1.5rem, 5vw, 4rem) 7rem;
+      font-family: var(--ff-body);
+      max-width: 1000px; margin: 0 auto;
+    }
+    h1 { font-family: 'EB Garamond', serif; font-weight: 400; font-size: 1.75rem; margin-bottom: .4rem; }
+    .lede { color: var(--text-2); font-size: .88rem; line-height: 1.65; max-width: 62ch; margin-bottom: 3rem; }
+    .lede b { color: var(--text); font-weight: 600; }
+
+    .opt { margin-bottom: 3.5rem; }
+    .opt-head {
+      display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: .74rem;
+      padding-bottom: .55rem; margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .opt-head .name { font-weight: 500; color: var(--text); }
+    .opt-head .dim  { color: var(--text-2); }
+    .opt-head .note { margin-left: auto; color: var(--text-2); }
+
+    /* exactly the .img-block treatment used in the case studies */
+    .img-block {
+      background: var(--c);
+      border: var(--bd, 0);
+      overflow: hidden;
+      margin: 0 0 1rem;
+      min-height: 200px;
+    }
+    .img-block img { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+
+  <h1>Case study 图片底色</h1>
+  <p class="lede">
+    真正的问题不是颜色旧，是<b>图和底分不开</b>。你 case study 里的截图平均亮度 237–251，约等于 <b>#F4F4F4</b>；
+    底色 <b>#F5F5F5</b> 是 245。<b>两者几乎是同一个值</b>，所以截图没有边界，整块看上去发糊、发平。
+    下面每一档我都放了同一张真实的 case study 截图（不是首页预览图）。
+  </p>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">现状</span><span>#F5F5F5</span>
+      <span class="dim">L96% · 纯中性</span>
+      <span class="note">截图边缘消失</span>
+    </div>
+    <div class="img-block" style="--c:#F5F5F5"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">A · 暖白，同亮度</span><span>#F7F6F2</span>
+      <span class="dim">H40 L96%</span>
+      <span class="note">色相对了，但还是分不开</span>
+    </div>
+    <div class="img-block" style="--c:#F7F6F2"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">B · 用 --bg-card</span><span>#EDEAE4</span>
+      <span class="dim">H40 L91% · 站点已有的颜色</span>
+      <span class="note">截图立刻浮起来</span>
+    </div>
+    <div class="img-block" style="--c:#EDEAE4"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">C · 再深一档</span><span>#E7E3DB</span>
+      <span class="dim">H38 L88%</span>
+      <span class="note">分离最强，但开始抢戏</span>
+    </div>
+    <div class="img-block" style="--c:#E7E3DB"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">D · 白底 + 发丝线</span><span>#FFFFFF</span>
+      <span class="dim">1px --border</span>
+      <span class="note">不靠底色靠边框，最克制</span>
+    </div>
+    <div class="img-block" style="--c:#FFFFFF; --bd:1px solid #DDD8CF"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head">
+      <span class="name">E · 暖白 + 发丝线</span><span>#F7F6F2</span>
+      <span class="dim">1px --border</span>
+      <span class="note">两者兼有</span>
+    </div>
+    <div class="img-block" style="--c:#F7F6F2; --bd:1px solid #DDD8CF"><img src="assets/search-feedback00.png" alt="" /></div>
+  </div>
+
+  <p class="lede" style="margin-top:4rem">
+    换一张更满的图再看一遍 —— 这张四周留白少，底色的作用会变小。
+  </p>
+
+  <div class="opt">
+    <div class="opt-head"><span class="name">现状</span><span>#F5F5F5</span></div>
+    <div class="img-block" style="--c:#F5F5F5"><img src="assets/ai-draft-user-edit.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><span class="name">B · --bg-card</span><span>#EDEAE4</span></div>
+    <div class="img-block" style="--c:#EDEAE4"><img src="assets/ai-draft-user-edit.png" alt="" /></div>
+  </div>
+
+  <div class="opt">
+    <div class="opt-head"><span class="name">E · 暖白 + 发丝线</span><span>#F7F6F2 + 1px</span></div>
+    <div class="img-block" style="--c:#F7F6F2; --bd:1px solid #DDD8CF"><img src="assets/ai-draft-user-edit.png" alt="" /></div>
+  </div>
+
+</body>
+</html>

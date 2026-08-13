@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蜗牛 · 方格纸 demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    :root { --cell: 34px; }
+
+    /* ===== 纸：整站白底 + 方格纸格线 ===== */
+    body {
+      position: relative;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(to right, rgba(33,33,33,0.055) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(33,33,33,0.055) 1px, transparent 1px);
+      background-size: var(--cell) var(--cell);
+      padding-bottom: 12rem;
+    }
+
+    .wrap { padding: 5rem max(3rem, calc((100% - var(--max)) / 2)) 3rem; }
+
+    h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: 2.25rem; font-weight: 400; line-height: 1.15;
+      max-width: 20ch;
+    }
+    .lede {
+      margin-top: 1rem; max-width: 60ch;
+      color: var(--text-2); font-size: 1rem; line-height: 1.65;
+    }
+    .lede strong { color: var(--text); font-weight: 500; }
+
+    .concept {
+      margin-top: 3.5rem;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+      max-width: 880px;
+    }
+    .concept-item {
+      background: rgba(255,255,255,0.72);
+      padding: 1.1rem 1.2rem 1.3rem;
+    }
+    .concept-k {
+      font-family: var(--ff-label); font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3);
+    }
+    .concept-v {
+      font-family: 'EB Garamond', serif; font-size: 1.15rem;
+      margin-top: 0.3rem; color: var(--text);
+    }
+
+    .body-copy {
+      margin-top: 4rem; max-width: 62ch;
+      color: var(--text-2); font-size: 1rem; line-height: 1.7;
+    }
+    .body-copy p + p { margin-top: 1.1rem; }
+    .body-copy strong { color: var(--text); font-weight: 500; }
+
+    /* ===== 蜗牛的痕迹：底部一行格子 ===== */
+    .trail {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: var(--cell);
+      display: flex;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .trail-cell {
+      flex: 0 0 var(--cell);
+      height: 100%;
+      position: relative;
+      border-right: 1px solid rgba(33,33,33,0.055);
+    }
+    .trail-cell::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--c, transparent);
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+    .trail-cell.wet::before { opacity: 0.5; }
+
+    .trail-cell .hex {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%; transform: translateX(-50%);
+      font-family: var(--ff-label);
+      font-size: 0.52rem; letter-spacing: 0;
+      color: var(--text-3);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .trail-cell.show-hex .hex { opacity: 1; }
+
+    /* ===== 蜗牛本体 ===== */
+    .snail {
+      position: fixed;
+      bottom: 6px;
+      width: 54px;
+      z-index: 210;
+      pointer-events: none;
+      transform: translateX(-50%) scaleX(-1);  /* 原图朝左，翻转成朝右 */
+      transition: left 0.15s linear;
+      will-change: left;
+    }
+    .snail img { width: 100%; display: block; }
+
+    .readout {
+      position: fixed;
+      bottom: calc(var(--cell) + 10px);
+      right: max(1.5rem, calc((100% - var(--max)) / 2));
+      font-family: var(--ff-label);
+      font-size: 0.7rem; letter-spacing: 0.08em;
+      color: var(--text-3);
+      z-index: 210;
+    }
+  </style>
+</head>
+<body class="nav-always-visible">
+
+  <div class="wrap">
+    <h1>白底是纸，格线是纸的纹理，蜗牛住在上面。</h1>
+    <p class="lede">这一版把站上原本互不相干的四样东西串成一个设定。<strong>往下滚，看页面底部——蜗牛沿着格子爬，爬过的格子留下彩色痕迹，并标出颜色值。</strong>你原来孤立的 hover 染色，变成了它的行为。</p>
+
+    <div class="concept">
+      <div class="concept-item">
+        <div class="concept-k">白底</div>
+        <div class="concept-v">纸</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-k">网格</div>
+        <div class="concept-v">方格纸的格线</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-k">蜗牛</div>
+        <div class="concept-v">纸上的生物</div>
+      </div>
+      <div class="concept-item">
+        <div class="concept-k">染色 + hex</div>
+        <div class="concept-v">爬过的痕迹</div>
+      </div>
+    </div>
+
+    <div class="body-copy">
+      <p>格线现在铺满整个页面，而不只是首页第一屏。它不再是"hero 的装饰底纹"，而是<strong>整个站点所在的介质</strong>——所有内容都画在这张纸上。</p>
+      <p>蜗牛的爬行速度映射滚动进度。它慢，这件事本身就是个恰当的玩笑：作品集不该被快速划过。</p>
+      <p>痕迹会保留，所以读到页面底部时回头看，能看到自己走过的整条彩色轨迹。颜色从你现有的那套调色板里随机取，hex 值标在格子上方——跟首页 hover 时显示 hex 是同一个机制，只是换成了由蜗牛触发。</p>
+      <p><strong>ASCII 那套怎么办：</strong>不用删，换个身份即可。ASCII 窗口 = 你做的产品（软件界面本来就是格子里的东西），蜗牛 = 你本人。作者和作品分属两套语言，就不打架了。首页可以保留那两个 ASCII 窗口作为"作品的抽象"，而蜗牛在旁边爬。</p>
+      <p>继续往下滚，让蜗牛走完全程。</p>
+      <p>这段文字用来撑出滚动距离，方便你观察痕迹累积的效果。</p>
+      <p>如果觉得痕迹太花，可以降低不透明度、只在部分格子留痕、或者去掉 hex 标注只留颜色。</p>
+      <p>如果觉得蜗牛太小或太大，尺寸也可以调。</p>
+      <p>快到底了，回头看看整条轨迹。</p>
+    </div>
+  </div>
+
+  <!-- 痕迹轨道 + 蜗牛 -->
+  <div class="trail" id="trail"></div>
+  <div class="snail" id="snail"><img src="assets/snail.png" alt="" /></div>
+  <div class="readout" id="readout">0%</div>
+
+  <script>
+    (function () {
+      const trail   = document.getElementById('trail');
+      const snail   = document.getElementById('snail');
+      const readout = document.getElementById('readout');
+      if (!trail || !snail) return;
+
+      const PALETTE = [
+        '#FF6B6B', '#FF922B', '#FFD43B', '#94D82D',
+        '#2FBF71', '#20C997', '#22B8CF', '#4DABF7',
+        '#339AF0', '#5C7CFA', '#845EF7', '#CC5DE8',
+        '#F06595', '#FF8787', '#FCC419', '#69DB7C'
+      ];
+
+      let cells = [];
+
+      function buildTrail() {
+        const size = parseFloat(getComputedStyle(document.documentElement)
+                       .getPropertyValue('--cell'));
+        const n = Math.ceil(window.innerWidth / size) + 1;
+        trail.innerHTML = '';
+        cells = [];
+        for (let i = 0; i < n; i++) {
+          const c = document.createElement('div');
+          c.className = 'trail-cell';
+          const hex = document.createElement('span');
+          hex.className = 'hex';
+          c.appendChild(hex);
+          trail.appendChild(c);
+          cells.push({ el: c, hex: hex, wet: false });
+        }
+      }
+
+      function update() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+
+        snail.style.left = (2 + p * 96) + '%';
+        readout.textContent = Math.round(p * 100) + '%';
+
+        // wet every cell the snail has already passed
+        const reached = Math.floor(p * cells.length);
+        cells.forEach((c, i) => {
+          if (i <= reached && !c.wet) {
+            c.wet = true;
+            const col = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+            c.el.style.setProperty('--c', col);
+            c.el.classList.add('wet');
+            // label only every 4th cell, otherwise the hex codes collide
+            if (i % 4 === 0) {
+              c.hex.textContent = col;
+              c.el.classList.add('show-hex');
+            }
+          }
+        });
+      }
+
+      buildTrail();
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', () => { buildTrail(); update(); });
+    })();
+  </script>
+</body>
+</html>

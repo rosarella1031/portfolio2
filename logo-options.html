@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logo 手绘方案</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=EB+Garamond:wght@400&family=IBM+Plex+Sans+Condensed:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1A1817; --muted: #919191; --rule: #DDD8CF; --paper: #fff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paper); color: var(--ink);
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      padding: 3rem clamp(1.5rem, 5vw, 4rem) 6rem;
+    }
+    h1 { font-family: 'EB Garamond', serif; font-weight: 400; font-size: 1.75rem; margin-bottom: 0.4rem; }
+    .lede { color: var(--muted); font-size: 0.85rem; margin-bottom: 3rem; max-width: 52ch; line-height: 1.6; }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2.5rem;
+      margin-bottom: 3.5rem;
+    }
+    .cell { border: 1px solid var(--rule); padding: 1.75rem; }
+    .cell h2 {
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); font-weight: 400; margin-bottom: 1.25rem;
+    }
+    .big { display: flex; align-items: center; justify-content: center; min-height: 170px; }
+    .big svg { width: 130px; height: 130px; }
+
+    /* actual size, sitting in the rail chip */
+    .chip-demo { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--rule); }
+    .chip-demo .label {
+      font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.6rem;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      height: 34px; padding: 0 0.6rem;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(12px) saturate(1.4);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(26,24,23,0.06);
+    }
+    .chip svg { width: 26px; height: 26px; display: block; }
+    .chip .name {
+      font-family: 'EB Garamond', serif; font-size: 0.95rem; white-space: nowrap;
+    }
+    /* the tinted strip behind the chip, so you can judge it on a wash */
+    .wash { background: #E4E9EF; padding: 1rem; display: inline-block; border-radius: 4px; }
+
+    .note { font-size: 0.8rem; color: var(--muted); line-height: 1.6; margin-top: 0.9rem; }
+    svg { overflow: visible; }
+    .stroke {
+      fill: none; stroke: var(--ink); stroke-width: 2.1;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .hand {
+      font-family: 'Caveat', cursive;
+      fill: var(--ink);
+      text-anchor: middle;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>左上角手绘 logo — 三版</h1>
+  <p class="lede">参考那张 L.I.A 的做法：一个手绘的外框，里面手写名字。线条用不规则的贝塞尔画，避免几何感；字用 Caveat。下面每版都给了实际尺寸在悬浮小卡片里的样子。</p>
+
+  <div class="row">
+
+    <!-- 1 -->
+    <div class="cell">
+      <h2>方案 1 · 心形，最贴近参考</h2>
+      <div class="big">
+        <svg viewBox="0 0 120 120" aria-label="Faye heart mark">
+          <path class="stroke" d="M64,101 C36,82 20,62 21,44 C22,29 38,22 51,32 C56,36 59,41 60,46
+                                   C62,40 66,34 72,30 C86,21 101,29 100,46 C99,64 80,84 54,105" />
+          <text class="hand" x="60" y="55" font-size="21">Faye</text>
+          <text class="hand" x="60" y="72" font-size="13" fill="#555">by Xuefei</text>
+        </svg>
+      </div>
+      <div class="chip-demo">
+        <div class="label">实际尺寸</div>
+        <span class="wash"><span class="chip">
+          <svg viewBox="0 0 120 120"><path class="stroke" stroke-width="4" d="M64,101 C36,82 20,62 21,44 C22,29 38,22 51,32 C56,36 59,41 60,46 C62,40 66,34 72,30 C86,21 101,29 100,46 C99,64 80,84 54,105"/></svg>
+          <span class="name">Xuefei Wang</span>
+        </span></span>
+      </div>
+      <p class="note">底部两条线交叉出头，和参考一样，是手绘感的关键。</p>
+    </div>
+
+    <!-- 2 -->
+    <div class="cell">
+      <h2>方案 2 · 蜗牛，你自己的符号</h2>
+      <div class="big">
+        <svg viewBox="0 0 120 120" aria-label="Faye snail mark">
+          <!-- shell -->
+          <path class="stroke" d="M74,60 C74,47 64,38 52,38 C38,38 28,49 28,63 C28,79 41,90 57,90
+                                  C76,90 90,76 90,58 C90,37 73,21 51,21 C34,21 20,31 14,45" />
+          <path class="stroke" d="M62,62 C62,56 57,52 51,52 C45,52 41,57 41,63 C41,70 47,75 54,75" />
+          <!-- body + antennae -->
+          <path class="stroke" d="M28,90 C22,96 30,100 40,100 L86,100 C96,100 102,96 98,90" />
+          <path class="stroke" d="M96,90 C100,80 104,74 108,70" />
+          <path class="stroke" d="M100,92 C106,86 112,84 116,83" />
+          <circle class="stroke" cx="108" cy="68" r="2.2" />
+          <circle class="stroke" cx="117" cy="82" r="2.2" />
+          <text class="hand" x="56" y="118" font-size="17">Faye</text>
+        </svg>
+      </div>
+      <div class="chip-demo">
+        <div class="label">实际尺寸</div>
+        <span class="wash"><span class="chip">
+          <svg viewBox="0 0 130 110"><g transform="translate(0,-8)">
+            <path class="stroke" stroke-width="4.5" d="M74,60 C74,47 64,38 52,38 C38,38 28,49 28,63 C28,79 41,90 57,90 C76,90 90,76 90,58 C90,37 73,21 51,21 C34,21 20,31 14,45"/>
+            <path class="stroke" stroke-width="4.5" d="M28,90 C22,96 30,100 40,100 L86,100 C96,100 102,96 98,90"/>
+            <path class="stroke" stroke-width="4.5" d="M96,90 C100,80 104,74 108,70"/>
+            <circle class="stroke" stroke-width="4.5" cx="108" cy="68" r="2.6"/>
+          </g></svg>
+          <span class="name">Xuefei Wang</span>
+        </span></span>
+      </div>
+      <p class="note">你之前说过更喜欢小蜗牛，assets 里也有一只。这版是你独有的，不像心形那么通用。</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="cell">
+      <h2>方案 3 · 手绘圈，最克制</h2>
+      <div class="big">
+        <svg viewBox="0 0 120 120" aria-label="XW circle mark">
+          <path class="stroke" d="M60,16 C88,16 105,36 104,60 C103,86 84,104 59,104
+                                  C34,104 16,85 16,60 C16,35 34,17 61,16 C70,16 78,18 84,21" />
+          <text class="hand" x="60" y="57" font-size="26">XW</text>
+          <text class="hand" x="60" y="76" font-size="12" fill="#555">Xuefei Wang</text>
+        </svg>
+      </div>
+      <div class="chip-demo">
+        <div class="label">实际尺寸</div>
+        <span class="wash"><span class="chip">
+          <svg viewBox="0 0 120 120">
+            <path class="stroke" stroke-width="4" d="M60,16 C88,16 105,36 104,60 C103,86 84,104 59,104 C34,104 16,85 16,60 C16,35 34,17 61,16 C70,16 78,18 84,21"/>
+            <text class="hand" x="60" y="72" font-size="46">XW</text>
+          </svg>
+          <span class="name">Xuefei Wang</span>
+        </span></span>
+      </div>
+      <p class="note">圈没有画满，留一个缺口，这是手绘感最省力也最可靠的做法。</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

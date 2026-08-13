@@ -1,0 +1,84 @@
+/* ===== Half and half — the default case study layout =====
+
+   Label and title take the left half of each section, the body takes the
+   right half. Figures ignore the split and run the full width, so the page
+   alternates between a two-column argument and a full-width image.
+
+   Loaded by every case study; ?plain disables the sheet to compare against
+   the single-column layout. This file only overrides — project.css still
+   supplies everything else, so ?plain lands exactly on the previous design. */
+
+.content-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(2rem, 4vw, 4rem);
+  row-gap: 0;
+  align-content: start;
+  margin-bottom: 5.5rem;
+}
+
+/* The label gets a row to itself across both columns. That is what pushes the
+   body down to row 2, so it starts level with the title rather than with the
+   label above it. */
+.content-section > .section-label {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+.content-section > .section-title {
+  grid-column: 1;
+  /* spans the remaining rows so the body below can start at the top of the
+     right column instead of being pushed down to clear the title */
+  grid-row: 2 / span 999;
+  align-self: start;
+  max-width: none;
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+/* Right half by default. Deliberately the lowest-specificity rule here — the
+   label, title and figure rules are all single-class and simply outrank it,
+   which is why none of them need a :not() chain. */
+.content-section > * {
+  grid-column: 2;
+  max-width: none;
+}
+
+/* Figures and any block that is itself columned break the split. A three-up
+   row inside one half is three very narrow columns; these need the whole
+   content area or they should not be columns at all. */
+.content-section > .img-block,
+.content-section > .detail-problems,
+.content-section > .scroll-gallery,
+.content-section > .overview-layout,
+.content-section > .detail-scroll,
+.content-section > .problem-list,
+.content-section > .stats-row,
+.content-section > .meta-row,
+.content-section > p.img-caption {
+  grid-column: 1 / -1;
+}
+.content-section > .detail-problems { width: auto; }
+
+/* Not scoped to direct children: the Role/Time/Team row lives inside
+   .overview-main, so its own max-width is what squeezes it, not the grid. */
+.stats-row,
+.meta-row { max-width: none; }
+
+/* Below this the split is off entirely: title and body both run the full
+   width, and nothing is two columns any more. */
+@media (max-width: 1000px) {
+  .content-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4.5rem;
+  }
+  .content-section > .section-title {
+    font-size: 2rem;
+    max-width: var(--measure-title);
+  }
+  .content-section > p,
+  .content-section > ol {
+    max-width: var(--measure);
+  }
+  .meta-row { max-width: var(--measure-title); }
+}

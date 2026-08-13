@@ -1,0 +1,181 @@
+/* =====================================================================
+   Left icon rail — a floating card of icons instead of a top nav bar.
+
+   Colours fall back to the site tokens, but any page that sets
+   --nav-ink / --nav-ink-2 (the full-screen work deck tints them per
+   project) will drive the icons from those instead.
+   ===================================================================== */
+
+:root {
+  --rail-x:    clamp(0.75rem, 1.4vw, 1.25rem);  /* card's distance from the edge */
+  --rail-card: 52px;                            /* 36px icon + 8px padding each side */
+  --rail-w:    calc(var(--rail-x) + var(--rail-card));
+}
+
+/* The rail replaces the site's top bar. Scoped to a direct child of body so
+   it can't also swallow <header> elements used inside articles. */
+body.has-rail > header { display: none; }
+
+/* the wordmark sits loose in the corner */
+/* its own small floating chip, matching the icon card — it shrinks to the
+   name rather than sitting as a bare strip over whatever is beside it */
+.rail-mark {
+  position: fixed;
+  top: var(--rail-x);
+  left: var(--rail-x);
+  z-index: 371;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 0.7rem;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--nav-ink, var(--text));
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(26, 24, 23, 0.06);
+  transition: color 0.65s var(--ease), background-color 0.2s var(--ease);
+}
+.rail-mark:hover { background: rgba(255, 255, 255, 0.75); }
+
+.rail {
+  position: fixed;
+  left: var(--rail-x);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--rail-card);
+  z-index: 370;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* style.css sets a 1.5rem gap on every <nav>; the rail spaces its
+     own children instead */
+  gap: 0;
+  padding: 8px;
+  /* translucent so whatever is behind tints the card */
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(26, 24, 23, 0.06);
+}
+
+.rail-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rail-rule {
+  width: 100%;
+  height: 1px;
+  background: var(--nav-ink-2, #4F4F4F);
+  opacity: 0.28;
+  margin: 8px 0;
+  transition: background-color 0.65s var(--ease);
+}
+
+.rail-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--nav-ink-2, #4F4F4F);
+  transition: color 0.65s var(--ease), background-color 0.2s var(--ease);
+}
+.rail-btn svg { width: 19px; height: 19px; display: block; }
+.rail-btn:hover { color: var(--nav-ink, var(--text)); background: rgba(26, 24, 23, 0.05); }
+.rail-btn[aria-current="page"] {
+  color: var(--nav-ink, var(--text));
+  background: rgba(26, 24, 23, 0.08);
+}
+
+/* hover label, to the right of the card */
+.rail-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-3px);
+  font-family: var(--ff-label);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--bg);
+  background: var(--nav-ink, var(--text));
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.rail-btn:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* content clears the card */
+body.has-rail main,
+body.has-rail footer,
+body.has-rail .rail-offset { padding-left: calc(var(--rail-w) + 1.5rem); }
+
+/* =====================================================================
+   Phones: a vertical rail floating mid-screen sits where the thumb can't
+   reach and eats width the layout needs. Same card, docked flat along the
+   bottom instead.
+   ===================================================================== */
+@media (max-width: 640px) {
+  :root { --rail-w: 0px; }          /* nothing occupies the left lane now */
+
+  .rail {
+    top: auto;
+    bottom: calc(var(--rail-x) + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 6px;
+    border-radius: 14px;
+  }
+  .rail-group { flex-direction: row; gap: 2px; }
+  .rail-rule { width: 1px; height: 20px; margin: 0 6px; }
+
+  .rail-btn { width: 40px; height: 40px; }   /* 40px is the usable tap target */
+  .rail-btn svg { width: 18px; height: 18px; }
+
+  /* no hover on touch — the labels would never show, and a tapped tooltip
+     just covers the thing you tapped */
+  .rail-btn::after { display: none; }
+
+  /* keep content clear of the docked bar */
+  body.has-rail main,
+  body.has-rail footer,
+  body.has-rail .rail-offset {
+    padding-left: 1.25rem;
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-btn, .rail-mark, .rail-rule { transition: none; }
+}
+
+/* =====================================================================
+   The rail floats over the content, so nothing needs to reserve the
+   56px the old top bar used to occupy. Pages that offset themselves by
+   --nav-h get that space back.
+   ===================================================================== */
+body.has-rail .canvas-viewport { top: 0; }
+body.has-rail .edit-panel { top: 12px; }
+body.has-rail main { padding-top: 2.5rem; }

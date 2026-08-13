@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hero 方案 · 网格系统下</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --u: 8px; --cell: 32px;
+      --paper:#FFFFFF; --ink:#1A1817; --ink-2:#6E6862; --ink-3:#A8A29B; --rule:#DDD8CF;
+      --p-brix:#4F7396; --p-opus:#96745A; --p-fitx:#5E7F63; --p-moka:#8A6A85;
+      --ff-serif:'EB Garamond',serif;
+      --ff-label:'IBM Plex Sans Condensed',sans-serif;
+      --ff-body:'General Sans',-apple-system,sans-serif;
+      --ff-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      background:var(--paper); color:var(--ink);
+      font-family:var(--ff-body); -webkit-font-smoothing:antialiased;
+      padding-bottom:calc(var(--cell)*4);
+    }
+    body.grid-on {
+      background-image:
+        linear-gradient(to right, rgba(33,33,33,0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(33,33,33,0.05) 1px, transparent 1px);
+      background-size:var(--cell) var(--cell);
+    }
+    .page { max-width:1280px; margin:0 auto; padding:0 calc(var(--cell)*2); }
+
+    .t-label { font-family:var(--ff-label); font-size:12px; line-height:16px;
+      letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); }
+    .t-body { font-size:16px; line-height:24px; color:var(--ink-2); }
+    .prose { max-width:640px; }
+
+    .ctl {
+      position:fixed; top:0; left:0; right:0; height:var(--cell);
+      background:rgba(255,255,255,0.94); border-bottom:1px solid var(--rule);
+      display:flex; align-items:center; gap:24px; padding:0 calc(var(--cell)*2);
+      z-index:400; font-family:var(--ff-label); font-size:12px;
+      letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3);
+    }
+    .ctl label { display:flex; align-items:center; gap:8px; cursor:pointer; }
+
+    .opt { padding:calc(var(--cell)*3) 0; border-top:1px solid var(--rule); }
+    .opt-tag { display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
+    .opt-tag h2 { font-family:var(--ff-serif); font-size:32px; line-height:40px; font-weight:400; }
+    .opt-note { font-size:14px; line-height:24px; color:var(--ink-2); max-width:640px; margin-bottom:calc(var(--cell)*2); }
+    .opt-note strong { color:var(--ink); font-weight:500; }
+    .demo-frame { border:1px solid var(--rule); padding:calc(var(--cell)*2); background:rgba(255,255,255,0.5); }
+
+    /* ============ 方案 1：排版主导 ============ */
+    .h1-name {
+      font-family:var(--ff-serif); font-size:64px; line-height:72px;
+      max-width:18ch;
+    }
+    .h1-sub { margin-top:calc(var(--u)*3); }
+    .h1-legend {
+      display:flex; gap:calc(var(--cell)*1); margin-top:calc(var(--cell)*2);
+      flex-wrap:wrap;
+    }
+    .h1-legend-item { display:flex; align-items:center; gap:8px;
+      font-family:var(--ff-label); font-size:12px; letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--ink-3); }
+    .h1-swatch { width:10px; height:10px; }
+    .h1-snail { margin-top:calc(var(--cell)*2); width:44px; display:block; transform:scaleX(-1); }
+
+    /* ============ 方案 2：ASCII + 蜗牛 ============ */
+    .h2-row { display:grid; grid-template-columns:1fr auto; gap:calc(var(--cell)*2); align-items:end; }
+    .h2-ascii {
+      font-family:var(--ff-mono); font-size:11px; line-height:1.25;
+      white-space:pre; color:var(--ink); overflow-x:auto;
+    }
+    .h2-side { text-align:right; padding-bottom:calc(var(--u)*2); }
+    .h2-snail { width:52px; transform:scaleX(-1); margin-left:auto; display:block; }
+    .h2-name { font-family:var(--ff-serif); font-size:32px; line-height:40px; margin-top:calc(var(--u)*2); }
+
+    /* ============ 方案 3：项目色索引 ============ */
+    .h3-name { font-family:var(--ff-serif); font-size:48px; line-height:56px; max-width:20ch; }
+    .h3-fields { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-top:calc(var(--cell)*2); }
+    .h3-field {
+      height:calc(var(--cell)*5); position:relative; overflow:hidden;
+      display:flex; align-items:flex-end; padding:calc(var(--u)*2);
+      text-decoration:none; transition:flex 0.4s ease;
+    }
+    .h3-field::before { content:''; position:absolute; inset:0; background:var(--pc); opacity:0.14; transition:opacity 0.35s ease; }
+    .h3-field:hover::before { opacity:0.32; }
+    .h3-field span {
+      position:relative; font-family:var(--ff-label); font-size:12px;
+      letter-spacing:0.06em; text-transform:uppercase; color:var(--pc);
+    }
+    .h3-sub { margin-top:calc(var(--cell)*1); }
+
+    @media (max-width:800px){
+      .h1-name{font-size:40px;line-height:48px;}
+      .h2-row{grid-template-columns:1fr;}
+      .h3-fields{grid-template-columns:repeat(2,1fr);}
+    }
+  </style>
+</head>
+<body class="grid-on">
+
+  <div class="ctl">
+    <label><input type="checkbox" id="gridToggle" checked /> 显示格线</label>
+    <span>三个 hero 方案，都建在 8/32 网格上</span>
+  </div>
+
+  <div class="page">
+
+    <!-- ============ 1 ============ -->
+    <section class="opt" style="padding-top:calc(var(--cell)*3);">
+      <div class="opt-tag"><span class="t-label">方案 1</span><h2>排版主导</h2></div>
+      <p class="opt-note">不放插画也不放 ASCII，靠字撑住。四个项目色收成一条细图例，暗示下面的系统。蜗牛小小地待在角落，等你滚动时才出发。<strong>最克制，编辑感最强，但也最不"独特"</strong>——把赌注全押在文案和排版功力上。</p>
+
+      <div class="demo-frame">
+        <div class="t-label">Product Designer · New York</div>
+        <h1 class="h1-name">I design AI experiences and the systems that hold them together.</h1>
+        <p class="t-body prose h1-sub">Currently Founding Product Designer at FitX Lab. Previously Brix, OpusClip, Moka HR.</p>
+        <div class="h1-legend">
+          <span class="h1-legend-item"><i class="h1-swatch" style="background:var(--p-brix)"></i> Brix</span>
+          <span class="h1-legend-item"><i class="h1-swatch" style="background:var(--p-opus)"></i> OpusClip</span>
+          <span class="h1-legend-item"><i class="h1-swatch" style="background:var(--p-fitx)"></i> FitX</span>
+          <span class="h1-legend-item"><i class="h1-swatch" style="background:var(--p-moka)"></i> Moka HR</span>
+        </div>
+        <img class="h1-snail" src="assets/snail.png" alt="" />
+      </div>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section class="opt">
+      <div class="opt-tag"><span class="t-label">方案 2</span><h2>ASCII 作品 + 蜗牛作者</h2></div>
+      <p class="opt-note">保留你已经做好的两个 ASCII 窗口，但给它们一个明确身份：<strong>ASCII = 你做的产品</strong>（软件界面本来就是格子里的东西，跟网格天然同源），<strong>蜗牛 = 你本人</strong>，站在自己的作品旁边。作者和作品分属两套语言就不打架了，而且你之前的工作没白费。</p>
+
+      <div class="demo-frame">
+        <div class="h2-row">
+          <pre class="h2-ascii"> ___________________________
+|...                       :|
+|---------------------------|/
+|@faye         .---------.  |/
+|----------    |  __     |  |/
+|==========    |&lt;(" \__  |  |/
+|==========    |  \      |  |/
+|==========    .---------.  |/
+|___________________ ___________________________
+////////////////////|...                       :|
+                    |---------------------------|/
+                    |@design                    |/
+                    |----------     _________   |/
+                    |==========     _________   |/
+                    |==========    (_________)  |/
+                    |==========                 |/
+                    |___________________________|/
+                    //////////////////////////////</pre>
+          <div class="h2-side">
+            <img class="h2-snail" src="assets/snail.png" alt="" />
+            <div class="h2-name">Faye Wang</div>
+            <div class="t-label" style="margin-top:8px;">Product Designer</div>
+          </div>
+        </div>
+        <p class="t-body prose" style="margin-top:calc(var(--cell)*2);">I design AI experiences and the systems that hold them together.</p>
+      </div>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section class="opt">
+      <div class="opt-tag"><span class="t-label">方案 3</span><h2>项目色索引</h2></div>
+      <p class="opt-note">Hero 直接就是作品索引：四个色场并排，既是导航也是色彩系统的自我介绍。<strong>第一屏就把"每个项目一个颜色"这条规则讲清楚了</strong>，后面所有页面的用色都有了出处。信息密度最高，也最像一份档案的封面。</p>
+
+      <div class="demo-frame">
+        <div class="t-label">Faye Wang · Product Designer</div>
+        <h1 class="h3-name" style="margin-top:calc(var(--u)*2);">I design AI experiences and the systems that hold them together.</h1>
+        <div class="h3-fields">
+          <a class="h3-field" style="--pc:var(--p-brix)" href="#"><span>Brix<br />AI Agent</span></a>
+          <a class="h3-field" style="--pc:var(--p-opus)" href="#"><span>OpusClip<br />Creator Tool</span></a>
+          <a class="h3-field" style="--pc:var(--p-fitx)" href="#"><span>FitX Lab<br />0→1</span></a>
+          <a class="h3-field" style="--pc:var(--p-moka)" href="#"><span>Moka HR<br />Enterprise</span></a>
+        </div>
+        <p class="t-body prose h3-sub">Currently Founding Product Designer at FitX Lab.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    document.getElementById('gridToggle').addEventListener('change', e => {
+      document.body.classList.toggle('grid-on', e.target.checked);
+    });
+    (function align(){
+      const p = document.querySelector('.page');
+      const cell = 32;
+      const left = p.getBoundingClientRect().left + parseFloat(getComputedStyle(p).paddingLeft);
+      document.body.style.backgroundPositionX = (left % cell) + 'px';
+    })();
+    window.addEventListener('resize', () => {
+      const p = document.querySelector('.page');
+      const left = p.getBoundingClientRect().left + parseFloat(getComputedStyle(p).paddingLeft);
+      document.body.style.backgroundPositionX = (left % 32) + 'px';
+    });
+  </script>
+</body>
+</html>

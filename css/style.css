@@ -2,7 +2,7 @@
 
 /* ===== Tokens ===== */
 :root {
-  --bg:           #ffffff;
+  --bg:           #fcfcfc;
   --bg-card:      #EDEAE4;
   --tag-bg:       #f7f7f7;
   --text:         #1A1817;
@@ -17,8 +17,19 @@
   --max:          1296px;
 }
 
+/* ===== Emphasis =====
+   Browsers render <strong>/<b> at 700, heavier than anything else on this
+   site. General Sans has a real 600. */
+strong, b {
+  font-weight: 600;
+}
+
 /* ===== Reset ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* The horizontal guard lives on html only. Setting overflow-x on body as well
+   makes body a scroll container, and every position: sticky inside the page
+   then sticks to body instead of the viewport — which is to say, not at all.
+   On html the value propagates to the viewport and sticky keeps working. */
 html { scroll-behavior: auto; overflow-x: hidden; }
 body {
   font-family: var(--ff-body);
@@ -28,7 +39,6 @@ body {
   line-height: 1.6;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
@@ -81,12 +91,12 @@ body.nav-always-visible header {
   justify-self: start;
 }
 .logo-name {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.04em;
 }
 .logo-title {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 400;
   color: var(--text-2);
   letter-spacing: 0.04em;
@@ -99,7 +109,7 @@ nav {
   gap: 1.5rem;
 }
 nav a {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   color: var(--text-2);
@@ -134,7 +144,7 @@ main {
 /* ===== Section header ===== */
 .projects-label {
   font-family: var(--ff-label);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -253,16 +263,16 @@ main {
   font-size: 0.75rem;
   color: var(--text-3);
   background: var(--tag-bg);
-  padding: 0.1rem 0.5rem;
+  padding: 0.125rem 0.5rem;
   border-radius: 4px;
   font-weight: 400;
 }
 
 .project-desc {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-2);
   font-weight: 400;
-  line-height: 1.45;
+  line-height: 1.6;
   letter-spacing: 0;
 }
 
@@ -273,7 +283,7 @@ main {
 }
 .see-more a {
   font-family: var(--ff-label);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -301,7 +311,7 @@ footer {
   gap: 1.5rem;
 }
 .footer-nav a {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   color: var(--text-2);

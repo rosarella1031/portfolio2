@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>把「有光源」翻译进浅色 — 对照</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: var(--ff-body); margin: 0; background: #fff; }
+
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
+
+    .intro { padding: 4rem 0 3rem; }
+    h1 { font-family: 'EB Garamond', serif; font-weight: 400; font-size: 1.9rem; margin: 0 0 .5rem; }
+    .lede { color: var(--text-2); font-size: .88rem; line-height: 1.7; max-width: 60ch; }
+    .lede b { color: var(--text); font-weight: 600; }
+    .lede + .lede { margin-top: .9rem; }
+
+    /* Each band paints its own page colour, so the comparison includes the
+       thing being compared — a swatch on a white page would prove nothing. */
+    .band { padding: 4.5rem 0 5rem; }
+
+    .head {
+      display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: .72rem;
+      padding-bottom: .6rem; margin-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(26,24,23,.12);
+    }
+    .head .k { font-weight: 500; color: var(--text); letter-spacing: .02em; }
+    .head .v { color: var(--text-2); }
+    .head .note { margin-left: auto; color: var(--text-2); font-family: var(--ff-body); font-size: .78rem; }
+
+    .stage { position: relative; }
+    .media { position: relative; z-index: 1; overflow: hidden; }
+    .media img { display: block; width: 100%; }
+
+    /* the glow, translated: in light you cannot add light, so this is shade */
+    .bloom {
+      position: absolute; z-index: 0;
+      left: 6%; right: 6%; top: 12%; bottom: -6%;
+      filter: blur(40px);
+      background: radial-gradient(closest-side,
+                    rgba(176,163,140,.50),
+                    rgba(176,163,140,.16) 55%,
+                    transparent 78%);
+      pointer-events: none;
+    }
+
+    code.snip {
+      display: block; white-space: pre; overflow-x: auto;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: .7rem; line-height: 1.75; color: var(--text-2);
+      margin-top: 1.6rem; padding-top: 1.1rem;
+      border-top: 1px dashed rgba(26,24,23,.14);
+    }
+    code.snip b { color: var(--text); font-weight: 500; }
+
+    .verdict { margin-top: 1rem; font-size: .82rem; line-height: 1.65; color: var(--text-2); max-width: 58ch; }
+    .verdict b { color: var(--text); font-weight: 600; }
+
+    /* ---- 0 · 现状 ---- */
+    .b0 { background: #ffffff; }
+    .b0 .media { background: #F8F8F8; border-radius: 10px; }
+
+    /* ---- A · 抬纸 ---- */
+    .bA { background: #F7F5F0; }
+    .bA .media {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(60,50,40,.05),
+                  0 10px 28px rgba(60,50,40,.07),
+                  0 28px 56px rgba(60,50,40,.05);
+    }
+
+    /* ---- B · 抬纸 + 光晕 ---- */
+    .bB { background: #F7F5F0; }
+    .bB .media {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(60,50,40,.05),
+                  0 10px 28px rgba(60,50,40,.07),
+                  0 28px 56px rgba(60,50,40,.05);
+    }
+
+    /* ---- C · 溶边（她的原结构） ---- */
+    .bC { background: #F7F5F0; }
+    .bC .media {
+      border-radius: 10px 10px 0 0;
+      -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+    }
+
+    /* ---- detail: 顶边高光 ---- */
+    .sheen-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .sheen-row .cap {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: .68rem; color: var(--text-2); margin-bottom: .7rem;
+    }
+    .sheen-box {
+      position: relative; border-radius: 10px; overflow: hidden; background: #fff;
+      box-shadow: 0 1px 2px rgba(60,50,40,.05), 0 10px 28px rgba(60,50,40,.07);
+    }
+    .sheen-box img { display: block; width: 100%; }
+    .sheen-on::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 9%);
+    }
+    @media (max-width: 720px) { .sheen-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="wrap intro">
+    <h1>把「有光源」翻译进浅色</h1>
+    <p class="lede">
+      Bella 那个背景里没有噪点、没有纹理、没有滤镜 —— 全部是渐变。真正在起作用的只有一件事：
+      <b>页面有一个光源。</b>底色 <code>#0a0a0a</code>（不是纯黑，留出往上提的余地）、主图背后一团
+      <code>blur(40px)</code> 的蓝色光晕、图片底边用 scrim 溶进背景、顶边一道 4% 的白色高光。
+    </p>
+    <p class="lede">
+      这套东西<b>不能直译</b>。暗色里光晕是加光；浅色里你没法往白上加光，只能减光 —— 直接翻过来就是一块脏印子。
+      浅色的等价物是把关系倒过来：<b>页面不再是发光的底，而是被照亮的纸</b>。光源还在，但表现为纸浮起来、影子落下去。
+    </p>
+    <p class="lede">
+      这里有个顺带的好处。你的产品截图平均色是 <b>#FCFCFD</b>，几乎纯白 ——
+      放在纯白页面上，物理上不可能有边界（对比 1.025）。现在的做法是给图配更深的底 <code>#F8F8F8</code>，
+      结果图是<b>陷进去</b>的。Bella 的结构正好相反：媒体浮在页面<b>之上</b>。
+    </p>
+  </div>
+
+  <!-- 0 -->
+  <section class="band b0">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">0 · 现状</span>
+        <span class="v">页面 #FFFFFF · 图块 #F8F8F8</span>
+        <span class="note">图比页面深 —— 陷进去</span>
+      </div>
+      <div class="stage"><div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div></div>
+      <code class="snip">--bg: <b>#ffffff</b>;
+.img-block { background: <b>#F8F8F8</b>; }</code>
+      <p class="verdict">
+        截图四周的白和图块的 #F8F8F8 差 1.009 —— <b>等于没有边界</b>。图糊在底上，
+        整块看起来发平。深浅关系也是反的：内容比容器暗，等于把主角压进背景里。
+      </p>
+    </div>
+  </section>
+
+  <!-- A -->
+  <section class="band bA">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">A · 抬纸</span>
+        <span class="v">页面 #F7F5F0 · 媒体 #FFFFFF + 柔影</span>
+        <span class="note">最小改动，改两个值</span>
+      </div>
+      <div class="stage"><div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div></div>
+      <code class="snip">--bg: <b>#F7F5F0</b>;              /* 页面退一档，让出上方空间 */
+.img-block {
+  background: <b>#fff</b>;
+  box-shadow: 0 1px 2px rgba(60,50,40,.05),
+              0 10px 28px rgba(60,50,40,.07),
+              0 28px 56px rgba(60,50,40,.05);
+}</code>
+      <p class="verdict">
+        深浅关系正过来了：内容比页面亮。注意<b>分离感几乎全部来自影子，不是来自颜色</b> ——
+        白卡和 #F7F5F0 只差 1.09，靠色差是撑不住的。三层影子里最外那层（28px 56px / 5%）负责"浮"，
+        最里那层（1px 2px）负责"实"，少了任何一层都会塌。
+      </p>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="band bB">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">B · 抬纸 + 光晕</span>
+        <span class="v">A + 背后一团 blur(40px) 的暖色影</span>
+        <span class="note">她那团蓝光的浅色对应物</span>
+      </div>
+      <div class="stage">
+        <div class="bloom"></div>
+        <div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+      </div>
+      <code class="snip">.bloom {              /* 放在媒体下面一层，比媒体大一圈、往下偏 */
+  position: absolute; left: 6%; right: 6%; top: 12%; bottom: -6%;
+  filter: blur(40px);
+  background: radial-gradient(closest-side,
+                <b>rgba(176,163,140,.50)</b>,
+                rgba(176,163,140,.16) 55%,
+                transparent 78%);
+}</code>
+      <p class="verdict">
+        同样是 <code>blur(40px)</code>、同样是 <code>closest-side</code> 的径向渐变、
+        同样比媒体大一圈往下偏 —— <b>只是颜色从"加光"换成了"落影"</b>。
+        效果是媒体不再是贴在页面上的一张纸，而是<b>悬在页面上方一点点</b>。
+        颜色取的是你 <code>--border #DDD8CF</code> 的同一支暖灰，所以不会脏。
+      </p>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="band bC">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">C · 溶边</span>
+        <span class="v">不要框，底边 mask 进页面</span>
+        <span class="note">她的原结构 — 只能用在 hero</span>
+      </div>
+      <div class="stage">
+        <div class="bloom"></div>
+        <div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+      </div>
+      <code class="snip">.hero-media {
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  border-radius: 10px 10px 0 0;    /* 底边没有边，就不需要圆角 */
+}</code>
+      <p class="verdict">
+        这是她实际用的做法：图不结束，只是<b>消失</b>。页面读起来是连续的一整片，而不是"一段字、一个方块、又一段字"。
+        <b>但这条只能给 hero 用。</b>正文里的图溶掉底边就是吃掉内容 ——
+        她自己也只在首屏这么做，往下的图全是规规矩矩的方块。
+      </p>
+    </div>
+  </section>
+
+  <!-- detail -->
+  <section class="band" style="background:#F7F5F0">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">细节 · 顶边高光</span>
+        <span class="v">她用 rgba(255,255,255,.04) 0 → 14%</span>
+        <span class="note">浅色里几乎无效</span>
+      </div>
+      <div class="sheen-row">
+        <div>
+          <div class="cap">不加</div>
+          <div class="sheen-box"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+        </div>
+        <div>
+          <div class="cap">加了（已放大到 90%，仍然看不出）</div>
+          <div class="sheen-box sheen-on"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+        </div>
+      </div>
+      <p class="verdict">
+        这一条<b>直接放弃</b>。顶边高光的原理是"光从上面打下来，最先照亮上沿" ——
+        在近黑的底上 4% 的白就够，在近白的媒体上你把它拉到 90% 都还是白加白。
+        浅色里承担同样叙事的是<b>影子的方向</b>：把 box-shadow 的 y 值全部设正，光就在上方，不需要再画高光。
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 让光源动起来 ============ -->
+
+  <section class="band" style="background:#F7F5F0;padding-bottom:2rem">
+    <div class="wrap">
+      <h1 style="margin-bottom:.6rem">让它活起来</h1>
+      <p class="lede">
+        她整个页面里唯一在动的背景元素是一条 <code>tmSweep</code>：156px 宽、<b>rgba(255,255,255,.035)</b> 的光带，
+        16 秒横扫一次，其中最后 30% 停着不动。<b>光源在缓慢移动</b> —— 就这一条。
+      </p>
+      <p class="lede">
+        这件事浅色里反而更好做：她只能用 3.5% 的白（再高就脏），而<b>影子在浅底上是清清楚楚可读的</b>。
+        下面四种都在动，鼠标划过去 / 滚动看看。
+      </p>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section class="band bD" style="background:#F7F5F0;padding-top:2.5rem">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">D · 光源跟着光标</span>
+        <span class="v">pointermove → 光晕位置</span>
+        <span class="note">← 把鼠标移到图上</span>
+      </div>
+      <div class="stage" id="stageD">
+        <div class="bloom bloom-track"></div>
+        <div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+      </div>
+      <code class="snip">stage.addEventListener('pointermove', e =&gt; {
+  const r = stage.getBoundingClientRect();
+  stage.style.setProperty('--mx', (e.clientX - r.left) / r.width  * 100 + '%');
+  stage.style.setProperty('--my', (e.clientY - r.top)  / r.height * 100 + '%');
+});
+.bloom-track { background: radial-gradient(closest-side at <b>var(--mx) var(--my)</b>, …); }</code>
+      <p class="verdict">
+        最直接的"有光源"证明：<b>光源的位置是可以被质疑的，所以它必须能移动</b>。
+        代价是它只在有鼠标的设备上成立 —— 手机上什么都不会发生，这条得有静态兜底。
+        另外<b>别让它跟得太紧</b>，1:1 跟随像贴纸；下面 E 里那个阻尼版本才像光。
+      </p>
+    </div>
+  </section>
+
+  <!-- E -->
+  <section class="band bE" style="background:#F7F5F0">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">E · 阻尼跟随 + 抬起</span>
+        <span class="v">lerp 0.08 · hover 抬 4px</span>
+        <span class="note">← 同样移上去，感受差别</span>
+      </div>
+      <div class="stage" id="stageE">
+        <div class="bloom bloom-track"></div>
+        <div class="media media-lift"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+      </div>
+      <code class="snip">cur += (target - cur) * <b>0.08</b>;        /* 每帧追一点点，不是直接赋值 */
+
+.media-lift {
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.stage:hover .media-lift {
+  transform: <b>translateY(-4px)</b>;         /* 纸被抬高，影子跟着变软变大 */
+  box-shadow: 0 2px 4px rgba(60,50,40,.05),
+              0 18px 44px rgba(60,50,40,.09),
+              0 40px 80px rgba(60,50,40,.06);
+}</code>
+      <p class="verdict">
+        <b>这个是我推荐的。</b>阻尼让光有质量 —— 它追你，但追不上。
+        再加上"纸被抬起、影子变软变大"，两件事说的是<b>同一个物理事实</b>，所以不显得是两个特效叠在一起。
+        整个交互只有 4px 的位移，但因为影子同时在变，读起来的幅度比 4px 大得多。
+      </p>
+    </div>
+  </section>
+
+  <!-- F -->
+  <section class="band bF" style="background:#F7F5F0">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">F · 随滚动漂移</span>
+        <span class="v">光晕位移 = 滚动量 × 0.06</span>
+        <span class="note">← 滚动页面时它在动</span>
+      </div>
+      <div class="stage" id="stageF">
+        <div class="bloom bloom-drift"></div>
+        <div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /></div>
+      </div>
+      <code class="snip">/* 光晕比内容慢 —— 视差，但只给背景用，内容不许动 */
+bloom.style.transform = 'translateY(' + (offsetFromCenter * <b>0.06</b>) + 'px)';</code>
+      <p class="verdict">
+        好处是<b>触屏也成立</b>，不依赖鼠标。坏处是系数一大就晕，而且它和你刚做的 scroll reveal
+        抢同一份注意力。<b>两个都要就都调弱</b>，或者干脆只留一个。
+      </p>
+    </div>
+  </section>
+
+  <!-- G -->
+  <section class="band bG" style="background:#F7F5F0">
+    <div class="wrap">
+      <div class="head">
+        <span class="k">G · 光扫过</span>
+        <span class="v">她的 tmSweep，换成影子</span>
+        <span class="note">16s 一轮，含 30% 静止</span>
+      </div>
+      <div class="stage" id="stageG">
+        <div class="bloom"></div>
+        <div class="media"><img src="assets/brix-challenge1-poster.jpg" alt="" /><span class="sweep"></span></div>
+      </div>
+      <code class="snip">@keyframes sweep {
+  0%   { transform: translateX(-130%); }
+  70%  { transform: translateX(150%); }
+  100% { transform: translateX(150%); }   /* <b>停 30%</b> —— 不是匀速循环 */
+}
+.sweep {
+  width: 22%;
+  background: linear-gradient(90deg, transparent,
+              <b>rgba(120,105,85,.055)</b> 50%, transparent);
+  animation: sweep 16s ease-in-out infinite;
+}</code>
+      <p class="verdict">
+        最接近她原作的一条，只是白色高光换成了 5.5% 的暖影。
+        那个 <b>30% 的静止</b>是关键 —— 匀速循环会读成"加载中"，停顿才读成"光偶尔晃了一下"。
+        但说实话：<b>它不响应你，只是自己在动。</b>你说想要 interactive，那 D/E 才是，这条是氛围。
+      </p>
+    </div>
+  </section>
+
+  <section class="band" style="background:#fff;padding-bottom:7rem">
+    <div class="wrap">
+      <div class="head"><span class="k">结论</span></div>
+      <p class="verdict" style="max-width:62ch">
+        <b>底子用 A + B</b> —— 页面退一档、媒体变纯白加三层影子。这两处恰好一起解决了你图片"发糊"的老问题，
+        而且改的是 token 和 <code>.img-block</code>，全站 case study 一起变。<br /><br />
+        <b>交互用 E。</b>阻尼跟随 + 悬停抬起，两件事讲同一个物理事实，不像堆特效。<br /><br />
+        <b>C 只给 hero</b>（正文图溶边会吃掉内容）。<b>顶边高光和 G 可以不要</b> ——
+        G 好看但不响应你，而且会跟你刚加的 scroll reveal 抢注意力。<br /><br />
+        还有一条不在选项里但更重要：<b>光晕不要每张图都加</b>。一个页面只能有一个光源，
+        加满了就退回成材质，反而什么都不剩。
+      </p>
+    </div>
+  </section>
+
+  <style>
+    .bloom-track {
+      background: radial-gradient(closest-side at var(--mx, 50%) var(--my, 55%),
+                    rgba(176,163,140,.55),
+                    rgba(176,163,140,.18) 55%,
+                    transparent 78%);
+    }
+    .media-lift {
+      transition: transform .5s cubic-bezier(0.25,0.46,0.45,0.94),
+                  box-shadow .5s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    #stageE:hover .media-lift {
+      transform: translateY(-4px);
+      box-shadow: 0 2px 4px rgba(60,50,40,.05),
+                  0 18px 44px rgba(60,50,40,.09),
+                  0 40px 80px rgba(60,50,40,.06);
+    }
+    .bD .media, .bE .media, .bF .media, .bG .media {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(60,50,40,.05),
+                  0 10px 28px rgba(60,50,40,.07),
+                  0 28px 56px rgba(60,50,40,.05);
+    }
+    .sweep {
+      position: absolute; top: 0; bottom: 0; left: 0; width: 22%;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent,
+                  rgba(120,105,85,.055) 50%, transparent);
+      animation: sweep 16s ease-in-out infinite;
+    }
+    @keyframes sweep {
+      0%   { transform: translateX(-130%); }
+      70%  { transform: translateX(150%); }
+      100% { transform: translateX(150%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sweep { animation: none; opacity: 0; }
+      .media-lift { transition: none; }
+    }
+  </style>
+
+  <script>
+  (function () {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* D — 1:1 跟随，故意不加阻尼，用来跟 E 对比 */
+    const d = document.getElementById('stageD');
+    d.addEventListener('pointermove', e => {
+      const r = d.getBoundingClientRect();
+      d.style.setProperty('--mx', (e.clientX - r.left) / r.width  * 100 + '%');
+      d.style.setProperty('--my', (e.clientY - r.top)  / r.height * 100 + '%');
+    });
+
+    /* E — 阻尼跟随。目标值随事件更新，实际值每帧追一点点。 */
+    const eStage = document.getElementById('stageE');
+    let tx = 50, ty = 55, cx = 50, cy = 55, running = false;
+    eStage.addEventListener('pointermove', ev => {
+      const r = eStage.getBoundingClientRect();
+      tx = (ev.clientX - r.left) / r.width  * 100;
+      ty = (ev.clientY - r.top)  / r.height * 100;
+      if (!running && !reduce) { running = true; step(); }
+    });
+    function step() {
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      eStage.style.setProperty('--mx', cx + '%');
+      eStage.style.setProperty('--my', cy + '%');
+      if (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) requestAnimationFrame(step);
+      else running = false;
+    }
+
+    /* F — 滚动视差。scroll 事件在某些内嵌视图里不派发，所以配一个轮询兜底。 */
+    const fBloom = document.querySelector('#stageF .bloom-drift');
+    let lastY = -1;
+    function drift() {
+      if (scrollY === lastY) return;
+      lastY = scrollY;
+      const r = fBloom.parentElement.getBoundingClientRect();
+      const fromCenter = (r.top + r.height / 2) - innerHeight / 2;
+      // clamped — unclamped, a block far off screen drags the bloom hundreds
+      // of pixels away and it flies in rather than drifts
+      const y = Math.max(-40, Math.min(40, fromCenter * -0.06));
+      fBloom.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+    }
+    if (!reduce) {
+      addEventListener('scroll', drift, { passive: true });
+      setInterval(drift, 100);
+      drift();
+    }
+  })();
+  </script>
+
+</body>
+</html>

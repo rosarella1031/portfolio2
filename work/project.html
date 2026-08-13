@@ -9,6 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+  <script>
+    /* The half-and-half layout is the default. ?plain switches it off for
+       side-by-side comparison; disabling the sheet leaves project.css alone,
+       so the fallback is exactly the previous design. */
+    if (new URLSearchParams(location.search).has('plain')) {
+      document.getElementById('split-sheet').disabled = true;
+    }
+  </script>
 </head>
 <body>
 
@@ -16,11 +25,14 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <a href="../index.html#work" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <a href="../index.html" class="back-link" aria-label="Back to projects">
+
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+
           <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
         </svg>
-        Back to Projects
+
       </a>
 
       <div class="sidebar-meta">
@@ -177,5 +189,7 @@
   </div>
 
   <script src="project.js"></script>
+  <script src="../js/reveal.js" defer></script>
+  <script src="../js/count-up.js" defer></script>
 </body>
 </html>

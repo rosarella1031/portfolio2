@@ -6,9 +6,10 @@
   <title>About — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
   <style>
     .about-grid {
       display: grid;
@@ -24,7 +25,27 @@
       overflow: hidden;
     }
 
-    /* Hero-style hover grid, used as the background behind the collage — fades out on the right instead of the bottom */
+    /* FigJam dot grid behind the collage, matching the deck's first and last
+       screens. On its own layer so the mask fades only the dots, not the
+       photos sitting on top. */
+    .about-photo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
+      -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      pointer-events: none;
+    }
+    /* the hover-colour grid it replaced — delete this line to bring it back.
+       Scoped past .about-photo-grid's own `display: grid`, which is declared
+       further down. */
+    .about-photo > .about-photo-grid { display: none; }
+
     .about-photo-grid {
       position: absolute;
       inset: 0;
@@ -281,7 +302,7 @@
     </a>
 
     <nav>
-      <a href="index.html#work">Work</a>
+      <a href="index.html">Work</a>
       <a href="builds.html">Builds</a>
       <a href="about.html" class="active">About</a>
     </nav>
@@ -371,7 +392,7 @@
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
-      <a href="index.html#work">Work</a>
+      <a href="index.html">Work</a>
       <a href="builds.html">Builds</a>
       <a href="about.html">About</a>
     </nav>
@@ -383,6 +404,7 @@
     (function () {
       const grid = document.getElementById('aboutPhotoGrid');
       if (!grid) return;
+      if (getComputedStyle(grid).display === 'none') return;   // dots are in use
 
       // match the hero grid's cell size (hero spans ~full viewport width at 24 cols)
       const palette = [
@@ -511,5 +533,6 @@
     })();
   </script>
 
+  <script src="js/rail.js" defer></script>
 </body>
 </html>

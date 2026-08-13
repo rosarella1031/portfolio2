@@ -10,6 +10,15 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+  <script>
+    /* The half-and-half layout is the default. ?plain switches it off for
+       side-by-side comparison; disabling the sheet leaves project.css alone,
+       so the fallback is exactly the previous design. */
+    if (new URLSearchParams(location.search).has('plain')) {
+      document.getElementById('split-sheet').disabled = true;
+    }
+  </script>
 </head>
 <body>
 
@@ -17,11 +26,14 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <a href="../index.html#work" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <a href="../index.html" class="back-link" aria-label="Back to projects">
+
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+
           <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
         </svg>
-        Back to Projects
+
       </a>
 
       <div class="sidebar-meta">
@@ -40,16 +52,19 @@
           <span class="sidebar-dot"></span><span class="sidebar-text">BUSINESS GOAL</span>
         </a>
         <a href="#problems" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">CORE PROBLEMS</span>
+          <span class="sidebar-dot"></span><span class="sidebar-text">UNCOVERING THE PROBLEM</span>
         </a>
         <a href="#product-solution" class="nav-item">
           <span class="sidebar-dot"></span><span class="sidebar-text">PRODUCT SOLUTION</span>
         </a>
         <a href="#challenge1" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN CHALLENGE 01</span>
+          <span class="sidebar-dot"></span><span class="sidebar-text">MAPPING AGENT</span>
         </a>
         <a href="#challenge2" class="nav-item">
-          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN CHALLENGE 02</span>
+          <span class="sidebar-dot"></span><span class="sidebar-text">SEARCH AGENT</span>
+        </a>
+        <a href="#details" class="nav-item">
+          <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN DETAILS</span>
         </a>
         <a href="#system" class="nav-item">
           <span class="sidebar-dot"></span><span class="sidebar-text">DESIGN SYSTEM</span>
@@ -89,47 +104,59 @@
         <div class="overview-layout">
           <div class="overview-main">
             <div class="section-label">Overview</div>
-            <h2 class="section-title">An agent-driven recruiting system built for modern hiring teams.</h2>
-            <p>Brix reimagines how recruiters find and evaluate candidates. Instead of manual filtering and guesswork, the system uses AI agents to define ideal candidate profiles and continuously refine search results based on recruiter feedback.</p>
-            <p>Timeline: Dec 2024 – May 2025 &nbsp;·&nbsp; Team: 2 PD, 1 PM, Engs with CEO &nbsp;·&nbsp; My role: Product Designer</p>
+            <h2 class="section-title" data-e="1">An agent-driven recruiting system built for modern hiring teams.</h2>
+            <p data-e="2">Brix replaces filtering and guesswork with two AI agents: one helps recruiters define an ideal candidate profile, the other searches against it and learns from their feedback.</p>
             <a href="https://joinbrix.com/" target="_blank" class="project-link">
               Visit joinbrix.com <span>↗</span>
             </a>
+            <div class="meta-row">
+              <div>
+                <div class="meta-k">Role</div>
+                <div class="meta-v" data-e="80">Product Designer</div>
+              </div>
+              <div>
+                <div class="meta-k">Time</div>
+                <div class="meta-v" data-e="81">Dec 2024 &ndash; May 2025</div>
+              </div>
+              <div>
+                <div class="meta-k">Team</div>
+                <div class="meta-v" data-e="82">2 PD &middot; 1 PM &middot; Engineers, with CEO</div>
+              </div>
+            </div>
           </div>
           <aside class="overview-note">
-            <div class="overview-note-label">Looking back</div>
-            <p>We began this exploration in early 2025, when OpenAI's Operator and Deep Research had only just launched, Devin was not yet widely accessible, and designers had few established patterns for agentic experiences. I was excited to explore how AI agents could work within a recruiting product. It has been rewarding to see agentic products become widely adopted, and many converge on similar patterns of chat, direct editing, and human confirmation.</p>
+            <div class="overview-note-label" data-e="4">Looking back</div>
+            <p data-e="5">We started weeks after Operator and Deep Research launched, with almost no settled patterns for agentic work. The industry has since converged on chat, direct editing and human confirmation &mdash; a fair check on the calls we made.</p>
           </aside>
         </div>
       </section>
 
       <section id="impact" class="content-section">
         <div class="section-label">Impact</div>
-        <h2 class="section-title">Measurable improvements across speed, funding, and recruiter confidence.</h2>
-        <p>The agent-driven workflow I designed delivered meaningful results, with recruiters reporting faster decision-making and greater trust in the candidates surfaced.</p>
+        <h2 class="section-title" data-e="6">Measurable improvements across speed, funding, and recruiter confidence.</h2>
         <div class="stats-row">
           <div class="stat">
-            <div class="stat-number">28%</div>
-            <div class="stat-label">Faster decision-making</div>
+            <div class="stat-number" data-e="8">28%</div>
+            <div class="stat-label" data-e="9">Faster decision-making</div>
           </div>
           <div class="stat">
-            <div class="stat-number">95%</div>
-            <div class="stat-label">Positive feedback</div>
+            <div class="stat-number" data-e="10">95%</div>
+            <div class="stat-label" data-e="11">Positive feedback</div>
           </div>
           <div class="stat">
-            <div class="stat-number">$10M</div>
-            <div class="stat-label">New funding</div>
+            <div class="stat-number" data-e="12">$10M</div>
+            <div class="stat-label" data-e="13">New funding</div>
           </div>
         </div>
       </section>
 
       <section id="goal" class="content-section">
         <div class="section-label">Business Goal</div>
-        <h2 class="section-title">Build an AI agentic talent search tool — aligning product growth with AI transformation.</h2>
-        <p>The business goals were to:</p>
+        <h2 class="section-title" data-e="14">Build an AI agentic talent search tool — aligning product growth with AI transformation.</h2>
+        <p data-e="15">The business goals were to:</p>
         <ol>
-          <li><strong>Expand the user base</strong> by positioning Talent Search as a standalone AI agent, lowering adoption barriers for recruiters and agencies while creating a path toward the full ATS and EMS suite.</li>
-          <li><strong>Reposition the platform as AI-native</strong> by embedding agentic workflows that improve recruiters' daily efficiency and strengthen its differentiation in the market.</li>
+          <li data-e="16"><strong>Expand the user base</strong> by making Talent Search a standalone AI agent, lowering the barrier for recruiters and agencies and opening a path to the full ATS and EMS suite.</li>
+          <li data-e="17"><strong>Reposition the platform as AI-native</strong> by embedding agentic workflows into recruiters' daily work.</li>
         </ol>
         <div class="img-block">
           <img src="../assets/brixbusinessgoal-img.jpg" alt="Diagram showing recruiters using Talent Search and AI to reach a faster match with ideal candidates" />
@@ -137,63 +164,128 @@
       </section>
 
       <section id="problems" class="content-section">
-        <div class="section-label">Core Problems</div>
-        <h2 class="section-title">How might we help recruiters efficiently define, discover, and evaluate the right candidates through an AI-driven workflow they can trust?</h2>
-        <p>Through research into recruiter workflows, I identified two persistent pain points: defining what "ideal" looks like for a role is time-consuming and subjective, and existing search tools return results that require significant manual review before any action can be taken.</p>
-        <p>This created a bottleneck at both ends of the hiring process — before the search began and after results came back.</p>
+        <div class="section-label">Uncovering the Problem</div>
+        <h2 class="section-title" data-e="18">Candidate criteria were treated as something to execute, not discover.</h2>
+        <p data-e="19">Two pain points ran through every recruiter workflow: defining what &ldquo;ideal&rdquo; means is slow and subjective, and results need heavy manual review before anyone can act.</p>
+        <p data-e="20">Right observation, wrong problem. Search was a rule-based filter: you had to know what you wanted before you could begin. Two attempts to fix that failed on the same assumption.</p>
         <div class="img-block"><img src="../assets/working-flow.png" alt="Recruiter workflow bottlenecks" /></div>
+
+        <div class="detail-problems">
+          <div class="detail-problem-item">
+            <div class="img-block"></div>
+            <h3 class="problem-heading" data-e="21"><span class="problem-num">01</span> AI-Assisted Matching</h3>
+            <p data-e="22">The direction already in flight. It parsed job descriptions, suggested filters and ranked by similarity &mdash; all of which made the input easier to produce.</p>
+            <p data-e="23">It did not move the judgement. Recruiters still had to decide whether a direction was right, and kept running the same job description again.</p>
+            <p data-e="24">Running the same JD twice is the tell: if the requirement were settled, there would be no second search.</p>
+          </div>
+
+          <div class="detail-problem-item">
+            <div class="img-block"></div>
+            <h3 class="problem-heading" data-e="25"><span class="problem-num">02</span> Deep Search &amp; Auto Enrich</h3>
+            <p data-e="26">The opposite bet, and the one leadership favoured: remove the manual work. Expand the search space, run variants in parallel.</p>
+            <p data-e="27">Engineering put a full run at twenty minutes. Worse than slow: for twenty minutes a recruiter could neither steer nor add what they knew &mdash; and still could not tell why a candidate had surfaced.</p>
+            <p data-e="28">Automation cannot rescue a goal that was never defined. It answers the wrong question faster, and locks you out while it does.</p>
+          </div>
+        </div>
+
 
         <div class="problem-list">
           <div class="problem-item">
-            <h3 class="problem-heading"><span class="problem-num">01</span> Hiring requirements were rigid and hard to revise once defined</h3>
-            <p>Hiring requirements were treated as rigid configurations—defined through keywords, filters, or job descriptions—and became difficult to revisit or reshape once search began.</p>
+            <h3 class="problem-heading" data-e="30"><span class="problem-num">01</span> Requirements were rigid once defined</h3>
+            <p data-e="31">Requirements were treated as configuration &mdash; keywords, filters, a job description &mdash; and hardened once a search began.</p>
           </div>
           <div class="problem-item">
-            <h3 class="problem-heading"><span class="problem-num">02</span> Outputs required constant back-and-forth</h3>
-            <p>Users relied on search results to understand and refine their own thinking—turning outputs into a way to explore options.</p>
+            <h3 class="problem-heading" data-e="32"><span class="problem-num">02</span> Results were how people worked out what they wanted</h3>
+            <p data-e="33">Recruiters used search output to work out their own thinking. The results were not the answer; they were the instrument for arriving at the question.</p>
           </div>
           <div class="problem-item">
-            <h3 class="problem-heading"><span class="problem-num">03</span> Balancing automation with transparency, trust, and user control</h3>
-            <p>As automation increased, users lost visibility into how decisions were made, making it harder to trust the system or actively steer the outcome.</p>
+            <h3 class="problem-heading" data-e="34"><span class="problem-num">03</span> More automation meant less to steer by</h3>
+            <p data-e="35">More automation meant less visibility into how decisions were made, and less to steer by.</p>
           </div>
         </div>
+
+        <p data-e="36">Both attempts treated <em>what we are looking for</em> as a known input. It is not one &mdash; recruiters only get there by looking at results. That is why twenty silent minutes were fatal, and why easier filters never helped.</p>
+        <p data-e="37">I proposed splitting the product in two. Each dead end handed us a question: the first became defining intent, the second making the first ranking answer to it.</p>
       </section>
 
       <section id="product-solution" class="content-section">
         <div class="section-label">Product Solution</div>
-        <h2 class="section-title">Connecting the mapping and search agents in a continuous learning loop</h2>
-        <p>I designed the two agents to work as a feedback loop: the Mapping Agent structures recruiter intent, while the Search Agent learns from results to refine future matches — together forming a definition–discovery loop that gets more accurate with each hire.</p>
+        <h2 class="section-title" data-e="38">Connecting the mapping and search agents in a continuous learning loop</h2>
+        <p data-e="39">The two agents run as a loop: Mapping structures intent, Search learns from results to sharpen the next match.</p>
       </section>
 
       <section id="challenge1" class="content-section">
-        <div class="section-label">Design Challenge 01</div>
-        <h2 class="section-title">HMW use AI to help recruiters define and refine Ideal Candidate Profiles?</h2>
-        <p>Recruiters often struggle to articulate exactly what they're looking for — especially early in a role definition. I designed an AI agent that could take a brief, ambiguous job description and turn it into a structured, editable Ideal Candidate Profile (ICP).</p>
-        <p>My solution: recruiters input a rough job description, and the AI agent generates a refined ICP that can be reviewed, edited, and confirmed before the search begins. This shifted the burden of structure from the recruiter to the system.</p>
+        <div class="section-label">Mapping Agent</div>
+        <h2 class="section-title" data-e="41">How might we use AI to help recruiters define and refine Ideal Candidate Profiles?</h2>
+        <p data-e="42"><em>Answering the first dead end.</em> The agent takes a rough job description and returns a structured, editable profile.</p>
+        <p data-e="43">In early 2025 no single generated profile was worth trusting. Rather than chase accuracy we could not guarantee, the agent proposes three at once, reasoning visible as they draft. Recruiters pick a direction, revise it, and that version becomes the basis for search.</p>
         <div class="img-block"><img src="../assets/search-feedback00.png" alt="Ideal Candidate Profile exploration" /></div>
         <div class="img-block"><img src="../assets/ai-draft-user-edit.png" alt="AI draft with user edit" /></div>
-        <p class="img-caption">Final Design</p>
+        <p class="img-caption" data-e="49">Final Design</p>
         <div class="img-block">
           <video src="../assets/brix-challenge1-video2.webm" autoplay loop muted playsinline></video>
         </div>
       </section>
 
       <section id="challenge2" class="content-section">
-        <div class="section-label">Design Challenge 02</div>
-        <h2 class="section-title">HMW make the first candidate ranking more accurate and aligned with intent?</h2>
-        <p>Early search results were often misaligned with what recruiters actually wanted — not because the data was wrong, but because intent hadn't been fully captured upfront. A single pass wasn't enough.</p>
-        <p>My solution was a feedback mechanism that lets recruiters fine-tune results before a full search runs. By rating or adjusting the initial shortlist, the agent learns what "good" looks like for this specific role and recruiter — making the comprehensive search meaningfully more accurate.</p>
+        <div class="section-label">Search Agent</div>
+        <h2 class="section-title" data-e="50">How might we make the first candidate search result more accurate and aligned with intent?</h2>
+        <p data-e="51"><em>Answering the second dead end.</em> Early results missed not because the data was wrong but because intent was never fully captured.</p>
+        <p data-e="52">Recruiters tune the results before the full search runs. Rating an initial shortlist teaches the agent what good looks like for this role.</p>
         <div class="img-block"><img src="../assets/search-feedback01.png" alt="Search feedback mechanism" /></div>
-        <p class="img-caption">Final Design</p>
+        <p class="img-caption" data-e="55">Final Design</p>
         <div class="img-block">
           <video src="../assets/brix-challenge2-video3.webm" autoplay loop muted playsinline></video>
         </div>
       </section>
 
+      <section id="details" class="content-section">
+        <div class="section-label">Design Details</div>
+        <h2 class="section-title" data-e="56">The small decisions that make an agent feel trustworthy.</h2>
+        <p data-e="57">There were no patterns to borrow. Each came from watching recruiters not trust the thing. The industry has since landed close to all of them — which says the reasoning held, not that we were early.</p>
+
+        <!-- Left column scrolls, right column is pinned and swaps to match.
+             js/detail-scroll.js drives the swap; without it every panel stays
+             visible and the section reads as a plain stack. -->
+        <div class="detail-scroll">
+          <div class="detail-steps">
+            <div class="problem-item detail-step">
+              <div class="detail-step-inner">
+                <h3 class="problem-heading" data-e="59"><span class="problem-num">01</span> Showing the work, not just the answer</h3>
+                <p data-e="60">Doubt is not answered by a better result but by seeing how the result was reached. The agent streams its reasoning and keeps a version history.</p>
+              </div>
+            </div>
+
+            <div class="problem-item detail-step">
+              <div class="detail-step-inner">
+                <h3 class="problem-heading" data-e="61"><span class="problem-num">02</span> Two agents, one conversation</h3>
+                <p data-e="62">A first-run introduction names both agents; after that nobody chooses &mdash; the system reads intent and calls the one the request belongs to.</p>
+              </div>
+            </div>
+
+            <div class="problem-item detail-step">
+              <div class="detail-step-inner">
+                <h3 class="problem-heading" data-e="63"><span class="problem-num">03</span> Nothing was taken away</h3>
+                <p data-e="64">Recruiters who trusted the old way kept it: upload a job description, paste filter terms, or type requirements straight in. The agent is a faster path through the same door.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-visual">
+            <div class="detail-pin">
+              <div class="detail-panel" aria-hidden="true"><div class="img-block"></div></div>
+              <div class="detail-panel" aria-hidden="true"><div class="img-block"></div></div>
+              <div class="detail-panel" aria-hidden="true"><div class="img-block"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="system" class="content-section">
         <div class="section-label">Design System</div>
-        <h2 class="section-title">A scalable conversational design system for agent-driven interfaces.</h2>
-        <p>I needed to define how AI agents communicate, act, and deliver results — across chat primitives, structured outputs, and feedback surfaces. Rather than designing one-off components, we built a system of reusable patterns that could scale across different agent types within the product.</p>
+        <h2 class="section-title" data-e="65">A scalable conversational design system for agent-driven interfaces.</h2>
+        <p data-e="66">As Brix AI took on more responsibilities in the recruiting workflow, we needed a scalable design system to unify the interface patterns, ensuring consistency in user experience and efficiency in development.</p>
+        <p data-e="67">The system defines how the agent communicates, acts, and delivers results — from chat primitives to structured task outputs.</p>
         <div class="scroll-gallery">
           <div class="scroll-gallery-item"><img src="../assets/ds1.png" alt="Design system — 1" /></div>
           <div class="scroll-gallery-item"><img src="../assets/ds2.png" alt="Design system — 2" /></div>
@@ -205,9 +297,9 @@
 
       <section id="next" class="content-section">
         <div class="section-label">Next Steps</div>
-        <h2 class="section-title">Deeper integration and zero-loss data migration.</h2>
-        <p>The immediate next steps focus on integrating Brix with the broader product suite — including standalone ATS and EMS design — with careful attention to data migration that preserves existing recruiter workflows and history.</p>
-        <p>Longer term, the feedback loop system opens up opportunities to personalize agent behavior per organization, learning from collective hiring patterns over time.</p>
+        <h2 class="section-title" data-e="68">Deeper integration and zero-loss data migration.</h2>
+        <p data-e="69">Integrating Brix with the wider suite &mdash; standalone ATS and EMS &mdash; without losing the workflows and history recruiters depend on.</p>
+        <p data-e="70">Longer term the feedback loop can personalise agent behaviour per organisation, learning from how a company actually hires.</p>
         <div class="img-block"><img src="../assets/brix-next-step.png" alt="Brix next steps" /></div>
       </section>
 
@@ -215,25 +307,25 @@
         <div class="overview-layout">
           <div class="overview-main">
             <div class="section-label">Takeaways</div>
-            <h2 class="section-title">Thoughts After Launch</h2>
+            <h2 class="section-title" data-e="71">Thoughts After Launch</h2>
             <div class="problem-list problem-list--stacked">
               <div class="problem-item">
-                <h3 class="problem-heading"><span class="problem-num">01</span> Balancing AI Control and User Control</h3>
-                <p>Effective AI support is not about making decisions for users and build user trust for automation tasks.</p>
+                <h3 class="problem-heading" data-e="72"><span class="problem-num">01</span>&nbsp;Put Human Intervention Where It Has the Highest Leverage</h3>
+                <p data-e="73">The argument about automation is usually about quantity &mdash; how much to hand over. The useful question is where. Picking one draft of three takes seconds and decides an entire search.</p>
               </div>
               <div class="problem-item">
-                <h3 class="problem-heading"><span class="problem-num">02</span> Designing for Cognitive Ease</h3>
-                <p>By presenting information in scannable, familiar formats and explaining relevance clearly, the system made recruiters feel more comfortable, confident, and in control while evaluating candidates.</p>
+                <h3 class="problem-heading" data-e="74"><span class="problem-num">02</span> Designing for Cognitive Ease</h3>
+                <p data-e="75">Familiar, scannable formats with the relevance spelled out did more for confidence than a better answer would have.</p>
               </div>
               <div class="problem-item">
-                <h3 class="problem-heading"><span class="problem-num">03</span> Systems Need Clear Decision Boundaries</h3>
-                <p>Explicit decision boundaries reduced uncertainty, improved trust, and made the overall workflow more scalable and understandable.</p>
+                <h3 class="problem-heading" data-e="76"><span class="problem-num">03</span> Systems Need Clear Decision Boundaries</h3>
+                <p data-e="77">Naming what the agent would not do removed more doubt than raising its accuracy did, and made the workflow easier to scale.</p>
               </div>
             </div>
           </div>
           <aside class="overview-note">
-            <div class="overview-note-label">Looking back</div>
-            <p>At the time, agentic transformation was often equated with conversational interaction. In practice, users preferred natural language for some tasks and direct controls for others. The goal was not to make everything conversational, but to place AI where it genuinely improved the workflow. It was rewarding to later see similar hybrid patterns emerge across agent products.</p>
+            <div class="overview-note-label" data-e="78">Looking back</div>
+            <p data-e="79">Agentic transformation was widely read as &ldquo;make it conversational.&rdquo; People wanted natural language for some tasks and direct controls for others. The goal was never to converse.</p>
           </aside>
         </div>
       </section>
@@ -251,12 +343,16 @@
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
-      <a href="../index.html#work">Work</a>
+      <a href="../index.html">Work</a>
       <a href="../builds.html">Builds</a>
       <a href="../about.html">About</a>
     </nav>
   </footer>
 
   <script src="project.js"></script>
+  <script src="../js/edit-prose.js" defer></script>
+  <script src="../js/reveal.js" defer></script>
+  <script src="../js/count-up.js" defer></script>
+  <script src="../js/detail-scroll.js" defer></script>
 </body>
 </html>

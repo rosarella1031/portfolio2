@@ -10,17 +10,29 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+  <script>
+    /* The half-and-half layout is the default. ?plain switches it off for
+       side-by-side comparison; disabling the sheet leaves project.css alone,
+       so the fallback is exactly the previous design. */
+    if (new URLSearchParams(location.search).has('plain')) {
+      document.getElementById('split-sheet').disabled = true;
+    }
+  </script>
 </head>
 <body>
 
   <div class="page-body">
 
     <aside class="sidebar">
-      <a href="../index.html#work" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <a href="../index.html" class="back-link" aria-label="Back to projects">
+
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+
           <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
         </svg>
-        Back to Projects
+
       </a>
       <div class="sidebar-meta">
         <div class="sidebar-label">CASE STUDY</div>
@@ -70,64 +82,78 @@
         <div class="overview-layout">
           <div class="overview-main">
             <div class="section-label">Overview</div>
-            <h2 class="section-title">Building a footwear system that learns from every user</h2>
-            <p>FitX is a U.S.-based technology company reimagining footwear as an intelligent product system — one that learns from each person over time.</p>
-            <p>Each pair begins with the user's 3D foot geometry, movement, and fit preferences. As the shoes are worn, feedback on comfort, performance, and fit flows back into the system, helping future pairs become more personalized and accurate. Rather than improving only the product itself, FitX is building a continuous learning loop between human experience and product design.</p>
-            <p>As the Founding Product Designer, I lead the end-to-end design of this experience across digital, brand, and physical touchpoints.</p>
+            <h2 class="section-title" data-e="1">Building a footwear system that learns from every user</h2>
+            <p data-e="2">FitX is a U.S.-based technology company reimagining footwear as an intelligent product system — one that learns from each person over time.</p>
+            <p data-e="3">Each pair begins with the user's 3D foot geometry, movement, and fit preferences. As the shoes are worn, feedback on comfort, performance, and fit flows back into the system, helping future pairs become more personalized and accurate. Rather than improving only the product itself, FitX is building a continuous learning loop between human experience and product design.</p>
+            <p data-e="4">As the Founding Product Designer, I lead the end-to-end design of this experience across digital, brand, and physical touchpoints.</p>
+            <div class="meta-row">
+              <div>
+                <div class="meta-k">Role</div>
+                <div class="meta-v" data-e="27">Founding Product Designer</div>
+              </div>
+              <div>
+                <div class="meta-k">Time</div>
+                <div class="meta-v" data-e="28">&mdash;</div>
+              </div>
+              <div>
+                <div class="meta-k">Team</div>
+                <div class="meta-v" data-e="29">&mdash;</div>
+              </div>
+            </div>
           </div>
           <aside class="overview-note">
-            <div class="overview-note-label">Note</div>
-            <p>FitX is currently in development, and the upcoming product launch is covered by NDA. I'm unable to publicly share detailed interface designs, internal workflows, or launch information at this time.</p>
+            <div class="overview-note-label" data-e="5">Note</div>
+            <p data-e="6">FitX is currently in development, and the upcoming product launch is covered by NDA. I'm unable to publicly share detailed interface designs, internal workflows, or launch information at this time.</p>
           </aside>
         </div>
       </section>
 
       <section id="process" class="content-section">
         <div class="section-label">Process</div>
-        <h2 class="section-title">Designing a learning system that improves with every interaction</h2>
-        <p>I designed the core journey as a continuous learning loop—from 3D foot scanning and ordering to wear feedback and reordering. Each stage captures new signals about the user's feet, preferences, and real-world experience, helping the system refine future fit recommendations over time.</p>
-        <p>My work spans the mobile and web product, scan guidance and recovery states, structured feedback models, and the touchpoints that keep the learning loop active after purchase—including packaging and an NFC-enabled unboxing experience that brings users back into the product after delivery.</p>
+        <h2 class="section-title" data-e="7">Designing a learning system that improves with every interaction</h2>
+        <p data-e="8">I designed the core journey as a continuous learning loop—from 3D foot scanning and ordering to wear feedback and reordering. Each stage captures new signals about the user's feet, preferences, and real-world experience, helping the system refine future fit recommendations over time.</p>
+        <p data-e="9">My work spans the mobile and web product, scan guidance and recovery states, structured feedback models, and the touchpoints that keep the learning loop active after purchase—including packaging and an NFC-enabled unboxing experience that brings users back into the product after delivery.</p>
       </section>
 
       <section id="impact" class="content-section">
         <div class="section-label">Impact</div>
-        <h2 class="section-title">Improving scan completion, retention, and usable fit data</h2>
-        <p>Early pilot testing achieved approximately 90% first-time scan completion and 90% participant retention across follow-up sessions.</p>
-        <p>Through iterative testing, I refined scan guidance and fit-feedback interactions, increasing usable scan and fit data by 18% and creating a stronger foundation for more accurate future recommendations.</p>
+        <h2 class="section-title" data-e="10">Improving scan completion, retention, and usable fit data</h2>
+        <p data-e="11">Early pilot testing achieved approximately 90% first-time scan completion and 90% participant retention across follow-up sessions.</p>
+        <p data-e="12">Through iterative testing, I refined scan guidance and fit-feedback interactions, increasing usable scan and fit data by 18% and creating a stronger foundation for more accurate future recommendations.</p>
         <div class="stats-row">
           <div class="stat">
-            <div class="stat-number">~90%</div>
-            <div class="stat-label">First-time scan completion</div>
+            <div class="stat-number" data-e="13">~90%</div>
+            <div class="stat-label" data-e="14">First-time scan completion</div>
           </div>
           <div class="stat">
-            <div class="stat-number">~90%</div>
-            <div class="stat-label">Participant retention</div>
+            <div class="stat-number" data-e="15">~90%</div>
+            <div class="stat-label" data-e="16">Participant retention</div>
           </div>
           <div class="stat">
-            <div class="stat-number">18%</div>
-            <div class="stat-label">Increase in usable fit data</div>
+            <div class="stat-number" data-e="17">18%</div>
+            <div class="stat-label" data-e="18">Increase in usable fit data</div>
           </div>
         </div>
       </section>
 
       <section id="system" class="content-section">
         <div class="section-label">Design System</div>
-        <h2 class="section-title">Building a scalable design system across mobile and web</h2>
-        <p>I built FitX's design system across mobile and web, including variables, tokens, responsive patterns, reusable components, interaction states, and usage guidelines. The system was designed not only to maintain consistency, but also to help a small team move quickly as the product continues to evolve.</p>
-        <p>Design systems are an area I'm especially interested in. I actively explore how they should be built and maintained across different product types, company stages, team sizes, and levels of maturity. I'm also interested in how design systems can integrate with AI-assisted workflows — helping teams generate and evaluate work faster while preserving product logic, accessibility, consistency, and implementation quality.</p>
-        <p>I regularly exchange ideas with other designers about system architecture, governance, adoption, and the evolving relationship between design systems, engineering, and AI.</p>
+        <h2 class="section-title" data-e="19">Building a scalable design system across mobile and web</h2>
+        <p data-e="20">I built FitX's design system across mobile and web, including variables, tokens, responsive patterns, reusable components, interaction states, and usage guidelines. The system was designed not only to maintain consistency, but also to help a small team move quickly as the product continues to evolve.</p>
+        <p data-e="21">Design systems are an area I'm especially interested in. I actively explore how they should be built and maintained across different product types, company stages, team sizes, and levels of maturity. I'm also interested in how design systems can integrate with AI-assisted workflows — helping teams generate and evaluate work faster while preserving product logic, accessibility, consistency, and implementation quality.</p>
+        <p data-e="22">I regularly exchange ideas with other designers about system architecture, governance, adoption, and the evolving relationship between design systems, engineering, and AI.</p>
       </section>
 
       <section id="culture" class="content-section">
         <div class="section-label">Design Culture</div>
-        <h2 class="section-title">Building a team where design is genuinely valued</h2>
-        <p>I also care a lot about working with strong product thinkers and being part of a team where design is genuinely valued. I've actively helped build design culture through shared standards, systems, and cross-functional ways of working, helping shape that culture from the ground up has been one of the most meaningful parts of this project.</p>
+        <h2 class="section-title" data-e="23">Building a team where design is genuinely valued</h2>
+        <p data-e="24">I also care a lot about working with strong product thinkers and being part of a team where design is genuinely valued. I've actively helped build design culture through shared standards, systems, and cross-functional ways of working, helping shape that culture from the ground up has been one of the most meaningful parts of this project.</p>
       </section>
 
       <section id="next" class="content-section">
         <div class="section-label">Next Steps</div>
-        <h2 class="section-title">Sharing more about the work</h2>
-        <p>Please reach out — I'd be happy to share more about my process and anything I'm able to share. ^ ^</p>
+        <h2 class="section-title" data-e="25">Sharing more about the work</h2>
+        <p data-e="26">Please reach out — I'd be happy to share more about my process and anything I'm able to share. ^ ^</p>
       </section>
 
       <div class="prev-project">
@@ -141,12 +167,15 @@
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
-      <a href="../index.html#work">Work</a>
+      <a href="../index.html">Work</a>
       <a href="../builds.html">Builds</a>
       <a href="../about.html">About</a>
     </nav>
   </footer>
 
   <script src="project.js"></script>
+  <script src="../js/edit-prose.js" defer></script>
+  <script src="../js/reveal.js" defer></script>
+  <script src="../js/count-up.js" defer></script>
 </body>
 </html>

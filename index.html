@@ -3,209 +3,318 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xuefei Wang</title>
+  <title>Work — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
   <style>
-    /* Hero */
-    .hero {
+    :root {
+      --tab-h: 40px;
+      --tab-w: 15rem;
+      --gap:   clamp(2rem, 5vh, 3.5rem);   /* dot grid left showing above the deck */
+      --pad-x: clamp(1.5rem, 3vw, 3rem);
+      --left: calc(var(--rail-w) + var(--pad-x));
+    }
+    /* the dot ground the cards ride on */
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, rgba(26,24,23,.16) 1px, transparent 1px);
+      background-size: 22px 22px;
+      font-family: var(--ff-body);
+      margin: 0;
+    }
+
+    /* ── the deck ─────────────────────────────────────────────────────
+       Each band is sticky at the top, so the next one rides up and covers
+       the one before it. Nothing is animated: the stacking is the layout. */
+    .stack {
       position: relative;
-      height: 100vh;
+      z-index: 1;              /* the deck rides over the outro below it */
+      /* the first card starts where every later card pins, so its own tab has
+         somewhere to sit and the dot ground shows from the very first frame */
+      padding-top: calc(var(--gap) + var(--tab-h));
+    }
+    .band {
+      /* Every card rests on the same line, and the strip above it is a place
+         no card's box ever reaches — which is why a parked tab is never
+         painted over, without needing any height trickery. */
+      --top: calc(var(--gap) + var(--tab-h));
+      position: sticky;
+      top: var(--top);
+      min-height: calc(100vh - var(--top));
+      background: var(--band);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* The tab is part of its own card, hanging above the card's top edge. */
+    /* A real element, not padding: the sticky constraint is the container's
+       content box, so padding-bottom does not buy the last card any pinned
+       time — every card unsticks together the moment the content ends. */
+    .stack-run-out { height: 45vh; }
+
+    .band-tab {
+      position: absolute;
+      /* One tab tall, sitting directly on its own card. Tabs separate by
+         moving sideways, never by growing. */
+      top: calc(-1 * var(--tab-h));
+      height: var(--tab-h);
+      left: calc(var(--rail-w) + var(--i) * var(--tab-w));
+      width: var(--tab-w);
+      background: var(--band);
+      border: 0;
+      cursor: pointer;
+      display: block;
+      text-align: left;
+      padding-left: var(--pad-x);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      /* a one-tab-tall line box, so every label sits on the same row no
+         matter how tall its tab has grown */
+      line-height: var(--tab-h);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      /* the angled right edge is the whole signature of the shape */
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
+    }
+
+    /* Same strip, same shape, mirrored — it belongs to the first card, so it
+       stays put for as long as that card is pinned. */
+    .see-all {
+      position: absolute;
+      top: calc(-1 * var(--tab-h));
+      right: 0;
+      height: var(--tab-h);
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: repeat(24, 1fr);
-      grid-template-rows: repeat(14, 1fr);
-      z-index: 0;
-      mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-    }
-
-    .hero-grid-cell {
-      position: relative;
-      border-right: 1px solid rgba(33, 33, 33, 0.06);
-      border-bottom: 1px solid rgba(33, 33, 33, 0.06);
-    }
-
-    .hero-grid-cell::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--cell-color, transparent);
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-
-    .hero-grid-cell.active::before {
-      opacity: 0.55;
-    }
-
-    .hero-grid-cell-hex {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      margin-top: 4px;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-family: var(--ff-label);
-      font-size: var(--hex-font-size, 0.6rem);
-      letter-spacing: 0;
+      padding: 0 var(--pad-x) 0 2.25rem;
+      /* not a project colour — one step down from the dot ground, so it reads
+         as a different kind of thing from the four card tabs */
+      background: var(--bg-card);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--text);
-      opacity: 0;
-      transition: opacity 0.6s ease;
-      pointer-events: none;
-      z-index: 1;
+      clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+      transition: background .15s cubic-bezier(.33,1,.68,1);
     }
+    .see-all:hover { background: #E4E0D8; }
 
-    .hero-grid-cell.active .hero-grid-cell-hex {
-      opacity: 1;
-    }
-
-    .hero-content {
+    /* ── hero ─────────────────────────────────────────────────────────
+       Copied from index.html unchanged — same markup, same type, same
+       centring. Only the dot ground differs: here it comes from body. */
+    .hero {
       position: relative;
-      z-index: 1;
+      /* short by exactly the strip, so the first card's tab is the only thing
+         showing at the fold — the card body starts on the viewport edge */
+      height: calc(100vh - var(--gap) - var(--tab-h));
+      overflow: hidden;
+    }
+    .hero-content {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 1.75rem;
-      max-width: 100%;
-      padding: 0 1.5rem;
+      padding-left: var(--left);
+      padding-right: var(--pad-x);
     }
-
-    .hero-ascii {
-      font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: clamp(0.6rem, 3.2vw, 0.85rem);
-      line-height: 1.15;
-      color: var(--text);
-      white-space: pre;
-      margin: 0;
-      position: relative;
-      z-index: 0;
-    }
-
-    /* occludes the grid only under each window's own rectangle, not the whole pre's bounding box */
-    .hero-ascii-mask {
-      position: absolute;
-      background: var(--bg);
-      z-index: -1;
-    }
-
-    /* isolates the swappable character for future click-to-change interactivity */
-    .hero-ascii .hero-duck {
-      cursor: pointer;
-    }
-
     .hero-intro {
-      max-width: 420px;
+      max-width: 34rem;
       text-align: center;
       font-family: var(--ff-body);
       font-size: 1.05rem;
       line-height: 1.6;
       color: var(--text-2);
     }
-
-    .hero-intro p + p {
-      margin-top: 0.75rem;
-    }
-
+    .hero-intro p + p { margin-top: 0.75rem; }
     .hero-intro p:first-child {
       font-family: 'EB Garamond', serif;
       font-size: 1.75rem;
       color: var(--text);
     }
+    .hero-intro-highlight { font-weight: 500; color: var(--text); }
 
-    .hero-intro-highlight {
-      font-weight: 500;
+    /* ── head row ─────────────────────────────────────────────────────── */
+    .band-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 2rem;
+      padding: clamp(1.75rem, 4vh, 3rem) var(--pad-x) clamp(1.25rem, 3vh, 2rem) var(--left);
+      border-bottom: 1px dashed rgba(26, 24, 23, 0.28);
+    }
+    .band-head h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.9rem, 4vw, 3.1rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
       color: var(--text);
+      margin: 0;
+    }
+    .band-meta {
+      text-align: right;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .band-meta .tags {
+      margin-top: 0.75rem;
+      display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .band-meta .tags span {
+      background: rgba(26, 24, 23, 0.07);
+      padding: 0.25rem 0.5rem;
+      letter-spacing: 0.06em;
     }
 
-    /* Work section */
-    #work {
-      padding-top: 5rem;
-      padding-bottom: 6rem;
+    /* ── body row ─────────────────────────────────────────────────────── */
+    .band-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+      padding: clamp(1.25rem, 3vh, 2rem) var(--pad-x) clamp(1.5rem, 4vh, 2.5rem) var(--left);
+      align-items: start;
+    }
+    .band-copy {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      line-height: 1.85;
+      text-transform: uppercase;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+    .band-copy a {
+      display: inline-block;
+      margin-top: 1.75rem;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 2px;
+      transition: opacity 0.15s cubic-bezier(.33,1,.68,1);
+    }
+    .band-copy a:hover { opacity: 0.55; }
+
+    /* No fixed ratio and no cover: the media keeps its own proportions and
+       the box takes their shape. Height is capped instead of cropped, so a
+       4:3 preview and a 1.6:1 video both fit the card without losing edges. */
+    .shot { display: flex; align-items: center; justify-content: center; }
+    .shot img, .shot video {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 56vh;
+    }
+
+    .band--wip .band-copy a { pointer-events: none; opacity: 0.4; }
+
+    /* The outro is pulled up under the end of the deck and runs a screen
+       longer than the panel inside it. That extra screen is the travel: the
+       ground is already pinned when the last card starts moving, so the card
+       slides off it instead of towing it along. */
+    .outro {
+      position: relative;
+      z-index: 0;
+      margin-top: -100vh;
+      height: 200vh;
+    }
+    .tail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
+      color: var(--text);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 4rem var(--pad-x) 4rem var(--left);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .tail h2 {
+      font-family: 'EB Garamond', serif; font-weight: 400; text-transform: none;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.008em; margin: 0 0 1rem;
+    }
+
+    /* Same strip, same shape, mirrored — it belongs to the first card, so it
+       stays put for as long as that card is pinned. */
+    .see-all {
+      position: absolute;
+      top: calc(-1 * var(--tab-h));
+      right: 0;
+      height: var(--tab-h);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--pad-x) 0 2.25rem;
+      /* not a project colour — one step down from the dot ground, so it reads
+         as a different kind of thing from the four card tabs */
+      background: var(--bg-card);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text);
+      clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+      transition: background .15s cubic-bezier(.33,1,.68,1);
+    }
+    .see-all:hover { background: #E4E0D8; }
+
+    @media (max-width: 900px) {
+      /* The deck still stacks — the change is that tabs no longer step
+         sideways. Every tab sits at the same left edge, so the arriving card
+         and its tab cover the one before them completely, which is the only
+         thing that works when there is no room for four tabs in a row. */
+      :root { --left: var(--pad-x); }
+
+      .band-tab {
+        left: var(--pad-x);
+        width: auto;
+        min-width: 11rem;
+        padding-right: 2rem;
+      }
+
+      .band-head {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+      }
+      .band-head h2 { font-size: 1.6rem; }
+      .band-meta { text-align: left; }
+      .band-meta .tags { justify-content: flex-start; }
+
+      .band-body {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding-top: 1.25rem;
+      }
+      .shot { justify-content: flex-start; }
+      .shot img, .shot video { max-height: 34vh; }
+
+      /* one card, one tab, one job — the outro already links to builds */
+      .see-all { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .band-head h2 { font-size: 1.35rem; }
+      .band-copy { font-size: 0.7rem; line-height: 1.7; }
+      .shot img, .shot video { max-height: 30vh; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <a href="#hero" class="logo">
-      <span class="logo-name">XUEFEI WANG</span>
-      <span class="logo-title">PRODUCT DESIGNER</span>
-    </a>
-
-    <nav>
-      <a href="#work">Work</a>
-      <a href="builds.html">Builds</a>
-      <a href="about.html">About</a>
-    </nav>
-
-    <div class="social">
-      <a href="https://github.com/rosarella1031" target="_blank" aria-label="GitHub">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9 18c-4.51 2-5-2-7-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" aria-label="LinkedIn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
-        </svg>
-      </a>
-      <a href="mailto:xuefeiw1031@gmail.com" aria-label="Email">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-      <a href="https://drive.google.com/file/d/1SPDmVJ7GanId5eyv_fWDuLKpN5A3RiRs/view?usp=drive_link" target="_blank" aria-label="Resume">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="8" y1="17" x2="16" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </a>
-    </div>
-  </header>
-
-  <!-- Hero: full screen, interactive element goes here -->
-  <section class="hero" id="hero">
-    <div class="hero-grid" id="heroGrid"></div>
+  <section class="hero">
     <div class="hero-content">
-      <pre class="hero-ascii" id="heroAscii"><div class="hero-ascii-mask" style="left:0; top:0; width:30ch; height:11.5em;"></div><div class="hero-ascii-mask" style="left:20ch; top:9.2em; width:30ch; height:11.5em;"></div> ___________________________
-|...                       :|
-|---------------------------|/
-|@faye         .---------.  |/
-|----------    |  __     |  |/
-|==========    |<span class="hero-duck">&lt;(" \__</span>  |  |/
-|==========    |  \      |  |/
-|==========    .---------.  |/
-|___________________ ___________________________
-////////////////////|...                       :|
-                    |---------------------------|/
-                    |@design                    |/
-                    |----------     _________   |/
-                    |==========     _________   |/
-                    |==========    (_________)  |/
-                    |==========                 |/
-                    |___________________________|/
-                    //////////////////////////////</pre>
       <div class="hero-intro">
         <p>Hi, I'm Faye!</p>
         <p>I'm a product designer with 3 years of experience, focused on <span class="hero-intro-highlight">AI experiences</span> and <span class="hero-intro-highlight">complex systems</span>.</p>
@@ -213,174 +322,121 @@
     </div>
   </section>
 
-  <!-- Work section -->
-  <main id="work">
-    <div class="projects-label">Selected Projects</div>
+  <div class="stack">
 
-    <div class="projects-grid">
-
-      <a href="work/brix.html" class="project-card fade-in">
-        <div class="project-inner">
-          <div class="project-visual">
-            <img src="assets/brixpreview.png" alt="Brix AI Agentic Talent Search" />
-          </div>
-          <div class="project-info">
-            <div class="project-name-row">
-              <h3 class="project-name">Brix AI Agentic Talent Search</h3>
-              <div class="project-name-tags">
-                <span>B2B SaaS</span>
-                <span>AI Agent</span>
-                <span>Design System</span>
-              </div>
-            </div>
-            <p class="project-desc">Transforming traditional talent search to an agent-driven workflow that helps recruiters find ideal candidates.</p>
-          </div>
-        </div>
-      </a>
-
-      <a href="work/opusclip.html" class="project-card fade-in">
-        <div class="project-inner">
-          <div class="project-visual">
-            <img src="assets/opuspreview.png" alt="OpusClip AI Video Clipping Mobile MVP" />
-          </div>
-          <div class="project-info">
-            <div class="project-name-row">
-              <h3 class="project-name">OpusClip AI Video Clipping Mobile MVP</h3>
-              <div class="project-name-tags">
-                <span>Mobile</span>
-                <span>Creator Tool</span>
-              </div>
-            </div>
-            <p class="project-desc">Mobile MVP design for AI-powered video editing — bringing OpusClip's viral clip generation to iOS for the first time.</p>
-          </div>
-        </div>
-      </a>
-
-      <a href="work/fitx.html" class="project-card fade-in">
-        <div class="project-inner">
-          <div class="project-visual">
-            <img src="assets/fitxpreview.png" alt="FitX Lab Fit Intelligence 0->1" />
-          </div>
-          <div class="project-info">
-            <div class="project-name-row">
-              <h3 class="project-name">FitX Lab Fit Intelligence 0->1</h3>
-              <div class="project-name-tags">
-                <span>Consumer Hardware</span>
-                <span>AI</span>
-                <span>Design System</span>
-              </div>
-            </div>
-            <p class="project-desc">Building a footwear system that learns from every user — connecting 3D scanning, fit intelligence, and personalization across mobile, web, and physical touchpoints.</p>
-          </div>
-        </div>
-      </a>
-
-      <div class="project-card project-card--wip fade-in">
-        <div class="project-inner">
-          <div class="project-visual">
-            <img src="assets/mokapreview.png" alt="Moka HR" />
-            <div class="project-wip-overlay">Work in Progress</div>
-          </div>
-          <div class="project-info">
-            <div class="project-name-row">
-              <h3 class="project-name">Moka HR Interview Scheduling &amp; Coordination</h3>
-              <div class="project-name-tags">
-                <span>Enterprise SaaS</span>
-              </div>
-            </div>
-            <p class="project-desc">Streamlined recruiting operations by designing intelligent scheduling and coordination experiences for recruiters, hiring managers, and candidates.</p>
-          </div>
+    <section class="band" style="--i:0; --band:#EFEDF9">
+      <button class="band-tab">Featured work 01</button>
+      <a class="see-all" href="builds.html">See builds &rarr;</a>
+      <div class="band-head">
+        <h2>Brix AI Agentic Talent Search</h2>
+        <div class="band-meta">
+          2025<br />AI Agent
+          <div class="tags"><span>B2B SaaS</span><span>Design System</span></div>
         </div>
       </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Turning rule-based candidate search into two agents — one that helps recruiters define what they are looking for, one that searches against it and learns from their feedback.
+          <br /><a href="work/brix.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><video src="assets/brix-challenge1-video2.webm" poster="assets/brix-challenge1-poster.jpg" autoplay loop muted playsinline></video></div>
+      </div>
+    </section>
 
-    </div>
+    <section class="band" style="--i:1; --band:#EDE6E5">
+      <button class="band-tab">Featured work 02</button>
+      <div class="band-head">
+        <h2>OpusClip AI Video Clipping</h2>
+        <div class="band-meta">
+          2024<br />Mobile MVP
+          <div class="tags"><span>Mobile</span><span>Creator Tool</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Bringing an AI clipping tool to mobile, where the editing model that worked on desktop no longer fits the screen.
+          <br /><a href="work/opusclip.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/opuspreview.png" alt="" /></div>
+      </div>
+    </section>
 
-    <div class="see-more">
-      <a href="builds.html">See more work →</a>
-    </div>
-  </main>
+    <section class="band" style="--i:2; --band:#E9E1E5">
+      <button class="band-tab">Featured work 03</button>
+      <div class="band-head">
+        <h2>FitX Lab Fit Intelligence</h2>
+        <div class="band-meta">
+          2024<br />0 &rarr; 1
+          <div class="tags"><span>Consumer Hardware</span><span>AI</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          A body-scanning fit system built from scratch — from hardware capture through to the recommendation itself.
+          <br /><a href="work/fitx.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/fitxpreview.png" alt="" /></div>
+      </div>
+    </section>
 
-  <footer>
-    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
-    <nav class="footer-nav">
-      <a href="#work">Work</a>
-      <a href="builds.html">Builds</a>
-      <a href="about.html">About</a>
-    </nav>
-  </footer>
+    <section class="band band--wip" style="--i:3; --band:#E3F1EE">
+      <button class="band-tab">Featured work 04</button>
+      <div class="band-head">
+        <h2>Moka HR Interview Scheduling</h2>
+        <div class="band-meta">
+          In progress<br />Enterprise
+          <div class="tags"><span>Enterprise SaaS</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Scheduling and coordination for interview loops that span several teams and time zones.
+          <br /><a href="work/moka.html">In progress &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/mokapreview.png" alt="" /></div>
+      </div>
+    </section>
 
-  <script src="js/main.js"></script>
+    <div class="stack-run-out"></div>
+
+  </div>
+
+  <div class="outro">
+  <div class="tail">
+    <h2>Things I build (not just) for fun</h2>
+    <a href="builds.html" style="border-bottom:1px solid currentColor; padding-bottom:2px; align-self:flex-start">Builds &rarr;</a>
+  </div>
+  </div>
+
   <script>
-    // Hero grid: hover a cell to fill it with a color + show its hex code
-    (function () {
-      const grid = document.getElementById('heroGrid');
-      if (!grid) return;
+  (function () {
+    const bands = [...document.querySelectorAll('.band')];
 
-      const cols = 24;
-      const palette = [
-        '#FF6B6B', '#FF922B', '#FFD43B', '#94D82D',
-        '#2FBF71', '#20C997', '#22B8CF', '#4DABF7',
-        '#339AF0', '#5C7CFA', '#845EF7', '#CC5DE8',
-        '#F06595', '#FF8787', '#FCC419', '#69DB7C'
-      ];
+    // Where the card would sit if it were not pinned. offsetTop is no help —
+    // Chrome folds the sticky shift into it, so a pinned card reports the
+    // current scroll position instead of its place in the document. Dropping
+    // sticky for the length of one measurement is the only exact way.
+    const naturalTop = el => {
+      const prev = el.style.position;
+      el.style.position = 'static';
+      const y = el.getBoundingClientRect().top + scrollY;
+      el.style.position = prev;
+      return y;
+    };
 
-      function makeCell() {
-        const cell = document.createElement('div');
-        cell.className = 'hero-grid-cell';
-
-        const hex = document.createElement('span');
-        hex.className = 'hero-grid-cell-hex';
-        cell.appendChild(hex);
-
-        let touchHideTimer;
-        const reveal = () => {
-          const color = palette[Math.floor(Math.random() * palette.length)];
-          cell.style.setProperty('--cell-color', color);
-          hex.textContent = color;
-          cell.classList.add('active');
-        };
-
-        cell.addEventListener('mouseenter', reveal);
-        cell.addEventListener('mouseleave', () => {
-          cell.classList.remove('active');
-        });
-
-        // touch devices have no hover — tap to reveal, auto-hide after a beat
-        cell.addEventListener('touchstart', () => {
-          reveal();
-          clearTimeout(touchHideTimer);
-          touchHideTimer = setTimeout(() => cell.classList.remove('active'), 1800);
-        }, { passive: true });
-
-        return cell;
-      }
-
-      function buildGrid() {
-        const cellSize = grid.clientWidth / cols;
-        const rows = Math.max(1, Math.round(grid.clientHeight / cellSize));
-
-        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-        // size the hex label text to span the full cell width (7-char "#RRGGBB" string)
-        grid.style.setProperty('--hex-font-size', Math.max(6, Math.min(11, cellSize / 4.2)) + 'px');
-
-        grid.innerHTML = '';
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i < cols * rows; i++) {
-          fragment.appendChild(makeCell());
-        }
-        grid.appendChild(fragment);
-      }
-
-      buildGrid();
-
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(buildGrid, 150);
+    // Scroll to where this card is the last one pinned — everything stacked
+    // on top of it slides back off as you travel there.
+    bands.forEach(b => {
+      const tab = b.querySelector('.band-tab');
+      if (!tab) return;
+      tab.addEventListener('click', () => {
+        const pin = parseFloat(getComputedStyle(b).top) || 0;
+        scrollTo({ top: Math.max(0, naturalTop(b) - pin), behavior: 'smooth' });
       });
-    })();
+    });
+  })();
   </script>
 
+  <script src="js/rail.js"></script>
 </body>
 </html>

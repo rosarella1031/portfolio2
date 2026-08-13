@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work — 横滑卡片</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
+  <style>
+    /* index.html keeps --gut on .slide rather than :root, so it is not
+       inherited here — same value, declared where this page can see it */
+    :root { --gut: clamp(1.5rem, 3vw, 3rem); }
+
+    /* ── page ─────────────────────────────────────────────────────────── */
+    body {
+      background: var(--bg);
+      font-family: var(--ff-body);
+      margin: 0;
+      overflow-x: hidden;
+    }
+    .head {
+      padding: clamp(3.5rem, 9vh, 6rem) var(--gut) clamp(2rem, 5vh, 3rem)
+               calc(var(--rail-w) + var(--gut));
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .head h1 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+      letter-spacing: -0.008em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--text);
+    }
+    .head .count {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+      margin-left: auto;
+    }
+
+    /* ── the rail of cards ────────────────────────────────────────────────
+       Runs off the right edge rather than stopping at a margin: a card cut by
+       the viewport is the only honest signal that there is more to the right,
+       and it costs no arrow, no dots, no instruction text. */
+    .slider {
+      display: flex;
+      gap: clamp(1.25rem, 2.2vw, 2rem);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding: 0 var(--gut) 2.5rem calc(var(--rail-w) + var(--gut));
+      /* Without this, snapping aligns the first card to the scrollport edge
+         and swallows the left padding, so the row stops lining up with the
+         heading above it. */
+      scroll-padding-left: calc(var(--rail-w) + var(--gut));
+      scrollbar-width: none;
+      cursor: grab;
+    }
+    .slider::-webkit-scrollbar { display: none; }
+    .slider.dragging { cursor: grabbing; }
+
+    .card {
+      flex: 0 0 clamp(17rem, 27vw, 25rem);
+      scroll-snap-align: start;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    /* Square, sharp-cornered. The 1:1 crop and the 0 radius are doing most of
+       the work here — it is what stops a row of screenshots reading as a
+       slide deck. */
+    .tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: var(--tile-bg, #EDEAE4);
+      border-radius: 0;
+      transition: filter 0.15s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .tile img,
+    .tile video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    /* the alternative: keep the whole composition, let the ground show */
+    body[data-fit="contain"] .tile img,
+    body[data-fit="contain"] .tile video {
+      object-fit: contain;
+      padding: clamp(1rem, 2.4vw, 2.25rem);
+      box-sizing: border-box;
+    }
+    .card:hover .tile { filter: brightness(0.97); }
+
+    .tile .num {
+      position: absolute;
+      top: 0.7rem;
+      left: 0.8rem;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: rgba(26, 24, 23, 0.55);
+      mix-blend-mode: multiply;
+    }
+
+    /* ── card text ────────────────────────────────────────────────────── */
+    .meta { padding-top: 0.95rem; }
+    .kicker {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.5rem;
+    }
+    .card h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+      line-height: 1.2;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0 0 0.45rem;
+    }
+    .card h2 .arrow {
+      display: inline-block;
+      font-size: 0.8em;
+      transition: transform 0.15s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .card:hover h2 .arrow { transform: translate(3px, -3px); }
+    .card p {
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #747474;
+      margin: 0 0 0.7rem;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tags span {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      padding: 0.16rem 0.45rem;
+      border-radius: 3px;
+    }
+
+    .card.wip { pointer-events: none; }
+    .card.wip .tile { opacity: 0.55; }
+
+    /* ── progress + fit switch ────────────────────────────────────────── */
+    .foot {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0 var(--gut) 4rem calc(var(--rail-w) + var(--gut));
+    }
+    .bar {
+      position: relative;
+      flex: 1;
+      max-width: 22rem;
+      height: 1px;
+      background: var(--border);
+    }
+    .bar i {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 30%;
+      background: var(--text);
+      transition: transform 0.1s linear;
+      transform-origin: left;
+    }
+    .switch {
+      display: flex;
+      gap: 0.35rem;
+      margin-left: auto;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.66rem;
+    }
+    .switch button {
+      font: inherit;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-3);
+      padding: 0.28rem 0.6rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .switch button:hover { color: var(--text); }
+    .switch button[aria-pressed="true"] {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .note {
+      padding: 0 var(--gut) 6rem calc(var(--rail-w) + var(--gut));
+      max-width: 46rem;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text-2);
+    }
+    .note b { color: var(--text); font-weight: 600; }
+
+    @media (max-width: 760px) {
+      .slider {
+        padding-left: var(--gut);
+        scroll-padding-left: var(--gut);
+        scroll-snap-type: x proximity;
+      }
+      .head, .foot, .note { padding-left: var(--gut); }
+      .card { flex-basis: 78vw; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card h2 .arrow, .tile, .bar i { transition: none; }
+    }
+  </style>
+</head>
+<body data-fit="cover">
+
+  <div class="head">
+    <h1>Selected work</h1>
+    <span class="count" id="count">01 / 04</span>
+  </div>
+
+  <div class="slider" id="slider">
+
+    <a class="card" href="work/brix.html" style="--tile-bg:#EFEDF9">
+      <div class="tile">
+        <span class="num">01</span>
+        <video src="assets/brix-challenge1-video2.webm"
+               poster="assets/brix-challenge1-poster.jpg"
+               autoplay loop muted playsinline></video>
+      </div>
+      <div class="meta">
+        <div class="kicker">AI Agent · 2025</div>
+        <h2>Brix AI Agentic Talent Search <span class="arrow">&#8599;</span></h2>
+        <p>Turning rule-based candidate search into two agents that help recruiters work out what they are looking for.</p>
+        <div class="tags"><span>B2B SaaS</span><span>AI Agent</span><span>Design System</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="work/opusclip.html" style="--tile-bg:#EDE6E5">
+      <div class="tile">
+        <span class="num">02</span>
+        <img src="assets/opuspreview.png" alt="" />
+      </div>
+      <div class="meta">
+        <div class="kicker">Mobile MVP · 2024</div>
+        <h2>OpusClip AI Video Clipping <span class="arrow">&#8599;</span></h2>
+        <p>Bringing an AI clipping tool to mobile, where the editing model that worked on desktop no longer fits the screen.</p>
+        <div class="tags"><span>Mobile</span><span>Creator Tool</span></div>
+      </div>
+    </a>
+
+    <a class="card" href="work/fitx.html" style="--tile-bg:#E9E1E5">
+      <div class="tile">
+        <span class="num">03</span>
+        <img src="assets/fitxpreview.png" alt="" />
+      </div>
+      <div class="meta">
+        <div class="kicker">0 &rarr; 1 · 2024</div>
+        <h2>FitX Lab Fit Intelligence <span class="arrow">&#8599;</span></h2>
+        <p>A body-scanning fit system built from scratch, from hardware capture through to the recommendation itself.</p>
+        <div class="tags"><span>Consumer Hardware</span><span>AI</span><span>Design System</span></div>
+      </div>
+    </a>
+
+    <a class="card wip" href="work/moka.html" style="--tile-bg:#E3F1EE">
+      <div class="tile">
+        <span class="num">04</span>
+        <img src="assets/mokapreview.png" alt="" />
+      </div>
+      <div class="meta">
+        <div class="kicker">Enterprise · in progress</div>
+        <h2>Moka HR Interview Scheduling</h2>
+        <p>Scheduling and coordination for interview loops that span several teams and time zones.</p>
+        <div class="tags"><span>Enterprise SaaS</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    <div class="bar"><i id="progress"></i></div>
+    <div class="switch">
+      <button data-fit="cover" aria-pressed="true">Crop 1:1</button>
+      <button data-fit="contain" aria-pressed="false">Fit whole</button>
+    </div>
+  </div>
+
+  <p class="note">
+    结构照他的：<b>1:1 方图</b>、<b>0 圆角</b>、mono 小标签 + 衬线标题、卡片被右边缘切断。
+    材料全是你自己的 —— EB Garamond、IBM Plex Mono、你的色板。<br /><br />
+    右边那个开关是这版真正的待定项：你的预览图是 4:3 的完整构图，
+    <b>裁成正方会切掉 25% 的宽度</b>；「Fit whole」保留整张图，用色底补足方形。两个都看一下。
+  </p>
+
+  <script src="js/rail.js"></script>
+  <script>
+  (function () {
+    const slider = document.getElementById('slider');
+    const bar = document.getElementById('progress');
+    const count = document.getElementById('count');
+    const cards = [...slider.querySelectorAll('.card')];
+
+    /* progress + which card is at the left edge */
+    function sync() {
+      const max = slider.scrollWidth - slider.clientWidth;
+      const ratio = max > 0 ? slider.scrollLeft / max : 0;
+      const visible = slider.clientWidth / slider.scrollWidth;
+      bar.style.width = Math.max(visible, 0.12) * 100 + '%';
+      bar.style.transform = 'translateX(' + (ratio * (100 / Math.max(visible, 0.12) - 100)) + '%)';
+
+      const left = slider.getBoundingClientRect().left;
+      let i = 0, best = Infinity;
+      cards.forEach((c, n) => {
+        const d = Math.abs(c.getBoundingClientRect().left - left);
+        if (d < best) { best = d; i = n; }
+      });
+      count.textContent = String(i + 1).padStart(2, '0') + ' / ' +
+                          String(cards.length).padStart(2, '0');
+    }
+    // scroll events are not delivered in every embedded viewer, so poll too
+    slider.addEventListener('scroll', sync, { passive: true });
+    setInterval(sync, 150);
+    addEventListener('resize', sync);
+    sync();
+
+    /* Drag to pan. Capture is deferred until the pointer has actually moved,
+       otherwise a plain click never reaches the link underneath. */
+    let down = false, startX = 0, startLeft = 0, moved = false;
+    slider.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      down = true; moved = false;
+      startX = e.clientX; startLeft = slider.scrollLeft;
+      // Inline, and here rather than on the first move: a class takes effect
+      // on the next style recalc, by which time mandatory snapping has already
+      // pulled the assignment below back to the nearest snap point.
+      slider.style.scrollSnapType = 'none';
+    });
+    slider.addEventListener('pointermove', e => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) < 3) return;
+      if (!moved) {
+        moved = true;
+        slider.classList.add('dragging');
+        // throws if the id is not an active pointer; the pan still works
+        // without capture, so never let it take the drag down with it
+        try { slider.setPointerCapture(e.pointerId); } catch (_) {}
+      }
+      slider.scrollLeft = startLeft - dx;
+    });
+    const end = () => {
+      if (!down) return;
+      down = false;
+      slider.classList.remove('dragging');
+      slider.style.scrollSnapType = '';   // let it settle onto a card again
+    };
+    slider.addEventListener('pointerup', end);
+    slider.addEventListener('pointercancel', end);
+    slider.addEventListener('click', e => { if (moved) e.preventDefault(); }, true);
+
+    /* arrow keys, once the rail has focus */
+    slider.tabIndex = 0;
+    slider.addEventListener('keydown', e => {
+      const step = cards[0].getBoundingClientRect().width + 24;
+      if (e.key === 'ArrowRight') { slider.scrollBy({ left: step, behavior: 'smooth' }); e.preventDefault(); }
+      if (e.key === 'ArrowLeft')  { slider.scrollBy({ left: -step, behavior: 'smooth' }); e.preventDefault(); }
+    });
+
+    /* the crop question */
+    document.querySelectorAll('.switch button').forEach(b => {
+      b.addEventListener('click', () => {
+        document.body.dataset.fit = b.dataset.fit;
+        document.querySelectorAll('.switch button').forEach(o =>
+          o.setAttribute('aria-pressed', String(o === b)));
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

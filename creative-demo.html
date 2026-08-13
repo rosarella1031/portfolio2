@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创意方向 demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { padding-bottom: 8rem; }
+
+    .wrap { padding: 4rem max(3rem, calc((100% - var(--max)) / 2)); }
+
+    .demo { padding: 4rem 0; border-top: 1px solid var(--border); }
+    .demo:first-of-type { border-top: none; }
+    .demo-tag {
+      display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.75rem;
+    }
+    .demo-tag h2 { font-family: 'EB Garamond', serif; font-size: 1.5rem; font-weight: 400; }
+    .demo-tag span {
+      font-family: var(--ff-label); font-size: 0.75rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-3);
+    }
+    .demo-note {
+      font-size: 0.9rem; color: var(--text-2); line-height: 1.6;
+      max-width: 62ch; margin-bottom: 2.5rem;
+    }
+    .demo-note strong { color: var(--text); font-weight: 500; }
+
+    /* ---------- 1. ASCII hero ---------- */
+    .ascii-hero {
+      font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+      font-size: clamp(0.42rem, 1.15vw, 0.78rem);
+      line-height: 1.35;
+      white-space: pre;
+      color: var(--text);
+      overflow-x: auto;
+      padding: 2.5rem 0;
+    }
+    .ascii-hero .dim { color: var(--text-3); }
+    .ascii-hero .bar { color: var(--text); }
+    .ascii-hero .bar-empty { color: var(--border); }
+
+    /* ---------- 2. ASCII stats ---------- */
+    .stat-rows {
+      display: flex; flex-direction: column; gap: 1.5rem;
+      font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+      max-width: 620px;
+    }
+    .stat-row { display: flex; flex-direction: column; gap: 0.4rem; }
+    .stat-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .stat-label {
+      font-family: var(--ff-label); font-size: 0.75rem;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3);
+    }
+    .stat-val {
+      font-family: 'EB Garamond', serif; font-size: 1.6rem; color: var(--text);
+    }
+    .stat-bar {
+      font-size: 0.8rem; letter-spacing: -0.05em; color: var(--text);
+      white-space: pre; overflow: hidden;
+    }
+    .stat-bar .empty { color: var(--border); }
+
+    /* ---------- 3. scroll duck ---------- */
+    .duck-track {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 46px;
+      pointer-events: none;
+      z-index: 300;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+    }
+    .duck {
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+      font-size: 0.8rem;
+      line-height: 1.15;
+      white-space: pre;
+      color: var(--text);
+      transform: translateX(-50%);
+      transition: left 0.12s linear;
+    }
+    .duck-pct {
+      position: absolute;
+      bottom: 12px; right: max(1.5rem, calc((100% - var(--max)) / 2));
+      font-family: var(--ff-label);
+      font-size: 0.7rem; letter-spacing: 0.08em;
+      color: var(--text-3);
+    }
+
+    .filler {
+      font-size: 0.95rem; color: var(--text-2); line-height: 1.7;
+      max-width: 62ch;
+    }
+    .filler p + p { margin-top: 1rem; }
+  </style>
+</head>
+<body class="nav-always-visible">
+
+  <div class="wrap">
+
+    <!-- ============ 1 ============ -->
+    <section class="demo">
+      <div class="demo-tag"><span>方向 1</span><h2>ASCII 作为 case study 顶图</h2></div>
+      <p class="demo-note">用 ASCII 画出项目的核心界面，替代截图。<strong>好处是彻底绕开"截图不够精致"这个问题</strong>——ASCII 没有精致不精致，只有画得巧不巧，而且跟首页那两个窗口是同一套语言。缺点是每个项目都得手工设计，而且只能表达结构、传达不了视觉细节。</p>
+
+      <div class="ascii-hero" id="asciiHero"></div>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section class="demo">
+      <div class="demo-tag"><span>方向 2</span><h2>数据用字符条呈现</h2></div>
+      <p class="demo-note">把 Impact 里那几个数字做成字符进度条，而不是现在的大数字并排。<strong>成本极低，但立刻把"数据"变成页面视觉的一部分</strong>，而且跟 ASCII 语言自洽。下面用的是 Brix 的真实数据。</p>
+
+      <div class="stat-rows" id="statRows"></div>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section class="demo">
+      <div class="demo-tag"><span>方向 3</span><h2>鸭子 = 阅读进度</h2></div>
+      <p class="demo-note">首页那只鸭子从静态字符变成贯穿全站的角色：<strong>它沿着页面底部行走，位置就是你的阅读进度</strong>。既是装饰也是功能，比单纯的进度条更让人记住。<strong>往下滚看页面底部。</strong></p>
+
+      <div class="filler">
+        <p>往下滚动，注意页面最底部那条线上的鸭子——它会跟着阅读进度往右走，腿部还有交替的走路动画。停止滚动时它也会停下。</p>
+        <p>这个想法的价值不在于"进度条"本身，而在于它把一个已经存在于你首页的角色，变成了贯穿整站的存在。访客在 case study 读到一半时还能看到它，这种连续性是记忆点的来源。</p>
+        <p>可以延伸的方向：读到页面底部时鸭子做个动作；不同页面鸭子的形态不同（builds 页是鸭子踩滑板？）；点击鸭子会说一句话。</p>
+        <p>另一个方向是让它跟已有的网格互动——鸭子走过的格子会短暂染色，等于把首页的 hover 染色机制自动化了。</p>
+        <p>继续滚，让鸭子走完全程。</p>
+        <p>这段文字只是为了撑出足够的滚动距离，方便你观察鸭子的行走动画和进度映射是否自然。</p>
+        <p>如果觉得鸭子太小或者走得太快，都可以调。目前它的水平位置是严格按滚动百分比线性映射的。</p>
+        <p>快到底了。</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 鸭子进度条 -->
+  <div class="duck-track">
+    <div class="duck" id="duck"></div>
+    <div class="duck-pct" id="duckPct">0%</div>
+  </div>
+
+  <script>
+    // ---------- 1. ASCII hero ----------
+    (function () {
+      const raw = [
+' __________________________________________________________________ ',
+'| brix · talent search                                             |',
+'|------------------------------------------------------------------|',
+'| .--------------------------.    |RANKED  ·  128 found            |',
+'| | agent                    |    |--------------------            |',
+'| | > define the ideal       |    |[1] ███████████  96%            |',
+'| |   candidate profile      |    |[2] █████████░░  81%            |',
+"| '--------------------------'    |[3] ███████░░░░  74%            |",
+'|                                 |[4] █████░░░░░░  62%            |',
+'|   + skills    + seniority       |[5] ████░░░░░░░  55%            |',
+'|   + domain    + location        |                                |',
+'|__________________________________________________________________|'
+      ].join('\n');
+
+      // colour the filled/empty bar glyphs without breaking the character grid
+      const html = raw
+        .replace(/█+/g, m => '<span class="bar">' + m + '</span>')
+        .replace(/░+/g, m => '<span class="bar-empty">' + m + '</span>');
+      document.getElementById('asciiHero').innerHTML = html;
+    })();
+
+    // ---------- 2. ASCII stat bars ----------
+    (function () {
+      const stats = [
+        { label: 'Faster decision-making', val: '28%', pct: 28 },
+        { label: 'Positive feedback',      val: '95%', pct: 95 },
+        { label: 'New funding',            val: '$10M', pct: 100 }
+      ];
+      const WIDTH = 34;
+
+      document.getElementById('statRows').innerHTML = stats.map(s => {
+        const filled = Math.round(WIDTH * s.pct / 100);
+        const bar = '█'.repeat(filled);
+        const rest = '░'.repeat(WIDTH - filled);
+        return `<div class="stat-row">
+          <div class="stat-top">
+            <span class="stat-label">${s.label}</span>
+            <span class="stat-val">${s.val}</span>
+          </div>
+          <div class="stat-bar">${bar}<span class="empty">${rest}</span></div>
+        </div>`;
+      }).join('');
+    })();
+
+    // ---------- 3. scroll-progress duck ----------
+    (function () {
+      const duck = document.getElementById('duck');
+      const pct  = document.getElementById('duckPct');
+      if (!duck) return;
+
+      // two frames: legs alternate as it walks
+      const FRAMES = [
+        '  __\n<(" )\n  ||',
+        '  __\n<(" )\n  /\\'
+      ];
+      let frame = 0, walkTimer = null;
+
+      duck.textContent = FRAMES[0];
+
+      function step() {
+        frame = (frame + 1) % FRAMES.length;
+        duck.textContent = FRAMES[frame];
+      }
+
+      function update() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        // keep the duck clear of both edges
+        duck.style.left = (4 + p * 92) + '%';
+        pct.textContent = Math.round(p * 100) + '%';
+
+        // animate legs only while actually scrolling
+        if (!walkTimer) walkTimer = setInterval(step, 140);
+        clearTimeout(update._stop);
+        update._stop = setTimeout(() => {
+          clearInterval(walkTimer); walkTimer = null;
+          duck.textContent = FRAMES[0];
+        }, 180);
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+  </script>
+</body>
+</html>

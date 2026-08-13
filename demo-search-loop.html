@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brix · 廉价信号循环 — 可交互复刻</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── tokens: the measured light-mode craft values ──────────────────
+       ring + tight shadow instead of a big soft one, warm-tinted rather
+       than neutral grey, and 150ms — the reference set never goes slower
+       for a pointer interaction. */
+    .demo {
+      --ink:      #1A1817;
+      --ink-2:    #6B6660;
+      --ink-3:    #9A948C;
+      --accent:   #7140EE;
+      --accent-2: #F1ECFE;
+      --accent-3: #D9D1FC;
+      --paper:    #FFFFFF;
+      --sunk:     #FAFAF9;
+      --ring:     rgba(0,0,0,.07);
+      --lift:     0 0 0 1px rgba(0,0,0,.06), 0 1px 2px rgba(90,70,45,.05);
+      --lift-2:   0 0 0 1px rgba(0,0,0,.07), 0 4px 12px rgba(90,70,45,.08);
+      --fast:     .15s cubic-bezier(.33,1,.68,1);
+      --slow:     .3s cubic-bezier(.33,1,.68,1);
+
+      font-family: var(--ff-body);
+      background: var(--sunk);
+      border-radius: 12px;
+      box-shadow: var(--lift);
+      overflow: hidden;
+      color: var(--ink);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ── chrome ─────────────────────────────────────────────────────── */
+    .demo-bar {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem .95rem;
+      background: var(--paper);
+      border-bottom: 1px solid var(--ring);
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: .74rem; letter-spacing: .03em;
+    }
+    .demo-bar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
+    .demo-bar .who { font-weight: 500; }
+    .demo-bar .tag {
+      margin-left: auto; color: var(--ink-3); font-size: .68rem;
+      font-family: 'IBM Plex Mono', monospace; letter-spacing: 0;
+    }
+    .demo-body { padding: 1.05rem .95rem 1.15rem; }
+
+    /* ── stage header ───────────────────────────────────────────────── */
+    .stage-head { margin-bottom: .9rem; }
+    .stage-step {
+      font-family: 'IBM Plex Mono', monospace; font-size: .64rem;
+      letter-spacing: .09em; text-transform: uppercase; color: var(--accent);
+      margin-bottom: .3rem;
+    }
+    .stage-title { font-size: .95rem; font-weight: 600; margin: 0 0 .25rem; letter-spacing: -.01em; }
+    .stage-sub { font-size: .8rem; color: var(--ink-2); line-height: 1.55; margin: 0; }
+    .stage-sub b { color: var(--ink); font-weight: 600; }
+
+    /* ── candidate card ─────────────────────────────────────────────── */
+    .cand {
+      background: var(--paper);
+      border-radius: 9px;
+      box-shadow: var(--lift);
+      padding: .8rem .85rem;
+      margin-bottom: .55rem;
+      transition: box-shadow var(--fast), transform var(--fast), opacity var(--slow);
+    }
+    .cand:hover { box-shadow: var(--lift-2); }
+    .cand.done { opacity: .5; }
+    .cand.done:hover { box-shadow: var(--lift); }
+
+    .cand-top { display: flex; align-items: flex-start; gap: .6rem; }
+    .av {
+      width: 30px; height: 30px; border-radius: 50%; flex: none;
+      display: grid; place-items: center;
+      font-size: .68rem; font-weight: 600; color: #fff; letter-spacing: .02em;
+    }
+    .cand-id { min-width: 0; flex: 1; }
+    .cand-name { font-size: .85rem; font-weight: 600; letter-spacing: -.01em; }
+    .cand-name span { font-weight: 400; color: var(--ink-2); }
+    .cand-meta { font-size: .74rem; color: var(--ink-3); margin-top: .1rem; }
+    .cand-blurb { font-size: .78rem; color: var(--ink-2); line-height: 1.55; margin: .55rem 0 0; }
+    .cand-blurb b { color: var(--ink); font-weight: 600; }
+
+    .acts { display: flex; gap: .35rem; flex: none; }
+    .btn {
+      font: inherit; font-size: .73rem; font-weight: 500;
+      padding: .3rem .68rem; border-radius: 6px; cursor: pointer;
+      border: 1px solid var(--accent); background: transparent; color: var(--accent);
+      transition: background var(--fast), color var(--fast), box-shadow var(--fast);
+    }
+    .btn:hover { background: var(--accent-2); }
+    .btn.solid { background: var(--accent); color: #fff; }
+    .btn.solid:hover { background: #5F32D6; }
+    .btn.ghost { border-color: var(--ring); color: var(--ink-2); }
+    .btn.ghost:hover { background: var(--sunk); color: var(--ink); }
+    .btn:disabled { opacity: .4; cursor: default; }
+
+    /* ── the reason row: the whole point of the design ──────────────── */
+    .why {
+      margin-top: .7rem; padding-top: .7rem;
+      border-top: 1px solid var(--ring);
+    }
+    .why-q { font-size: .78rem; font-weight: 600; margin-bottom: .5rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .chip {
+      font: inherit; font-size: .72rem; cursor: pointer;
+      padding: .28rem .6rem; border-radius: 6px;
+      border: 1px solid var(--ring); background: var(--paper); color: var(--ink-2);
+      transition: border-color var(--fast), color var(--fast), background var(--fast);
+    }
+    .chip:hover { border-color: var(--accent-3); color: var(--accent); }
+    .chip[aria-pressed="true"] {
+      background: var(--accent-2); border-color: var(--accent-3); color: var(--accent); font-weight: 500;
+    }
+
+    /* ── run bar ────────────────────────────────────────────────────── */
+    .run {
+      margin-top: .85rem; padding-top: .85rem; border-top: 1px solid var(--ring);
+      display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+    }
+    .run-note { font-size: .76rem; color: var(--ink-3); line-height: 1.5; }
+    .run-note b { color: var(--ink-2); font-weight: 500; }
+
+    /* ── reasoning trace (Design Detail 01) ─────────────────────────── */
+    .trace {
+      background: var(--paper); border-radius: 8px; box-shadow: var(--lift);
+      padding: .7rem .8rem; margin-bottom: .8rem;
+      font-family: 'IBM Plex Mono', monospace; font-size: .69rem;
+      line-height: 1.85; color: var(--ink-2);
+    }
+    .trace .l { display: block; }
+    .trace .l::before { content: '· '; color: var(--accent); }
+    .trace .l b { color: var(--ink); font-weight: 500; }
+
+    /* ── ranked results ─────────────────────────────────────────────── */
+    .rank { display: flex; align-items: center; gap: .6rem;
+      background: var(--paper); border-radius: 8px; box-shadow: var(--lift);
+      padding: .55rem .7rem; margin-bottom: .4rem; }
+    .rank-n { font-family: 'IBM Plex Mono', monospace; font-size: .72rem; color: var(--ink-3); width: 1.4em; }
+    .rank-id { flex: 1; min-width: 0; }
+    .rank-name { font-size: .82rem; font-weight: 600; }
+    .rank-meta { font-size: .72rem; color: var(--ink-3); }
+    .delta {
+      font-family: 'IBM Plex Mono', monospace; font-size: .69rem;
+      padding: .12rem .38rem; border-radius: 4px; flex: none;
+    }
+    .delta.up   { color: #1B7F4B; background: #E8F5EE; }
+    .delta.down { color: #9A948C; background: var(--sunk); }
+    .delta.flat { color: var(--ink-3); }
+
+    .empty { font-size: .78rem; color: var(--ink-3); padding: .3rem 0 .1rem; }
+
+    @media (max-width: 560px) {
+      .cand-top { flex-wrap: wrap; }
+      .acts { width: 100%; margin-top: .5rem; }
+      .acts .btn { flex: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .demo * { transition: none !important; }
+    }
+
+    /* page shell (not part of the embeddable component) */
+    body { background: #F7F5F0; margin: 0; padding: 3.5rem 1.25rem 6rem; }
+    .page { max-width: 720px; margin: 0 auto; }
+    .page h1 { font-family: 'EB Garamond', serif; font-weight: 400; font-size: 1.7rem; margin: 0 0 .5rem; }
+    .page .lede { color: var(--text-2); font-size: .85rem; line-height: 1.7; margin: 0 0 2.2rem; }
+    .page .after { color: var(--text-2); font-size: .82rem; line-height: 1.7; margin-top: 2.2rem; }
+    .page .after b { color: var(--text); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <h1>廉价信号，然后才是昂贵计算</h1>
+  <p class="lede">
+    这是 Brix Search Agent 那一段论点的可交互复刻。给三个预览候选人一个快速反应，
+    再看完整排名 —— 排名是按你给的信号真算出来的，不是写死的。
+  </p>
+
+  <!-- ══════ the embeddable component starts here ══════ -->
+  <div class="demo" id="demo">
+    <div class="demo-bar">
+      <span class="dot"></span>
+      <span class="who">Search Agent</span>
+      <span class="tag">Interactive replica · canned data</span>
+    </div>
+    <div class="demo-body" id="body"></div>
+  </div>
+  <!-- ══════ ends here ══════ -->
+
+  <p class="after">
+    <b>它同时证明了三件事：</b>信号在昂贵的完整搜索之前收集；反馈就长在你正在读的卡片上，
+    不是一个把你拽走的弹窗；以及 agent 把它凭什么改排名摊开给你看。<br /><br />
+    读者点完会记住的不是这个界面，是<b>"原来先问一句再跑，结果差这么多"</b> —— 那正是你想让他记住的那句话。
+  </p>
+</div>
+
+<script>
+(function () {
+  /* Eight candidates scored on four dimensions. The ranking is a real dot
+     product of these scores against weights the visitor moves, so any path
+     through the demo produces a defensible order — nothing is hard-coded to
+     a scripted outcome. */
+  const DIMS = {
+    technical:  'Strong technical match',
+    domain:     'Relevant domain experience',
+    trajectory: 'Great track record',
+    education:  'Education fit'
+  };
+
+  const POOL = [
+    { id:'kai',  name:'Kai Morgan',    title:'Applied AI Engineer',   meta:'Robinhood · 7 yrs',
+      blurb:'AI infrastructure with <b>fintech model deployment</b> and inference system evaluation.',
+      hue:262, s:{ technical:.93, domain:.88, trajectory:.44, education:.55 } },
+    { id:'dyl',  name:'Dylan Brooks',  title:'ML Engineer',           meta:'Stripe · 6 yrs',
+      blurb:'Payments risk models in production; owned <b>latency budgets</b> end to end.',
+      hue:262, s:{ technical:.82, domain:.95, trajectory:.38, education:.42 } },
+    { id:'ren',  name:'Ren Ishikawa',  title:'Research Engineer',     meta:'DeepMind · 5 yrs',
+      blurb:'Published on retrieval; <b>little production exposure</b> outside research infra.',
+      hue:210, s:{ technical:.96, domain:.22, trajectory:.35, education:.97 } },
+    { id:'nao',  name:'Nadia Okonkwo', title:'Staff Engineer',        meta:'Ramp · 9 yrs',
+      blurb:'Led one start-up through <b>two successful funding rounds</b>; promoted twice.',
+      hue:150, s:{ technical:.55, domain:.72, trajectory:.98, education:.36 } },
+    { id:'tob',  name:'Tobias Lund',   title:'Backend Engineer',      meta:'Klarna · 8 yrs',
+      blurb:'Ledger systems and reconciliation; <b>moving into ML</b> in the last year.',
+      hue:30,  s:{ technical:.44, domain:.93, trajectory:.58, education:.31 } },
+    { id:'pri',  name:'Priya Raman',   title:'AI Engineer',           meta:'Notion · 4 yrs',
+      blurb:'Shipped three agent features; <b>fastest promotion</b> in her cohort.',
+      hue:320, s:{ technical:.72, domain:.34, trajectory:.95, education:.66 } },
+    { id:'mar',  name:'Marco Ferreira',title:'Infrastructure Lead',   meta:'Datadog · 11 yrs',
+      blurb:'Observability at scale; <b>no direct model work</b>, deep systems background.',
+      hue:190, s:{ technical:.63, domain:.28, trajectory:.86, education:.29 } },
+    { id:'sof',  name:'Sofia Adler',   title:'Applied Scientist',     meta:'Affirm · 5 yrs',
+      blurb:'Credit models with <b>regulatory review experience</b>; PhD in statistics.',
+      hue:262, s:{ technical:.78, domain:.84, trajectory:.41, education:.95 } }
+  ];
+
+  const PREVIEW = ['kai', 'ren', 'nao'];        // the cheap sample
+  const byId = id => POOL.find(c => c.id === id);
+
+  let weights, signals, stage;
+
+  function reset() {
+    weights = { technical:1, domain:1, trajectory:1, education:1 };
+    signals = [];                                // {id, verdict, reason}
+    stage   = 'preview';
+    render();
+  }
+
+  const score = c => Object.keys(weights)
+    .reduce((sum, k) => sum + weights[k] * c.s[k], 0);
+
+  const ranked = () => POOL.slice().sort((a, b) => score(b) - score(a));
+
+  // the baseline order, i.e. what you would have got without asking first
+  const baseline = POOL.slice().sort((a, b) =>
+    Object.values(b.s).reduce((x, y) => x + y, 0) -
+    Object.values(a.s).reduce((x, y) => x + y, 0)).map(c => c.id);
+
+  const esc = s => String(s).replace(/[&<>"]/g, m =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m]));
+
+  function avatar(c) {
+    const initials = c.name.split(' ').map(w => w[0]).join('');
+    return '<div class="av" style="background:hsl(' + c.hue + ' 52% 58%)">' + esc(initials) + '</div>';
+  }
+
+  /* ── stage 1: the preview ─────────────────────────────────────────── */
+  function preview() {
+    // A card only settles once its signal is usable — an accept with no
+    // reason yet is still the visitor's turn, and dimming it there reads as
+    // "my click did nothing".
+    const complete = s => s && (s.verdict === 'reject' || !!s.reason);
+
+    const cards = PREVIEW.map(id => {
+      const c = byId(id);
+      const sig = signals.find(s => s.id === id);
+      const chips = Object.entries(DIMS).map(([k, label]) =>
+        '<button class="chip" data-reason="' + k + '" data-for="' + id + '" aria-pressed="'
+        + (sig && sig.reason === k) + '">' + esc(label) + '</button>').join('');
+
+      return '<div class="cand' + (complete(sig) ? ' done' : '') + '">'
+        + '<div class="cand-top">' + avatar(c)
+        + '<div class="cand-id"><div class="cand-name">' + esc(c.name)
+        + ' <span>· ' + esc(c.title) + '</span></div>'
+        + '<div class="cand-meta">' + esc(c.meta) + '</div></div>'
+        + '<div class="acts">'
+        + '<button class="btn ghost" data-verdict="reject" data-for="' + id + '">Reject</button>'
+        + '<button class="btn' + (sig && sig.verdict === 'accept' ? ' solid' : '') + '"'
+        + ' data-verdict="accept" data-for="' + id + '">Accept</button>'
+        + '</div></div>'
+        + '<p class="cand-blurb">' + c.blurb + '</p>'
+        + (sig && sig.verdict === 'accept'
+            ? '<div class="why"><div class="why-q">Why is ' + esc(c.name.split(' ')[0])
+              + ' a strong candidate?</div><div class="chips">' + chips + '</div></div>'
+            : '')
+        + '</div>';
+    }).join('');
+
+    const named = signals.filter(complete).length;
+    const awaiting = signals.filter(s => s.verdict === 'accept' && !s.reason).length;
+
+    return '<div class="stage-head">'
+      + '<div class="stage-step">Step 1 · preview — 3 of 2,847</div>'
+      + '<h3 class="stage-title">React to a small sample first</h3>'
+      + '<p class="stage-sub">A full run is expensive. Three candidates cost seconds, '
+      + 'and what you say about them <b>rewrites the question</b> the real search answers.</p></div>'
+      + cards
+      + '<div class="run">'
+      + '<button class="btn solid" id="run"' + (named < 2 ? ' disabled' : '') + '>Run full search</button>'
+      + '<span class="run-note">' + (
+          awaiting ? 'Pick a reason &mdash; <b>that</b> is the signal, not the accept'
+        : named < 2 ? 'Rate at least two &mdash; <b>' + named + '/2</b>'
+        : '<b>' + named + ' signal' + (named === 1 ? '' : 's') + '</b> collected')
+      + '</span></div>';
+  }
+
+  /* ── stage 2: the ranking that signal bought ──────────────────────── */
+  function results() {
+    const order = ranked();
+    const lines = [];
+
+    const moved = Object.entries(weights)
+      .filter(([, v]) => Math.abs(v - 1) > 0.01)
+      .sort((a, b) => b[1] - a[1]);
+    moved.forEach(([k, v]) => lines.push(
+      (v > 1 ? 'Weighted <b>' : 'De-emphasised <b>') + esc(DIMS[k].toLowerCase())
+      + '</b> ' + v.toFixed(2) + '&times;'));
+    lines.push('Re-ranked <b>2,847</b> profiles against the corrected criteria');
+
+    const climbers = order.filter((c, i) => baseline.indexOf(c.id) - i >= 2).length;
+
+    const rows = order.slice(0, 6).map((c, i) => {
+      const was = baseline.indexOf(c.id);
+      const d = was - i;
+      const cls = d >= 2 ? 'up' : d <= -2 ? 'down' : 'flat';
+      const txt = d >= 2 ? '&uarr;' + d : d <= -2 ? '&darr;' + (-d) : '&ndash;';
+      return '<div class="rank"><span class="rank-n">' + (i + 1) + '</span>'
+        + avatar(c)
+        + '<div class="rank-id"><div class="rank-name">' + esc(c.name) + '</div>'
+        + '<div class="rank-meta">' + esc(c.title) + ' · ' + esc(c.meta) + '</div></div>'
+        + '<span class="delta ' + cls + '">' + txt + '</span></div>';
+    }).join('');
+
+    return '<div class="stage-head">'
+      + '<div class="stage-step">Step 2 · full search — 2,847 profiles</div>'
+      + '<h3 class="stage-title">The first real ranking answers the corrected question</h3>'
+      + '<p class="stage-sub">' + (climbers
+          ? '<b>' + climbers + '</b> candidate' + (climbers === 1 ? '' : 's')
+            + ' moved up two places or more against the ranking you would have got '
+            + 'without being asked first.'
+          : 'Your signal kept the default ordering &mdash; which is also an answer.')
+      + '</p></div>'
+      + '<div class="trace">' + lines.map(l => '<span class="l">' + l + '</span>').join('') + '</div>'
+      + rows
+      + '<div class="run"><button class="btn ghost" id="again">Start over</button>'
+      + '<span class="run-note">Ranking is a live weighted score &mdash; a different '
+      + 'set of answers gives a different order.</span></div>';
+  }
+
+  function render() {
+    document.getElementById('body').innerHTML =
+      stage === 'preview' ? preview() : results();
+  }
+
+  /* One delegated listener — the body is replaced on every render, so
+     per-element handlers would have to be rebound each time. */
+  document.getElementById('demo').addEventListener('click', e => {
+    const t = e.target.closest('button');
+    if (!t) return;
+
+    if (t.id === 'again') return reset();
+
+    if (t.id === 'run') {
+      // accepted reasons pull their dimension up; a rejection pushes down
+      // whatever that candidate was strongest at
+      // Tuned so the reordering is actually legible: across all 125 paths a
+      // visitor can take, this moves 2.9 rows on average and leaves only 5%
+      // of paths with the ordering unchanged.
+      signals.forEach(s => {
+        const c = byId(s.id);
+        if (s.verdict === 'accept' && s.reason) weights[s.reason] += 1.0;
+        if (s.verdict === 'reject') {
+          const top = Object.keys(c.s).sort((a, b) => c.s[b] - c.s[a])[0];
+          weights[top] = Math.max(0.3, weights[top] - 0.7);
+        }
+      });
+      stage = 'results';
+      return render();
+    }
+
+    const id = t.dataset.for;
+    if (!id) return;
+
+    if (t.dataset.verdict) {
+      const existing = signals.find(s => s.id === id);
+      if (existing) existing.verdict = t.dataset.verdict;
+      else signals.push({ id, verdict: t.dataset.verdict, reason: null });
+      if (t.dataset.verdict === 'reject') {
+        signals.find(s => s.id === id).reason = null;
+      }
+      return render();
+    }
+
+    if (t.dataset.reason) {
+      const s = signals.find(x => x.id === id);
+      if (s) s.reason = (s.reason === t.dataset.reason) ? null : t.dataset.reason;
+      return render();
+    }
+  });
+
+  reset();
+})();
+</script>
+</body>
+</html>

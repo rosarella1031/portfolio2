@@ -2,25 +2,58 @@
 @import url('https://api.fontshare.com/v2/css?f[]=switzer@100,200,300,400,500,600,700,800,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
+/* ===== Measure =====
+   Body copy sat at 680px, which runs ~92 characters per line — well past
+   the 65–75 that reads comfortably. These cap the text column while
+   .img-block keeps the full content width, so images stay wide and the
+   prose stays readable. */
+:root {
+  --measure:       29rem;   /* ~62 characters at 16px General Sans */
+  --measure-title: 36rem;
+}
+
 /* ===== Font override for project pages ===== */
 .page-body {
   font-family: 'General Sans', sans-serif;
 }
 
-/* ===== Back link (inside sidebar) ===== */
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  transition: color 0.2s, gap 0.2s;
+/* ===== Scroll reveal =====
+   Applied by js/reveal.js, which adds .visible immediately when motion is
+   reduced — so the class only ever hides content while the script is in
+   control of showing it.
+
+   An animation rather than a transition: several of these blocks declare their
+   own `transition` further down this file, and at equal specificity the later
+   rule wins and quietly drops the fade. */
+.reveal { opacity: 0; }
+.reveal.visible {
+  animation: reveal-in 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 }
-.back-link:hover { color: var(--text); gap: 0.75rem; }
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; }
+  .reveal.visible { animation: none; }
+}
+
+/* ===== Back link (inside sidebar) ===== */
+/* Just a boxed arrow — the label was redundant next to a case study title. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.back-link:hover { color: var(--text); border-color: var(--text-3); background: var(--tag-bg); }
 .back-link svg { transition: transform 0.2s; }
-.back-link:hover svg { transform: translateX(-3px); }
+.back-link:hover svg { transform: translateX(-2px); }
 
 /* ===== Page body ===== */
 .page-body {
@@ -51,7 +84,7 @@
 }
 
 .sidebar-label {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-3);
@@ -76,7 +109,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0;
+  padding: 0.5rem 0;
   font-size: 0.75rem;
   font-weight: 400;
   letter-spacing: 0.05em;
@@ -85,7 +118,7 @@
   text-decoration: none;
   position: relative;
   transition: color 0.2s;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* Connecting vertical line between dots */
@@ -130,10 +163,40 @@
 
 /* prose column — constrains text to readable width */
 .prose {
-  max-width: 680px;
+  max-width: var(--measure);
 }
 
 /* ===== Project link ===== */
+/* ===== Role / Time / Team =====
+   Three columns under the project link. Splitting what used to be one run-on
+   line matters more than it looks: a recruiter checking scope reads down a
+   column, and a sentence makes them read the whole thing to find one fact. */
+.meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem 2rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  max-width: var(--measure-title);
+}
+.meta-k {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0.5rem;
+}
+.meta-v {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+@media (max-width: 560px) {
+  .meta-row { grid-template-columns: 1fr; gap: 0.9rem; }
+}
+
 .project-link {
   display: flex;
   align-items: center;
@@ -150,7 +213,7 @@
   transition: border-color 0.2s, background 0.2s;
 }
 .project-link:hover { background: var(--tag-bg); }
-.project-link span { color: var(--text-3); font-size: 0.9rem; transition: color 0.2s; }
+.project-link span { color: var(--text-3); font-size: 0.875rem; transition: color 0.2s; }
 .project-link:hover span { color: var(--text); }
 
 /* ===== Overview layout (main + side note) ===== */
@@ -185,17 +248,17 @@
 
 .overview-note-label {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .overview-note p {
   font-family: 'EB Garamond', serif;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.55;
   color: var(--text-2);
@@ -229,18 +292,18 @@
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
-  padding-top: 0.2rem;
+  padding-top: 0.25rem;
 }
 
 .pill {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
   border: 1px solid var(--border);
   background: none;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   white-space: nowrap;
 }
@@ -249,16 +312,16 @@
   font-family: 'EB Garamond', serif;
   font-size: 2.25rem;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: -0.008em;
   color: var(--text);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .project-summary {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--text-2);
-  line-height: 1.5;
+  line-height: 1.6;
   letter-spacing: 0;
 }
 
@@ -266,7 +329,7 @@
 .hero-image {
   aspect-ratio: 16 / 9;
   margin-bottom: 5rem;
-  background: #F5F5F5;
+  background: #F8F8F8;
   overflow: hidden;
 }
 
@@ -287,7 +350,7 @@
 
 .section-label {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -299,30 +362,30 @@
   font-family: 'EB Garamond', serif;
   font-size: 2rem;
   font-weight: 400;
-  line-height: 1.143;
-  letter-spacing: 0;
+  line-height: 1.1;
+  letter-spacing: -0.008em;
   color: var(--text);
-  margin-bottom: 1.25rem;
-  max-width: 680px;
+  margin-bottom: 1rem;
+  max-width: var(--measure-title);
 }
 
 .content-section p {
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.6;
   letter-spacing: 0;
-  color: #767676;
-  margin-bottom: 1.75rem;
-  max-width: 680px;
+  color: #747474;
+  margin-bottom: 1.5rem;
+  max-width: var(--measure);
 }
 
 .content-section ol {
   font-size: 1rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.6;
   letter-spacing: 0;
-  color: #767676;
-  max-width: 680px;
+  color: #747474;
+  max-width: var(--measure);
   margin: -0.75rem 0 1.75rem;
   padding-left: 1.25rem;
 }
@@ -338,7 +401,7 @@
 
 /* ===== Images ===== */
 .img-block {
-  background: #F5F5F5;
+  background: #F8F8F8;
   overflow: hidden;
   margin: 1.5rem 0 2.5rem;
   min-height: 300px;
@@ -358,6 +421,21 @@
   object-fit: cover;
 }
 
+/* An .img-block with nothing in it is a slot waiting for artwork. Labelling
+   it through :empty means the label disappears by itself the moment an <img>
+   goes in — nothing to remember to delete. */
+.img-block:empty {
+  display: grid;
+  place-items: center;
+}
+.img-block:empty::after {
+  content: 'Placeholder';
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
 .img-block:has(video) {
   padding: 3rem;
 }
@@ -390,7 +468,9 @@
   flex: 1;
 }
 
-.detail-problem-item h3 {
+/* Scoped past .problem-heading so a numbered heading placed in this column
+   keeps the same size and weight it has everywhere else on the page. */
+.detail-problem-item h3:not(.problem-heading) {
   font-size: 1.2rem;
   font-weight: 400;
   color: var(--text);
@@ -444,7 +524,7 @@
   font-family: var(--ff-body, 'General Sans', sans-serif);
   font-size: 1.1rem;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.3;
   color: var(--text);
   margin-bottom: 0.75rem;
 }
@@ -455,12 +535,93 @@
 }
 
 .problem-item p {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 400;
-  line-height: 1.5;
-  color: #767676;
+  line-height: 1.45;
+  color: #747474;
   margin-bottom: 0;
   max-width: none;
+}
+
+/* ===== Pinned detail scroller =====
+   Left column scrolls normally, right column is pinned and swaps panels to
+   match. Panels are stacked in one grid cell rather than absolutely
+   positioned, so the pinned box is as tall as its tallest panel and nothing
+   below it jumps when the active panel changes. */
+.detail-scroll {
+  display: grid;
+  /* The text side only has to hold a heading and a short paragraph; the
+     artwork is the thing worth the room. */
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  column-gap: clamp(2rem, 4vw, 4rem);
+  margin: 1.5rem 0 0;
+}
+.detail-steps { display: flex; flex-direction: column; }
+/* Two layers per step, and the pairing depends on it: an outer track that
+   scrolls, and an inner block pinned to the same line as the visual. The
+   inner block holds its place until its own track runs out, at which point
+   the next step's block — arriving on the same line — pushes it up and out.
+   That collision is the whole effect; a single static block just drifts past.
+
+   The track has to be roughly twice the height of the block it carries, or
+   the outgoing and incoming steps overlap on the way past each other. */
+.detail-step {
+  min-height: 55vh;
+  padding-right: 1rem;
+}
+/* .problem-item drops body copy to 0.9rem for the three-up grid, where the
+   columns are narrow. Here there is one column and it is the argument, so it
+   runs at the same size as the rest of the page. */
+.detail-step p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.detail-step-inner {
+  position: sticky;
+  top: 12vh;
+  padding-bottom: 3.5rem;
+  transition: opacity 0.3s var(--ease, ease);
+}
+/* The steps still to come sit there in grey and darken as they arrive. */
+.detail-scroll[data-live] .detail-step-inner { opacity: 0.4; }
+.detail-scroll[data-live] .detail-step.is-active .detail-step-inner { opacity: 1; }
+
+.detail-visual { position: relative; }
+.detail-pin {
+  position: sticky;
+  top: 12vh;
+  display: grid;
+}
+.detail-panel {
+  grid-area: 1 / 1;
+  transition: opacity 0.35s var(--ease, ease), transform 0.35s var(--ease, ease);
+}
+.detail-scroll[data-live] .detail-panel {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+.detail-scroll[data-live] .detail-panel.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.detail-panel .img-block { margin: 0; min-height: 340px; }
+
+@media (max-width: 900px) {
+  .detail-scroll { grid-template-columns: 1fr; }
+  .detail-step { min-height: 0; padding-right: 0; margin-bottom: 1.75rem; }
+  .detail-step-inner { position: static; padding-bottom: 0; }
+  .detail-pin { position: static; display: block; }
+  .detail-scroll[data-live] .detail-step-inner,
+  .detail-scroll[data-live] .detail-panel {
+    opacity: 1;
+    transform: none;
+  }
+  .detail-panel + .detail-panel { margin-top: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .detail-step-inner, .detail-panel { transition: none; }
 }
 
 .problem-list--stacked {
@@ -498,7 +659,7 @@
   max-width: 960px;
   aspect-ratio: 2000 / 1380;
   overflow: hidden;
-  background: #F5F5F5;
+  background: #F8F8F8;
   scroll-snap-align: start;
 }
 
@@ -523,19 +684,22 @@
 }
 
 .stat-number {
+  /* the figure is counted up by js/count-up.js — fixed-width digits keep the
+     number from twitching sideways on every frame */
+  font-variant-numeric: tabular-nums;
   font-size: clamp(2rem, 3.5vw, 2.75rem);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
   color: var(--text);
 }
 
 .stat-label {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 400;
   color: var(--text-3);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 /* ===== Prev / Next project =====
@@ -579,7 +743,7 @@
 
 .next-label {
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   color: var(--text-3);
@@ -590,7 +754,7 @@
   font-family: 'EB Garamond', serif;
   font-size: 1.5rem;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: -0.008em;
   color: var(--text);
   transition: opacity 0.2s;
 }
@@ -607,6 +771,10 @@
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .page-body { flex-direction: column; }
+
+  /* The indent exists to clear the fixed sidebar. Here the sidebar is stacked
+     on top instead, so the indent is 376px of pure overflow on a 375px phone. */
+  .page-body ~ footer { padding-left: 1.5rem; padding-right: 1.5rem; }
 
   .sidebar {
     width: 100%;
@@ -637,7 +805,22 @@
 
   .img-row { grid-template-columns: 1fr; }
 
-  .stats-row { gap: 2rem; flex-wrap: wrap; }
+  /* Everything multi-column becomes one column. Three stats across a phone is
+     88px each — a number and a label neither of which fits. */
+  .stats-row {
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: 1.5rem 0;
+    max-width: none;
+  }
+  .problem-list { grid-template-columns: 1fr; gap: 2rem; }
+  .detail-problems { flex-direction: column; gap: 2rem; }
+  .meta-row { grid-template-columns: 1fr; gap: 1rem; }
+
+  /* The gallery scrolls inside itself; without a width to push against, its
+     items size to their own content and drag the whole page sideways. */
+  .scroll-gallery { max-width: 100%; }
+  .scroll-gallery-item { width: 100%; max-width: 100%; }
 }
 
 /* ===== Sidebar left-align override (dot version) ===== */

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Layout Study — sidebar column</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600&display=swap');
+
+/* ============================================================
+   TOKENS — 沿用 portfolio2/css/style.css
+   ============================================================ */
+:root {
+  --bg:        #ffffff;
+  --bg-sunk:   #FAF9F7;   /* 侧栏 / 页面外的底 */
+  --bg-card:   #EDEAE4;
+  --tag-bg:    #F7F7F7;
+
+  --text:      #1A1817;
+  --text-2:    #919191;
+  --text-3:    #AAA49C;
+  --accent:    #C4593A;
+  --border:    #DDD8CF;
+
+  --ff-body:   'General Sans', -apple-system, sans-serif;
+  --ff-display:'EB Garamond', Georgia, serif;
+  --ff-label:  'IBM Plex Sans Condensed', sans-serif;
+  --ff-mono:   'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  --ease:      cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* 布局尺寸 —— 想调宽窄改这三个就行 */
+  --sidebar-w: 192px;
+  --column-w:  768px;   /* 内容"纸页"栏总宽 */
+  --measure:   640px;   /* 正文行长 */
+  --pad:       64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  background: var(--bg-sunk);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+ol, ul { list-style: none; }
+
+/* ============================================================
+   SHELL — 全高 flex，两栏各自滚动
+   ============================================================ */
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- 左：侧栏 ---------- */
+.sidebar {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-sunk);
+  border-right: 3px double var(--border);
+  padding: 240px 0 32px;
+}
+
+/* 书签丝带 —— 用 accent 换掉原来的正红 */
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 32px;
+  width: 32px;
+  height: 160px;
+  background: linear-gradient(135deg, #A8482D, var(--accent) 50%, #A8482D);
+  border: 1px solid #A8482D;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 12px), 0 100%);
+  box-shadow: 2px 2px 6px rgba(26,24,23,.22), inset -1px -1px 2px rgba(0,0,0,.18);
+}
+
+.sidebar nav { display: flex; flex-direction: column; }
+.sidebar nav a {
+  padding: 6px 8px 6px 40px;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: color .2s var(--ease);
+}
+.sidebar nav a:hover { color: var(--text-2); }
+.sidebar nav a.is-active { color: var(--text); }
+
+/* ---------- 右：内容列 ---------- */
+.column {
+  flex-shrink: 0;
+  width: var(--column-w);
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg);
+  border-right: 3px double var(--border);
+  padding: var(--pad);
+}
+/* 内层撑满高度，footer 自动沉底 */
+.column-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-width: var(--measure);
+}
+
+/* ============================================================
+   TYPE
+   ============================================================ */
+.page-title {
+  font-family: var(--ff-display);
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.page-sub {
+  margin-top: 8px;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--text-2);
+  letter-spacing: 0;
+}
+.label {
+  font-family: var(--ff-label);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.prose p { margin-bottom: 1rem; }
+.prose a { border-bottom: 1px solid var(--border); }
+.prose a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 页头 + 分隔线（bookshelf 那种） */
+.page-head { padding-bottom: 32px; }
+.rule {
+  height: 0;
+  border-top: 1px solid var(--border);
+  margin: 0 calc(var(--pad) * -1) 32px;
+}
+
+/* ============================================================
+   LIST —— floguo bookshelf 的分组列表
+   ============================================================ */
+.group { margin-bottom: 48px; }
+.group > .label { display: block; margin-bottom: 20px; }
+
+.entry { display: block; padding: 10px 0; }
+.entry-title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.entry-title .arrow {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--text-3);
+  transition: transform .2s var(--ease), color .2s var(--ease);
+}
+.entry:hover .entry-title { color: var(--accent); }
+.entry:hover .arrow { color: var(--accent); transform: translate(2px, -2px); }
+.entry-meta { font-size: 15px; color: var(--text-2); letter-spacing: 0; }
+
+.tags { display: inline-flex; gap: .35rem; margin-left: .5rem; vertical-align: middle; }
+.tags span {
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--tag-bg);
+  padding: .1rem .45rem;
+  border-radius: 4px;
+  letter-spacing: .02em;
+}
+
+/* 定义式条目（About 那种编号列表） */
+.defs { counter-reset: d; }
+.defs li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 12px;
+}
+.defs li::before {
+  counter-increment: d;
+  content: counter(d) ".";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* 图片作品用的一格 */
+.thumb {
+  aspect-ratio: 4 / 3;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  margin: 12px 0 4px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.column footer {
+  padding-top: 80px;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.column footer a { border-bottom: 1px solid var(--border); }
+.column footer a:hover { color: var(--accent); }
+.dot { padding: 0 8px; color: var(--border); }
+
+/* ============================================================
+   VIEW SWITCH
+   ============================================================ */
+.view { display: none; }
+.view.is-on {
+  display: flex;
+  flex: 1;                          /* 撑满 column-inner，footer 才沉得到底 */
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 50;
+  width: 44px; height: 44px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 16px;
+}
+@media (max-width: 860px) {
+  :root { --pad: 24px; }
+  .menu-btn { display: block; }
+  .shell { display: block; height: auto; overflow: visible; }
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: 220px;
+    padding-top: 200px;
+    transform: translateX(-100%);
+    transition: transform .25s var(--ease);
+    box-shadow: 0 0 40px rgba(26,24,23,.12);
+  }
+  .sidebar.is-open { transform: none; }
+  .ribbon { left: 96px; }             /* 让开汉堡按钮 */
+  .column {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    border-right: 0;
+    padding-top: 76px;
+  }
+  .column-inner, .view.is-on { min-height: 0; }
+  .page-title { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
+
+<div class="shell">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="ribbon"></div>
+    <nav>
+      <a href="#work"    data-view="work"    class="is-active">Work</a>
+      <a href="#builds"  data-view="builds">Builds</a>
+      <a href="#writing" data-view="writing">Writing</a>
+      <a href="#about"   data-view="about">About</a>
+      <a href="#resume"  data-view="resume">Résumé</a>
+    </nav>
+  </aside>
+
+  <!-- ========== CONTENT COLUMN ========== -->
+  <main class="column">
+    <div class="column-inner">
+
+      <!-- ---------- WORK ---------- -->
+      <section class="view is-on" id="view-work">
+        <div class="body">
+          <div class="page-head">
+            <h1 class="page-title">Work</h1>
+            <p class="page-sub">Product design, 2019—2026</p>
+          </div>
+          <div class="rule"></div>
+
+          <div class="group">
+            <span class="label">Selected</span>
+
+            <a class="entry" href="#">
+              <div class="entry-title">Project One <span class="arrow">↗</span></div>
+              <div class="entry-meta">End-to-end product design · 2025</div>
+              <div class="thumb"></div>
+            </a>
+
+            <a class="entry" href="#">
+              <div class="entry-title">Project Two <span class="arrow">↗</span></div>
+              <div class="entry-meta">Design system, 0→1 · 2024</div>
+              <div class="thumb"></div>
+            </a>
+          </div>
+
+          <div class="group">
+            <span class="label">Archive</span>
+            <a class="entry" href="#">
+              <div class="entry-title">Older Project</div>
+              <div class="entry-meta">Concept · 2022</div>
+            </a>
+            <a class="entry" href="#">
+              <div class="entry-title">Another One</div>
+              <div class="entry-meta">Internship · 2021</div>
+            </a>
+          </div>
+        </div>
+        <footer>© XUEFEI 2026 <span class="dot">·</span> <a href="#">EMAIL</a> <span class="dot">·</span> <a href="#">LINKEDIN</a></footer>
+      </section>
+
+      <!-- ---------- BUILDS ---------- -->
+      <section class="view" id="view-builds">
+        <div class="body">
+          <div class="page-head">
+            <h1 class="page-title">Builds</h1>
+            <p class="page-sub">Things made on weekends</p>
+          </div>
+          <div class="rule"></div>
+
+          <div class="group">
+            <span class="label">2026</span>
+            <a class="entry" href="#">
+              <div class="entry-title">Small Tool <span class="arrow">↗</span><span class="tags"><span>Web</span><span>Claude</span></span></div>
+              <div class="entry-meta">One line on what it does and why.</div>
+            </a>
+            <a class="entry" href="#">
+              <div class="entry-title">Another Build <span class="arrow">↗</span><span class="tags"><span>Unity</span></span></div>
+              <div class="entry-meta">One line on what it does and why.</div>
+            </a>
+          </div>
+
+          <div class="group">
+            <span class="label">2025</span>
+            <a class="entry" href="#">
+              <div class="entry-title">Earlier Thing <span class="arrow">↗</span></div>
+              <div class="entry-meta">One line on what it does and why.</div>
+            </a>
+          </div>
+        </div>
+        <footer>© XUEFEI 2026 <span class="dot">·</span> <a href="#">EMAIL</a> <span class="dot">·</span> <a href="#">LINKEDIN</a></footer>
+      </section>
+
+      <!-- ---------- WRITING ---------- -->
+      <section class="view" id="view-writing">
+        <div class="body">
+          <div class="page-head">
+            <h1 class="page-title">Writing</h1>
+          </div>
+          <div class="rule"></div>
+          <div class="group">
+            <a class="entry" href="#">
+              <div class="entry-title">An essay title goes here</div>
+              <div class="entry-meta">Mar 2026 · 6 min</div>
+            </a>
+            <a class="entry" href="#">
+              <div class="entry-title">A shorter note</div>
+              <div class="entry-meta">Jan 2026 · 2 min</div>
+            </a>
+          </div>
+        </div>
+        <footer>© XUEFEI 2026 <span class="dot">·</span> <a href="#">EMAIL</a> <span class="dot">·</span> <a href="#">LINKEDIN</a></footer>
+      </section>
+
+      <!-- ---------- ABOUT ---------- -->
+      <section class="view" id="view-about">
+        <div class="body">
+          <div class="page-head">
+            <h1 class="page-title">xue·fei</h1>
+            <p class="page-sub">/ˈʃue̯.feɪ/</p>
+          </div>
+
+          <p class="label" style="margin-bottom:16px">noun</p>
+          <ol class="defs prose">
+            <li>Product designer; one line about how you think.</li>
+            <li>Currently at <a href="#">Somewhere</a>; previously <a href="#">Elsewhere</a>.</li>
+          </ol>
+          <p class="prose" style="color:var(--text-2);font-style:italic;margin-top:8px">Also known as: 王雪飞</p>
+
+          <p class="prose" style="margin-top:48px">
+            See also: &nbsp;<a href="#">Twitter</a>&nbsp;&nbsp;<a href="#">GitHub</a>&nbsp;&nbsp;<a href="#">Read.cv</a>
+          </p>
+        </div>
+        <footer>© XUEFEI 2026 <span class="dot">·</span> <a href="#">EMAIL</a> <span class="dot">·</span> <a href="#">LINKEDIN</a></footer>
+      </section>
+
+      <!-- ---------- RESUME ---------- -->
+      <section class="view" id="view-resume">
+        <div class="body">
+          <div class="page-head">
+            <h1 class="page-title">Résumé</h1>
+            <p class="page-sub"><a href="#">Download PDF ↓</a></p>
+          </div>
+          <div class="rule"></div>
+          <div class="group">
+            <span class="label">Experience</span>
+            <div class="entry">
+              <div class="entry-title">Product Designer — Company</div>
+              <div class="entry-meta">2024 — Present</div>
+            </div>
+            <div class="entry">
+              <div class="entry-title">Designer — Company</div>
+              <div class="entry-meta">2022 — 2024</div>
+            </div>
+          </div>
+          <div class="group">
+            <span class="label">Education</span>
+            <div class="entry">
+              <div class="entry-title">MFA, Somewhere</div>
+              <div class="entry-meta">2020 — 2022</div>
+            </div>
+          </div>
+        </div>
+        <footer>© XUEFEI 2026 <span class="dot">·</span> <a href="#">EMAIL</a> <span class="dot">·</span> <a href="#">LINKEDIN</a></footer>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const links = document.querySelectorAll('.sidebar nav a');
+const views = document.querySelectorAll('.view');
+const sidebar = document.getElementById('sidebar');
+const column = document.querySelector('.column');
+
+function show(name) {
+  views.forEach(v => v.classList.toggle('is-on', v.id === 'view-' + name));
+  links.forEach(a => a.classList.toggle('is-active', a.dataset.view === name));
+  column.scrollTop = 0;
+  sidebar.classList.remove('is-open');
+}
+
+links.forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  location.hash = a.dataset.view;
+  show(a.dataset.view);
+}));
+
+document.getElementById('menuBtn').addEventListener('click', () =>
+  sidebar.classList.toggle('is-open'));
+
+show(location.hash.slice(1) || 'work');
+</script>
+</body>
+</html>

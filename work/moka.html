@@ -10,17 +10,29 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+  <script>
+    /* The half-and-half layout is the default. ?plain switches it off for
+       side-by-side comparison; disabling the sheet leaves project.css alone,
+       so the fallback is exactly the previous design. */
+    if (new URLSearchParams(location.search).has('plain')) {
+      document.getElementById('split-sheet').disabled = true;
+    }
+  </script>
 </head>
 <body>
 
   <div class="page-body">
 
     <aside class="sidebar">
-      <a href="../index.html#work" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <a href="../index.html" class="back-link" aria-label="Back to projects">
+
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+
           <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
         </svg>
-        Back to Projects
+
       </a>
       <div class="sidebar-meta">
         <div class="sidebar-label">CASE STUDY</div>
@@ -70,21 +82,35 @@
 
       <section id="overview" class="content-section">
         <div class="section-label">Overview</div>
-        <h2 class="section-title">Overview heading goes here.</h2>
-        <p>Overview content goes here.</p>
+        <h2 class="section-title" data-e="1">Overview heading goes here.</h2>
+        <p data-e="2">Overview content goes here.</p>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Role</div>
+            <div class="meta-v" data-e="23">&mdash;</div>
+          </div>
+          <div>
+            <div class="meta-k">Time</div>
+            <div class="meta-v" data-e="24">&mdash;</div>
+          </div>
+          <div>
+            <div class="meta-k">Team</div>
+            <div class="meta-v" data-e="25">&mdash;</div>
+          </div>
+        </div>
       </section>
 
       <section id="goal" class="content-section">
         <div class="section-label">Business Goal</div>
-        <h2 class="section-title">Business goal heading goes here.</h2>
-        <p>Business goal content goes here.</p>
+        <h2 class="section-title" data-e="3">Business goal heading goes here.</h2>
+        <p data-e="4">Business goal content goes here.</p>
         <div class="img-block"></div>
       </section>
 
       <section id="problems" class="content-section">
         <div class="section-label">Core Problems</div>
-        <h2 class="section-title">Core problems heading goes here.</h2>
-        <p>Core problems content goes here.</p>
+        <h2 class="section-title" data-e="5">Core problems heading goes here.</h2>
+        <p data-e="6">Core problems content goes here.</p>
         <div class="img-row">
           <div class="img-block"></div>
           <div class="img-block"></div>
@@ -93,42 +119,42 @@
 
       <section id="impact" class="content-section">
         <div class="section-label">Impact</div>
-        <h2 class="section-title">Impact heading goes here.</h2>
-        <p>Impact content goes here.</p>
+        <h2 class="section-title" data-e="7">Impact heading goes here.</h2>
+        <p data-e="8">Impact content goes here.</p>
         <div class="stats-row">
           <div class="stat">
-            <div class="stat-number">—</div>
-            <div class="stat-label">Metric one</div>
+            <div class="stat-number" data-e="9">—</div>
+            <div class="stat-label" data-e="10">Metric one</div>
           </div>
           <div class="stat">
-            <div class="stat-number">—</div>
-            <div class="stat-label">Metric two</div>
+            <div class="stat-number" data-e="11">—</div>
+            <div class="stat-label" data-e="12">Metric two</div>
           </div>
           <div class="stat">
-            <div class="stat-number">—</div>
-            <div class="stat-label">Metric three</div>
+            <div class="stat-number" data-e="13">—</div>
+            <div class="stat-label" data-e="14">Metric three</div>
           </div>
         </div>
       </section>
 
       <section id="challenge1" class="content-section">
         <div class="section-label">Design Challenge 01</div>
-        <h2 class="section-title">Design challenge 01 heading goes here.</h2>
-        <p>Design challenge content goes here.</p>
+        <h2 class="section-title" data-e="15">Design challenge 01 heading goes here.</h2>
+        <p data-e="16">Design challenge content goes here.</p>
         <div class="img-block"></div>
       </section>
 
       <section id="challenge2" class="content-section">
         <div class="section-label">Design Challenge 02</div>
-        <h2 class="section-title">Design challenge 02 heading goes here.</h2>
-        <p>Design challenge content goes here.</p>
+        <h2 class="section-title" data-e="17">Design challenge 02 heading goes here.</h2>
+        <p data-e="18">Design challenge content goes here.</p>
         <div class="img-block"></div>
       </section>
 
       <section id="system" class="content-section">
         <div class="section-label">Design System</div>
-        <h2 class="section-title">Design system heading goes here.</h2>
-        <p>Design system content goes here.</p>
+        <h2 class="section-title" data-e="19">Design system heading goes here.</h2>
+        <p data-e="20">Design system content goes here.</p>
         <div class="img-row">
           <div class="img-block"></div>
           <div class="img-block"></div>
@@ -137,8 +163,8 @@
 
       <section id="next" class="content-section">
         <div class="section-label">Next Steps</div>
-        <h2 class="section-title">Next steps heading goes here.</h2>
-        <p>Next steps content goes here.</p>
+        <h2 class="section-title" data-e="21">Next steps heading goes here.</h2>
+        <p data-e="22">Next steps content goes here.</p>
         <div class="img-block"></div>
       </section>
 
@@ -159,12 +185,15 @@
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
-      <a href="../index.html#work">Work</a>
+      <a href="../index.html">Work</a>
       <a href="../builds.html">Builds</a>
       <a href="../about.html">About</a>
     </nav>
   </footer>
 
   <script src="project.js"></script>
+  <script src="../js/edit-prose.js" defer></script>
+  <script src="../js/reveal.js" defer></script>
+  <script src="../js/count-up.js" defer></script>
 </body>
 </html>

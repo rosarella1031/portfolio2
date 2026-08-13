@@ -10,17 +10,29 @@
   <link rel="icon" href="../assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+  <script>
+    /* The half-and-half layout is the default. ?plain switches it off for
+       side-by-side comparison; disabling the sheet leaves project.css alone,
+       so the fallback is exactly the previous design. */
+    if (new URLSearchParams(location.search).has('plain')) {
+      document.getElementById('split-sheet').disabled = true;
+    }
+  </script>
 </head>
 <body>
 
   <div class="page-body">
 
     <aside class="sidebar">
-      <a href="../index.html#work" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <a href="../index.html" class="back-link" aria-label="Back to projects">
+
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+
           <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
         </svg>
-        Back to Projects
+
       </a>
       <div class="sidebar-meta">
         <div class="sidebar-label">CASE STUDY</div>
@@ -70,38 +82,51 @@
 
       <section id="overview" class="content-section">
         <div class="section-label">Overview</div>
-        <h2 class="section-title">A mobile MVP for OpusClip, built to expand its reach and meet creators' on-the-go needs.</h2>
-        <p>OpusClip is a fast-growing AI video editing startup. To expand its reach and meet creators' on-the-go needs, we designed a mobile experience that makes clipping and publishing videos accessible without a desktop.</p>
-        <p>Timeline: Dec 2024 – Mar 2025 &nbsp;·&nbsp; Team: PD, PM, Eng &nbsp;·&nbsp; My role: Product Designer</p>
+        <h2 class="section-title" data-e="1">A mobile MVP for OpusClip, built to expand its reach and meet creators' on-the-go needs.</h2>
+        <p data-e="2">OpusClip is a fast-growing AI video editing startup. To expand its reach and meet creators' on-the-go needs, we designed a mobile experience that makes clipping and publishing videos accessible without a desktop.</p>
         <a href="https://apps.apple.com/us/app/opusclip-ai-video-clipping/id6743615403" target="_blank" class="project-link">
           Visit OpusClip on the App Store <span>↗</span>
         </a>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Role</div>
+            <div class="meta-v" data-e="28">Product Designer</div>
+          </div>
+          <div>
+            <div class="meta-k">Time</div>
+            <div class="meta-v" data-e="29">Dec 2024 &ndash; Mar 2025</div>
+          </div>
+          <div>
+            <div class="meta-k">Team</div>
+            <div class="meta-v" data-e="30">PD &middot; PM &middot; Eng</div>
+          </div>
+        </div>
       </section>
 
       <section id="impact" class="content-section">
         <div class="section-label">Impact</div>
-        <h2 class="section-title">Results across retention, adoption, and publish rate.</h2>
-        <p>The mobile MVP moved the needle across the metrics we scoped it for, giving creators a reason to stay in the product and publish more often.</p>
+        <h2 class="section-title" data-e="4">Results across retention, adoption, and publish rate.</h2>
+        <p data-e="5">The mobile MVP moved the needle across the metrics we scoped it for, giving creators a reason to stay in the product and publish more often.</p>
         <div class="stats-row">
           <div class="stat">
-            <div class="stat-number">4.9 ★</div>
-            <div class="stat-label">App Store rating at launch</div>
+            <div class="stat-number" data-e="6">4.9 ★</div>
+            <div class="stat-label" data-e="7">App Store rating at launch</div>
           </div>
           <div class="stat">
-            <div class="stat-number">26%</div>
-            <div class="stat-label">Day-1 retention</div>
+            <div class="stat-number" data-e="8">26%</div>
+            <div class="stat-label" data-e="9">Day-1 retention</div>
           </div>
           <div class="stat">
-            <div class="stat-number">12%</div>
-            <div class="stat-label">Desktop-to-mobile shift</div>
+            <div class="stat-number" data-e="10">12%</div>
+            <div class="stat-label" data-e="11">Desktop-to-mobile shift</div>
           </div>
         </div>
       </section>
 
       <section id="background" class="content-section">
         <div class="section-label">Background</div>
-        <h2 class="section-title">As creators increasingly film, edit, and publish on their phones, OpusClip needed a mobile experience to support their full workflow.</h2>
-        <p>OpusClip's AI clip-generation engine only lived on the web. As more creators started filming and editing entirely from their phones, the product needed a mobile presence to meet them where they already were — without waiting to get back to a desktop.</p>
+        <h2 class="section-title" data-e="12">As creators increasingly film, edit, and publish on their phones, OpusClip needed a mobile experience to support their full workflow.</h2>
+        <p data-e="13">OpusClip's AI clip-generation engine only lived on the web. As more creators started filming and editing entirely from their phones, the product needed a mobile presence to meet them where they already were — without waiting to get back to a desktop.</p>
 
         <div class="img-block"><img src="../assets/opus-background-new.png" alt="Why OpusClip needed a mobile experience" /></div>
 
@@ -109,16 +134,16 @@
           <div class="detail-problem-item">
             <h3>Business Goal</h3>
             <ul class="detail-list">
-              <li>Increase retention and expand the user base</li>
-              <li>Empower creators with on-the-go tools</li>
-              <li>Drive organic growth from the app store</li>
+              <li data-e="14">Increase retention and expand the user base</li>
+              <li data-e="15">Empower creators with on-the-go tools</li>
+              <li data-e="16">Drive organic growth from the app store</li>
             </ul>
           </div>
           <div class="detail-problem-item">
             <h3>User Needs</h3>
             <ul class="detail-list">
-              <li>Eliminates the need to transfer mobile-recorded content to a web platform.</li>
-              <li>No need to wait and monitor AI progress — preview clips and publish directly on mobile without returning to desktop.</li>
+              <li data-e="17">Eliminates the need to transfer mobile-recorded content to a web platform.</li>
+              <li data-e="18">No need to wait and monitor AI progress — preview clips and publish directly on mobile without returning to desktop.</li>
             </ul>
           </div>
         </div>
@@ -126,15 +151,15 @@
 
       <section id="process" class="content-section">
         <div class="section-label">Design Process</div>
-        <h2 class="section-title">Let's define the scope and create a lean but impactful mobile MVP.</h2>
-        <p>We scoped the mobile experience around the product's core value — transforming long videos into short clips and publishing them across platforms in one click. To deliver on this, we focused on four essential flows: video upload and preset selection, AI-powered clip generation, preview, and sharing, resulting in a lean yet impactful mobile MVP.</p>
-        <p>On the web, these flows were already well-defined but heavily desktop-oriented. When translating this flow into mobile, two key design challenges emerged.</p>
+        <h2 class="section-title" data-e="19">Let's define the scope and create a lean but impactful mobile MVP.</h2>
+        <p data-e="20">We scoped the mobile experience around the product's core value — transforming long videos into short clips and publishing them across platforms in one click. To deliver on this, we focused on four essential flows: video upload and preset selection, AI-powered clip generation, preview, and sharing, resulting in a lean yet impactful mobile MVP.</p>
+        <p data-e="21">On the web, these flows were already well-defined but heavily desktop-oriented. When translating this flow into mobile, two key design challenges emerged.</p>
       </section>
 
       <section id="challenge1" class="content-section">
         <div class="section-label">Design Challenge 01</div>
-        <h2 class="section-title">HMW help mobile users select presets effortlessly?</h2>
-        <p>We explored three directions before landing on the final flow. An all-in-one page gave users full control but caused information overload. A step-by-step wizard reduced cognitive load by presenting one choice at a time, but forced users through every option and made it hard to revisit earlier choices. The final direction — a one-page summary with a single-tap entry point — kept the flow fast and clean while still letting users jump back to any choice.</p>
+        <h2 class="section-title" data-e="22">HMW help mobile users select presets effortlessly?</h2>
+        <p data-e="23">We explored three directions before landing on the final flow. An all-in-one page gave users full control but caused information overload. A step-by-step wizard reduced cognitive load by presenting one choice at a time, but forced users through every option and made it hard to revisit earlier choices. The final direction — a one-page summary with a single-tap entry point — kept the flow fast and clean while still letting users jump back to any choice.</p>
         <div class="img-block"><img src="../assets/opus-challenge1-1.png" alt="Design Challenge 01 exploration 1" /></div>
         <div class="img-block"><img src="../assets/opus-challenge1-2.png" alt="Design Challenge 01 exploration 2" /></div>
         <div class="img-block"><img src="../assets/opus-challenge1-3.png" alt="Design Challenge 01 exploration 3" /></div>
@@ -143,15 +168,15 @@
 
       <section id="challenge2" class="content-section">
         <div class="section-label">Design Challenge 02</div>
-        <h2 class="section-title">HMW help mobile users easily preview and compare AI-generated clips?</h2>
-        <p>Our first pass let users click into a clip and scroll through duration, preview, transcript, and scoring rationale — easy to compare, but slow, and switching clips meant going back to the list. We then tried swiping left and right between clips, which sped up switching but conflicted with the system's back gesture. The final design kept the fast switching of swiping while resolving the gesture conflict, so comparing clips finally felt as quick as scrolling a feed.</p>
+        <h2 class="section-title" data-e="24">HMW help mobile users easily preview and compare AI-generated clips?</h2>
+        <p data-e="25">Our first pass let users click into a clip and scroll through duration, preview, transcript, and scoring rationale — easy to compare, but slow, and switching clips meant going back to the list. We then tried swiping left and right between clips, which sped up switching but conflicted with the system's back gesture. The final design kept the fast switching of swiping while resolving the gesture conflict, so comparing clips finally felt as quick as scrolling a feed.</p>
         <div class="img-block"><img src="../assets/opus-challenge2-1-new.png" alt="Design Challenge 02 final design" /></div>
       </section>
 
       <section id="next" class="content-section">
         <div class="section-label">Next Steps</div>
-        <h2 class="section-title">Bring advanced editing tools to mobile.</h2>
-        <p>The launched version currently focuses on the core flows defined in our mobile MVP. As the next step, we plan to bring advanced video-editing capabilities from the web to mobile — including editing tools, caption customization, and more. This will empower users with greater flexibility and truly enable on-the-go video creation.</p>
+        <h2 class="section-title" data-e="26">Bring advanced editing tools to mobile.</h2>
+        <p data-e="27">The launched version currently focuses on the core flows defined in our mobile MVP. As the next step, we plan to bring advanced video-editing capabilities from the web to mobile — including editing tools, caption customization, and more. This will empower users with greater flexibility and truly enable on-the-go video creation.</p>
         <div class="img-block"><img src="../assets/next-step.png" alt="Next steps for OpusClip mobile" /></div>
       </section>
 
@@ -172,12 +197,15 @@
   <footer>
     <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
     <nav class="footer-nav">
-      <a href="../index.html#work">Work</a>
+      <a href="../index.html">Work</a>
       <a href="../builds.html">Builds</a>
       <a href="../about.html">About</a>
     </nav>
   </footer>
 
   <script src="project.js"></script>
+  <script src="../js/edit-prose.js" defer></script>
+  <script src="../js/reveal.js" defer></script>
+  <script src="../js/count-up.js" defer></script>
 </body>
 </html>

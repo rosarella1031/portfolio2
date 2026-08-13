@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="assets/favicon.png" type="image/png" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
   <style>
     /* ===== canvas shell ===== */
     html, body { height: 100%; overflow: hidden; }
@@ -19,7 +20,13 @@
       top: var(--nav-h);
       overflow: hidden;
       cursor: grab;
-      background: var(--bg);
+      /* the same FigJam dot ground the homepage deck uses — it also gives the
+         drag somewhere to read against, which a flat white cannot */
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
       touch-action: none;
     }
     .canvas-viewport.dragging,
@@ -52,7 +59,7 @@
     }
     /* the two award pieces carry the page — bigger type, always on top */
     .item--hero { z-index: 3; }
-    .item--hero .item-name { font-size: 0.92rem; }
+    .item--hero .item-name { font-size: 0.875rem; }
     .item-media {
       width: 100%;
       overflow: hidden;
@@ -70,15 +77,15 @@
 
     .item-name {
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
-      font-size: 0.78rem;
+      font-size: 0.875rem;
       font-weight: 500;
       color: var(--text);
       margin-top: 0.6rem;
     }
     .item-desc {
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
-      font-size: 0.74rem;
-      line-height: 1.5;
+      font-size: 0.875rem;
+      line-height: 1.45;
       color: var(--text-2);
       margin-top: 0.15rem;
       max-width: 30ch;
@@ -114,7 +121,7 @@
       left: 1.5rem; bottom: 1.5rem;
       z-index: 350;
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       color: var(--text-3);
@@ -171,7 +178,7 @@
       color: var(--text-3);
     }
     .edit-panel-body {
-      padding: 10px;
+      padding: 12px;
       overflow: auto;
       white-space: pre;
       line-height: 1.6;
@@ -229,7 +236,7 @@
     }
     .panel-label {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.7rem; letter-spacing: 0.06em;
+      font-size: 0.75rem; letter-spacing: 0.06em;
       text-transform: uppercase; color: var(--text-3);
     }
     .panel-title {
@@ -238,12 +245,12 @@
       margin-top: 0.4rem;
     }
     .panel-desc {
-      font-size: 0.9rem; line-height: 1.55; color: #767676;
+      font-size: 1rem; line-height: 1.6; color: #767676;
     }
     .panel-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
     .panel-tags span {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase;
+      font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase;
       color: var(--text-3); border: 1px solid var(--border);
       padding: 0.18rem 0.45rem; white-space: nowrap;
     }
@@ -251,7 +258,7 @@
     .panel-links { display: flex; flex-direction: column; gap: 0.6rem; }
     .panel-links a {
       display: inline-flex; align-items: center; gap: 0.4rem;
-      font-size: 0.85rem; color: var(--text); transition: color 0.2s;
+      font-size: 0.875rem; color: var(--text); transition: color 0.2s;
     }
     .panel-links a:hover { color: var(--text-2); }
     .panel-links .arrow { color: var(--text-3); }
@@ -276,7 +283,7 @@
       position: absolute; top: 1rem; right: 1rem;
       width: 30px; height: 30px;
       border: 1px solid var(--border); background: var(--bg);
-      cursor: pointer; font-size: 0.85rem; line-height: 1; color: var(--text-2);
+      cursor: pointer; font-size: 0.875rem; line-height: 1; color: var(--text-2);
       display: flex; align-items: center; justify-content: center;
       transition: background 0.2s, color 0.2s;
       z-index: 2;
@@ -331,7 +338,7 @@
       <span class="logo-title">PRODUCT DESIGNER</span>
     </a>
     <nav>
-      <a href="index.html#work">Work</a>
+      <a href="index.html">Work</a>
       <a href="builds.html" class="active">Builds</a>
       <a href="about.html">About</a>
     </nav>
@@ -394,7 +401,7 @@
         <div class="item-media">
           <video src="assets/hive-1.webm" autoplay loop muted playsinline></video>
         </div>
-        <div class="item-name">Hive AI</div>
+        <div class="item-name">Hive.ai</div>
         <div class="item-desc">Red Dot winner. Branding, guidelines and motion.</div>
       </a>
 
@@ -651,6 +658,10 @@
 
     function apply() {
       canvas.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      // The dot ground lives on the fixed viewport, so it has to be scrolled
+      // by hand — otherwise the cards move and the surface under them does
+      // not, which reads as stickers sliding over a printed backdrop.
+      vp.style.backgroundPosition = `${x - 1}px ${y - 1}px`;
       if (vw && vh) {
         const sx = mini.clientWidth / CW, sy = mini.clientHeight / CH;
         miniView.style.left   = (-x * sx) + 'px';
@@ -853,5 +864,6 @@
     measure();
   })();
   </script>
+  <script src="js/rail.js" defer></script>
 </body>
 </html>

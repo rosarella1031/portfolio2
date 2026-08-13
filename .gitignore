@@ -36,3 +36,13 @@ assets/pretext.mp4
 
 .DS_Store
 .claude/
+
+# Working backups made while editing — local safety nets, not site content
+*.bak
+*.dotbak
+*.deckbak
+*.panelbak
+*.typebak
+*.prose-bak
+*.predelete
+*.predelete2
