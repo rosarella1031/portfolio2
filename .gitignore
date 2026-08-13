@@ -37,12 +37,8 @@ assets/pretext.mp4
 .DS_Store
 .claude/
 
-# Working backups made while editing — local safety nets, not site content
-*.bak
-*.dotbak
-*.deckbak
-*.panelbak
-*.typebak
-*.prose-bak
-*.predelete
-*.predelete2
+# Working backups made while editing — local safety nets, not site content.
+# One pattern rather than a growing list of suffixes: every snapshot ends in
+# "bak" (.bak, .herobak, .tocbak, .filebak …) or starts a .predelete series.
+*bak
+*.predelete*

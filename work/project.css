@@ -41,6 +41,11 @@
 /* ===== Back link (inside sidebar) ===== */
 /* Just a boxed arrow — the label was redundant next to a case study title. */
 .back-link {
+  position: fixed;
+  top: 2rem;
+  left: 1.75rem;
+  z-index: 45;
+  background: var(--bg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,104 +66,123 @@
   min-height: 100vh;
 }
 
-/* ===== Sidebar ===== */
+/* ===== Contents rail =====
+   At rest it is a column of tick marks on the left edge, one per section, the
+   current one inked in. Hovering opens it into a labelled card. The markup is
+   the old sidebar's — each .nav-item is a tick, and its .sidebar-text is the
+   label that appears once the rail is open. */
 .sidebar {
   position: fixed;
-  top: 0;
   left: 0;
-  width: 240px;
-  height: 100vh;
-  padding: 2rem;
+  /* Centred with auto margins, not translateY: a transformed ancestor turns
+     position: fixed on its children into position: absolute, which parked the
+     back arrow next to the rail instead of in the page corner. */
+  top: 0;
+  bottom: 0;
+  height: fit-content;
+  margin-block: auto;
+  width: auto;
+  padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  overflow-y: auto;
-  background: var(--bg);
-  z-index: 10;
+  gap: 0;
+  overflow: visible;
+  background: none;
+  z-index: 40;
 }
 
-.sidebar-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
+/* the old panel heading is gone — the ticks are the whole rail now */
+.sidebar-meta { display: none; }
 
-.sidebar-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-3);
-}
-
-.sidebar-project-name {
-  font-family: 'EB Garamond', serif;
-  font-size: 1.25rem;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--text);
-  line-height: 1.3;
-}
-
-/* ===== Sidebar nav ===== */
+/* the card that grows behind the ticks */
 .sidebar-nav {
+  position: relative;
   display: flex;
   flex-direction: column;
+  /* stretch, not center: centred items shrink to their own label, so every
+     row starts at a different x and the list reads as centred text */
+  align-items: stretch;
+  gap: 0;
+  padding: 0.35rem;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
+  transition: background .28s, box-shadow .28s;
+}
+/* the trigger is the list itself, not the whole rail — the back arrow is a
+   child of .sidebar and hovering it used to open the contents */
+.sidebar-nav:hover,
+.sidebar.is-open .sidebar-nav {
+  background: var(--bg);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.05), 0 12px 32px rgba(90,70,45,.10);
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
+  gap: 0;
+  /* Closed, a row is only as tall as its tick: the label keeps a line box even
+     at zero width, and eleven of those made a column down half the screen. */
+  padding: 5px 0.35rem;
+  line-height: 0;
+  border-radius: 8px;
+  /* same mono as every other bit of meta on the site — the section labels,
+     ROLE/TIME/TEAM, the figure captions */
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  color: var(--text-3);
+  letter-spacing: 0.06em;
+  color: var(--text-2);
   text-transform: uppercase;
   text-decoration: none;
   position: relative;
-  transition: color 0.2s;
-  line-height: 1.45;
+  transition: background .2s, color .2s;
 }
+.nav-item::after { display: none; }
+.sidebar-dot { display: none; }
 
-/* Connecting vertical line between dots */
-.nav-item:not(:last-child)::after {
+/* the tick: a rule that stands in for the label while the rail is shut */
+.nav-item::before {
   content: '';
-  position: absolute;
-  left: 3.5px;
-  top: calc(0.55rem + 8px);
-  width: 1px;
-  height: calc(100% - 4px);
+  flex: none;
+  width: 22px;
+  height: 1.5px;
+  border-radius: 1px;
   background: var(--border);
-  z-index: -1;
+  transition: width .28s cubic-bezier(.33,1,.68,1), margin .28s, background .2s, height .2s;
 }
+.nav-item.active::before { background: var(--text); height: 2px; }
+.sidebar-nav:hover .nav-item::before,
+.sidebar.is-open .nav-item::before { width: 0; margin-right: 0; }
 
-.nav-item:hover { color: var(--text-2); }
-
-.nav-item .sidebar-text {
-  transition: transform 0.2s;
+.sidebar-text {
   display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: max-width .28s cubic-bezier(.33,1,.68,1), opacity .22s;
 }
-.nav-item:hover .sidebar-text { transform: translateX(3px); }
+.sidebar-nav:hover .sidebar-text,
+.sidebar.is-open .sidebar-text { max-width: 14rem; opacity: 1; }
 
-.nav-item.active { color: var(--text); }
+.sidebar-nav:hover .nav-item,
+.sidebar.is-open .nav-item { padding: 0.3rem 0.5rem; line-height: 1.45; }
 
-.sidebar-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #E5E5E5;
-  flex-shrink: 0;
-  transition: background 0.2s;
-}
-.nav-item.active .sidebar-dot { background: var(--text); }
+.sidebar-nav:hover .nav-item:hover,
+.sidebar.is-open .nav-item:hover { background: var(--tag-bg); color: var(--text); }
+.sidebar-nav:hover .nav-item.active,
+.sidebar.is-open .nav-item.active { background: var(--tag-bg); color: var(--text); }
+
+/* The back arrow is a child of the rail but pinned to the corner on its own —
+   it must not collapse with the ticks. */
 
 /* ===== Main content ===== */
 .content {
   flex: 1;
   min-width: 0;
-  margin-left: 240px;
-  padding: 5rem 6rem 8rem;
+  margin-left: 0;
+  padding: 5rem 6rem 8rem 7.5rem;
 }
 
 /* prose column — constrains text to readable width */
@@ -343,6 +367,9 @@
 
 /* ===== Content sections ===== */
 .content-section {
+  /* Jumping from the contents used to land the heading hard against the top
+     edge of the window. This is the breathing room the anchor lands with. */
+  scroll-margin-top: 5rem;
   margin-bottom: 4.5rem;
   display: flex;
   flex-direction: column;
@@ -370,7 +397,9 @@
 }
 
 .content-section p {
-  font-size: 1rem;
+  /* one step up the scale — at 583px the 16px setting ran 74 characters a
+     line, past what reads comfortably. Bigger type, shorter lines. */
+  font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: 0;
@@ -380,7 +409,7 @@
 }
 
 .content-section ol {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: 0;
@@ -765,7 +794,7 @@
 
 /* ===== Footer (project pages) ===== */
 .page-body ~ footer {
-  padding-left: calc(280px + 6rem);
+  padding-left: 7.5rem;
 }
 
 /* ===== Responsive ===== */
@@ -821,40 +850,5 @@
      items size to their own content and drag the whole page sideways. */
   .scroll-gallery { max-width: 100%; }
   .scroll-gallery-item { width: 100%; max-width: 100%; }
-}
-
-/* ===== Sidebar left-align override (dot version) ===== */
-@media (min-width: 769px) {
-
-.sidebar {
-  width: 280px;
-  padding: 48px 32px;
-  align-items: flex-start;
-}
-
-.sidebar-nav {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  text-align: left;
-}
-
-.nav-item .sidebar-text {
-  text-align: left;
-}
-
-.content {
-  margin-left: 280px;
-}
-
 }
 

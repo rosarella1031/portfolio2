@@ -103,25 +103,24 @@
     .see-all:hover { background: #E4E0D8; }
 
     /* ── hero ─────────────────────────────────────────────────────────
-       Copied from index.html unchanged — same markup, same type, same
-       centring. Only the dot ground differs: here it comes from body. */
+       Type at the top, a hand of cards fanned underneath. The cards overlap
+       and each is rotated a few degrees; hovering one straightens it, lifts
+       it and brings it to the front. */
     .hero {
       position: relative;
-      /* short by exactly the strip, so the first card's tab is the only thing
-         showing at the fold — the card body starts on the viewport edge */
       height: calc(100vh - var(--gap) - var(--tab-h));
-      overflow: hidden;
-    }
-    .hero-content {
-      position: absolute;
-      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 1.75rem;
-      padding-left: var(--left);
-      padding-right: var(--pad-x);
+      padding: clamp(3rem, 8vh, 5.5rem) var(--pad-x) 0 var(--left);
+      overflow: hidden;
+    }
+    /* the rule is gone but its space is not — removing the element would pull
+       the whole hero up, and nothing else is meant to move */
+    .hero-rule {
+      width: 80px; height: 1px;
+      background: none;
+      margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
     }
     .hero-intro {
       max-width: 34rem;
@@ -134,10 +133,104 @@
     .hero-intro p + p { margin-top: 0.75rem; }
     .hero-intro p:first-child {
       font-family: 'EB Garamond', serif;
-      font-size: 1.75rem;
+      font-size: clamp(2rem, 4vw, 3.125rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
       color: var(--text);
+      margin-bottom: 0.5rem;
     }
     .hero-intro-highlight { font-weight: 500; color: var(--text); }
+
+    .fan {
+      position: relative;
+      width: min(46rem, 100%);
+      /* a block of its own height, not the leftover space — with flex:1 the
+         cards anchored to the bottom of the hero and sank far below the type */
+      flex: 1;
+      margin-top: clamp(1.5rem, 7vh, 5rem);
+      transform: scale(0.8) translateY(120px);
+      opacity: 0;
+      transition: transform .9s cubic-bezier(.16, 1, .3, 1),
+                  opacity .7s cubic-bezier(.16, 1, .3, 1);
+    }
+    .fan.is-in { transform: none; opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .fan { transform: none; opacity: 1; transition: none; }
+    }
+
+    /* One card is always open, centred and square-on above the others; the
+       rest stay fanned along the bottom, each showing just its name. */
+    .fan-card {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: var(--w);
+      aspect-ratio: 5 / 6;
+      border: 0;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+      transform: translateX(-50%) translateX(var(--dx)) translateY(var(--dy)) rotate(var(--rot));
+      transform-origin: 50% 100%;
+      transition: transform .5s cubic-bezier(.33, 1, .68, 1),
+                  opacity .3s cubic-bezier(.33, 1, .68, 1);
+      z-index: var(--z);
+    }
+    .fan-card .shot {
+      width: 100%; height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--tile);
+      box-shadow: 0 0 0 1px rgba(26,24,23,.06), 0 2px 6px rgba(90,70,45,.07);
+      display: flex;
+      flex-direction: column;
+    }
+    .fan-card .ph {
+      flex: 1;
+      display: grid; place-items: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    /* name on the closed cards, full copy only once open */
+    .fan-card .copy {
+      padding: 0 0.85rem 0.85rem;
+      text-align: left;
+    }
+    .fan-card .copy h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: 0.95rem;
+      line-height: 1.15;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0;
+    }
+    .fan-card .copy p {
+      margin: 0.4rem 0 0;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      color: #747474;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .4s cubic-bezier(.33,1,.68,1), opacity .3s;
+    }
+
+    /* the open one */
+    .fan-card.is-open {
+      top: 0;
+      transform-origin: 50% 0;
+      transform: translateX(-50%) rotate(0deg) scale(1.4);
+      z-index: 30;
+    }
+    .fan-card.is-open .shot {
+      box-shadow: 0 0 0 1px rgba(26,24,23,.07), 0 18px 44px rgba(90,70,45,.14);
+    }
+    .fan-card.is-open .copy h2 { font-size: 1.35rem; }
+    .fan-card.is-open .copy p { max-height: 8rem; opacity: 1; }
 
     /* ── head row ─────────────────────────────────────────────────────── */
     .band-head {
@@ -314,11 +407,58 @@
 <body>
 
   <section class="hero">
-    <div class="hero-content">
-      <div class="hero-intro">
-        <p>Hi, I'm Faye!</p>
-        <p>I'm a product designer with 3 years of experience, focused on <span class="hero-intro-highlight">AI experiences</span> and <span class="hero-intro-highlight">complex systems</span>.</p>
-      </div>
+    <div class="hero-rule"></div>
+    <div class="hero-intro">
+      <p>Hi, I'm Faye!</p>
+      <p>I'm a product designer with 3 years of experience, focused on <span class="hero-intro-highlight">AI experiences</span> and <span class="hero-intro-highlight">complex systems</span>.</p>
+    </div>
+
+    <div class="fan" id="fan" style="--fan-lift: 5rem">
+      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-12.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>AI experiences</h2>
+            <p>Agentic tools where the interface has to make an uncertain model checkable.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-6.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Complex systems</h2>
+            <p>Untangling workflows that grew by accretion, and giving them a spine again.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.4rem; --dx:0rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>0 &rarr; 1</h2>
+            <p>Founding design: research, system, and the first shipped thing.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.2rem; --dx:6.1rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Design systems</h2>
+            <p>Patterns built to hold for the screens nobody has drawn yet.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:13.1rem; --dx:13.1rem;  --dy:188px; --rot:5deg;  --z:5; --tile:#EDEAE4">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Play</h2>
+            <p>Small things built for fun, which is where most of the ideas start.</p>
+          </div>
+        </div>
+      </button>
     </div>
   </section>
 
@@ -407,6 +547,29 @@
     <a href="builds.html" style="border-bottom:1px solid currentColor; padding-bottom:2px; align-self:flex-start">Builds &rarr;</a>
   </div>
   </div>
+
+  <script>
+  (function () {
+    /* One card is always open. Clicking another hands it over; there is no
+       closed state, which is what keeps the hero from ever looking empty. */
+    const fan = document.getElementById('fan');
+    if (fan) {
+      requestAnimationFrame(() => requestAnimationFrame(() => fan.classList.add('is-in')));
+      setTimeout(() => fan.classList.add('is-in'), 400);   // rAF is paused in some viewers
+
+      const cards = [...fan.querySelectorAll('.fan-card')];
+      const clear = () => cards.forEach(o => o.classList.remove('is-open'));
+      cards.forEach(c => c.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = c.classList.contains('is-open');
+        clear();
+        if (!open) c.classList.add('is-open');
+      }));
+      addEventListener('click', clear);
+      addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
+    }
+  })();
+  </script>
 
   <script>
   (function () {

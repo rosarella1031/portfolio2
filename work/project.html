@@ -6,7 +6,7 @@
   <title>Brix AI Talent Search — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Sans+Condensed:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
   <link rel="stylesheet" href="project-split.css" id="split-sheet" />
@@ -189,6 +189,21 @@
   </div>
 
   <script src="project.js"></script>
+  <script>
+  /* toc-open: hover opens the contents rail on a mouse, but a touch screen has
+     no hover — tapping the ticks has to work too. */
+  (function () {
+    const rail = document.querySelector('.sidebar');
+    if (!rail) return;
+    rail.addEventListener('click', e => {
+      if (e.target.closest('.nav-item')) { rail.classList.remove('is-open'); return; }
+      e.stopPropagation();
+      rail.classList.toggle('is-open');
+    });
+    addEventListener('click', () => rail.classList.remove('is-open'));
+    addEventListener('keydown', e => { if (e.key === 'Escape') rail.classList.remove('is-open'); });
+  })();
+  </script>
   <script src="../js/reveal.js" defer></script>
   <script src="../js/count-up.js" defer></script>
 </body>

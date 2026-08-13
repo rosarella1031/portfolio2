@@ -11,160 +11,142 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/rail.css" />
   <style>
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5rem;
-      align-items: start;
-    }
-
-    .about-photo {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      overflow: hidden;
-    }
-
-    /* FigJam dot grid behind the collage, matching the deck's first and last
-       screens. On its own layer so the mask fades only the dots, not the
-       photos sitting on top. */
-    .about-photo::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
+    /* Dot ground for the whole page, so the right-hand text sits on the same
+       surface the deck and builds canvas use. */
+    body {
+      background-color: var(--bg);
       background-image: radial-gradient(circle at 1px 1px,
                         rgba(26, 24, 23, 0.16) 1px, transparent 0);
       background-size: 22px 22px;
       background-position: -1px -1px;
-      -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
-      mask-image: linear-gradient(to right, black 80%, transparent 100%);
-      pointer-events: none;
     }
-    /* the hover-colour grid it replaced — delete this line to bring it back.
-       Scoped past .about-photo-grid's own `display: grid`, which is declared
-       further down. */
-    .about-photo > .about-photo-grid { display: none; }
 
-    .about-photo-grid {
-      position: absolute;
-      inset: 0;
+    .about-grid {
       display: grid;
-      z-index: 0;
-      mask-image: linear-gradient(to right, black 80%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+      align-items: start;
     }
 
-    .about-photo-grid-cell {
-      position: relative;
-      border-right: 1px solid rgba(33, 33, 33, 0.06);
-      border-bottom: 1px solid rgba(33, 33, 33, 0.06);
+    /* ── the file ───────────────────────────────────────────────────────
+       A frame that never exceeds the screen. The sheet in front fills it; the
+       ones still to come wait at the bottom with just their tabs showing, and
+       climb into the frame as you scroll. Sticky alone cannot do that — a
+       sticky sheet has no resting place other than its own flow position — so
+       the vertical offsets are driven from script. */
+    .file-track { position: relative; }
+    .file {
+      --tab-h: 34px;
+      --tab-w: 8.5rem;
+      --pin: calc(var(--tab-h) + 3rem);
+      position: sticky;
+      top: var(--pin);
+      height: calc(100vh - var(--pin));
+      /* Clip at the bottom edge only. A waiting sheet is a full-height piece
+         of paper parked below the frame; without this its whole face hangs out
+         underneath and the tabs read as detached strips. The negative top
+         keeps the overhanging tabs — overflow: hidden would cut those off. */
+      clip-path: inset(-60px 0 0 0);
+      touch-action: none;
     }
-
-    .about-photo-grid-cell::before {
-      content: '';
+    .sheet {
       position: absolute;
-      inset: 0;
-      background: var(--cell-color, transparent);
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-
-    .about-photo-grid-cell.active::before {
-      opacity: 0.55;
-    }
-
-    .about-photo-grid-cell-hex {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      margin-top: 4px;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-family: var(--ff-label);
-      font-size: var(--hex-font-size, 0.6rem);
-      letter-spacing: 0;
-      color: var(--text);
-      opacity: 0;
-      transition: opacity 0.6s ease;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .about-photo-grid-cell.active .about-photo-grid-cell-hex {
-      opacity: 1;
-    }
-    .about-photo-item img {
-      width: 100%;
+      left: 0; right: 0; top: 0;
       height: 100%;
-      display: block;
-      pointer-events: none;
+      transform: translateY(var(--y, 0px));
+      transition: transform .45s cubic-bezier(.33, 1, .68, 1);
     }
-    .about-photo-item {
+    .sheet-face { height: 100%; background: var(--paper); }
+
+    .tab {
+      position: absolute;
+      top: calc(-1 * var(--tab-h));
+      left: calc(var(--i) * var(--tab-w));
+      width: var(--tab-w);
+      /* One pixel past its own height, so the tab overlaps the sheet it
+         belongs to. The clip-path that cuts the angled corner antialiases its
+         bottom edge into a half-transparent row, and the card behind shows
+         through it as a hairline seam. */
+      height: calc(var(--tab-h) + 1px);
+      background: var(--paper);
+      border: 0;
+      cursor: pointer;
+      display: block;
+      text-align: left;
+      padding-left: 0.9rem;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      line-height: var(--tab-h);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+    }
+
+    .sheet-no {
+      position: absolute;
+      right: 1.1rem; bottom: 0.9rem;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: rgba(26, 24, 23, 0.32);
+    }
+
+    /* ── the stickers, still draggable ─────────────────────────────────── */
+    .sticker {
+      position: absolute;
+      z-index: 6;
       cursor: grab;
       touch-action: none;
       user-select: none;
     }
-    .about-photo-item.dragging {
-      cursor: grabbing;
-      z-index: 5;
-    }
+    .sticker img { width: 100%; height: 100%; display: block; pointer-events: none; }
+    .sticker.dragging { cursor: grabbing; z-index: 9; }
 
-    /* Circular photo — polaroid-style frame, same treatment as the rectangular one */
-    .about-photo-1 {
-      position: absolute;
-      width: 62%;
-      aspect-ratio: 1 / 1;
-      top: 0;
-      left: 4%;
+    .sticker--1 {
+      width: 44%; aspect-ratio: 1 / 1;
+      top: 8%; left: 6%;
       transform: rotate(-4deg);
-      z-index: 2;
       border-radius: 50%;
       overflow: hidden;
       background: var(--bg-card);
       border: 5px solid var(--bg);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+      box-shadow: 0 14px 28px rgba(26,24,23,0.16);
     }
-    .about-photo-1 img { object-fit: cover; }
-
-    /* Rectangular photo — polaroid-style frame */
-    .about-photo-2 {
-      position: absolute;
-      width: 58%;
-      aspect-ratio: 4 / 5;
-      bottom: 2%;
-      right: 0;
+    .sticker--2 {
+      width: 46%; aspect-ratio: 3 / 4;
+      right: 4%; bottom: 16%;
       transform: rotate(5deg);
-      z-index: 1;
       overflow: hidden;
       background: var(--bg-card);
-      border: 5px solid var(--bg);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+      border: 6px solid var(--bg);
+      box-shadow: 0 14px 28px rgba(26,24,23,0.16);
     }
-    .about-photo-2 img { object-fit: cover; }
+    .sticker--3 {
+      width: 26%;
+      left: 8%; bottom: 4%;
+      transform: rotate(-8deg);
+      filter: drop-shadow(0 5px 0 var(--bg)) drop-shadow(0 -5px 0 var(--bg))
+              drop-shadow(0 10px 18px rgba(26,24,23,0.18));
+    }
 
-    /* Snail — transparent cutout, sticker-style outline + shadow hugging its own silhouette */
-    .about-photo-3 {
-      position: absolute;
-      width: 30%;
-      aspect-ratio: 329 / 308;
-      top: 4%;
-      right: 4%;
-      transform: rotate(8deg);
-      z-index: 3;
+    /* ── right column: text straight on the dots ───────────────────────── */
+    /* Nothing between the last sheet landing and the end of the page — the
+       bottom padding was showing as a band of bare dots after the card had
+       already settled. */
+    main { padding-bottom: 0; }
+
+    .about-content {
+      position: sticky;
+      top: calc(34px + 3rem);
     }
-    .about-photo-3 img {
-      object-fit: contain;
-      filter:
-        drop-shadow(5px 0 0 var(--bg))
-        drop-shadow(-5px 0 0 var(--bg))
-        drop-shadow(0 5px 0 var(--bg))
-        drop-shadow(0 -5px 0 var(--bg))
-        drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+    .about-panel {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s cubic-bezier(.33,1,.68,1);
     }
+    .about-panel:not(:first-child) { position: absolute; inset: 0; }
+    .about-panel.is-open { opacity: 1; pointer-events: auto; position: relative; inset: auto; }
 
     .about-content {
       display: flex;
@@ -339,29 +321,48 @@
   </header>
 
   <main>
-    <div class="about-grid fade-in">
+    <div class="about-grid">
 
-      <div class="about-photo">
-        <div class="about-photo-grid" id="aboutPhotoGrid"></div>
-        <div class="about-photo-item about-photo-1">
-          <img src="assets/about1.png" alt="Xuefei Wang" />
+      <!-- Left: the file. Tabs pick a sheet; the sheet picks the text on the
+           right. The stickers sit on top of whatever is in front. -->
+      <div class="file-track" id="track">
+      <div class="file" id="file">
+        <div class="sheet" data-i="0" style="--i:0; --paper:#EFEDF9">
+          <button class="tab" style="--i:0">Profile 01</button>
+          <div class="sheet-face"></div>
+          <span class="sheet-no">AB&ndash;01</span>
+          <div class="sticker sticker--1"><img src="assets/about1.png" alt="Xuefei Wang" /></div>
+          <div class="sticker sticker--2"><img src="assets/about2.png" alt="Xuefei Wang" /></div>
+          <div class="sticker sticker--3"><img src="assets/snail.png" alt="Snail" /></div>
         </div>
-        <div class="about-photo-item about-photo-2">
-          <img src="assets/about2.png" alt="Xuefei Wang" />
+        <div class="sheet" data-i="1" style="--i:1; --paper:#EDE6E5">
+          <button class="tab" style="--i:1">Off hours 02</button>
+          <div class="sheet-face"></div>
+          <span class="sheet-no">AB&ndash;02</span>
         </div>
-        <div class="about-photo-item about-photo-3">
-          <img src="assets/snail.png" alt="Snail" />
+        <div class="sheet" data-i="2" style="--i:2; --paper:#E3F1EE">
+          <button class="tab" style="--i:2">Contact 03</button>
+          <div class="sheet-face"></div>
+          <span class="sheet-no">AB&ndash;03</span>
         </div>
+
+      </div>
       </div>
 
       <div class="about-content">
 
-        <div class="about-intro">
+        <div class="about-panel is-open" data-panel="0">
           <div class="about-bio">
             <p>Hi, I'm Faye!</p>
             <p>My name is Xuefei Wang, and I usually go by Faye. I'm a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
             <p>Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
             <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+            <p>Currently based in New York.</p>
+          </div>
+        </div>
+
+        <div class="about-panel" data-panel="1">
+          <div class="about-bio">
             <p>Outside of design, I'm usually:</p>
             <ul class="about-bio-list">
               <li>listening to music and playing drums</li>
@@ -369,18 +370,17 @@
               <li>making something delicious in the kitchen</li>
               <li>playing with my cat</li>
             </ul>
-            <p>Currently based in New York. Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+            <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
           </div>
         </div>
 
-        <div class="about-section">
-          <div class="about-section-label">Contact</div>
+        <div class="about-panel" data-panel="2">
           <div class="about-links">
             <a href="mailto:xuefeiw1031@gmail.com" class="about-link">
-              xuefeiw1031@gmail.com <span>↗</span>
+              xuefeiw1031@gmail.com <span>&#8599;</span>
             </a>
             <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" class="about-link">
-              LinkedIn <span>↗</span>
+              LinkedIn <span>&#8599;</span>
             </a>
           </div>
         </div>
@@ -389,148 +389,93 @@
     </div>
   </main>
 
-  <footer>
-    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
-    <nav class="footer-nav">
-      <a href="index.html">Work</a>
-      <a href="builds.html">Builds</a>
-      <a href="about.html">About</a>
-    </nav>
-  </footer>
 
   <script src="js/main.js"></script>
   <script>
-    // Photo area hover grid — same interaction as the homepage hero, mirrored here
-    (function () {
-      const grid = document.getElementById('aboutPhotoGrid');
-      if (!grid) return;
-      if (getComputedStyle(grid).display === 'none') return;   // dots are in use
+  (function () {
+    const track  = document.getElementById('track');
+    const file   = document.getElementById('file');
+    if (!track || !file) return;
+    const sheets = [...file.querySelectorAll('.sheet')];
+    const panels = [...document.querySelectorAll('.about-panel')];
+    const n = sheets.length;
+    const STEP = 0.7;                       // screens of scroll per sheet
 
-      // match the hero grid's cell size (hero spans ~full viewport width at 24 cols)
-      const palette = [
-        '#FF6B6B', '#FF922B', '#FFD43B', '#94D82D',
-        '#2FBF71', '#20C997', '#22B8CF', '#4DABF7',
-        '#339AF0', '#5C7CFA', '#845EF7', '#CC5DE8',
-        '#F06595', '#FF8787', '#FCC419', '#69DB7C'
-      ];
+    // the track has to be tall enough to hold one screen plus a step per sheet
+    function sizeTrack() {
+      track.style.height = (innerHeight + (n - 1) * STEP * innerHeight) + 'px';
+    }
 
-      function makeCell() {
-        const cell = document.createElement('div');
-        cell.className = 'about-photo-grid-cell';
+    /* Where a sheet waits before its turn: parked at the bottom of the frame
+       with only its tab above the edge, and one tab-height per sheet still to
+       come, so the waiting tabs stack up rather than land on each other. */
+    function restY(i) {
+      const tab = parseFloat(getComputedStyle(file).getPropertyValue('--tab-h')) || 34;
+      return file.clientHeight - (n - 1 - i) * tab;
+    }
 
-        const hex = document.createElement('span');
-        hex.className = 'about-photo-grid-cell-hex';
-        cell.appendChild(hex);
+    let last = -1;
+    function sync() {
+      const top = track.getBoundingClientRect().top;
+      const span = (n - 1) * STEP * innerHeight;
+      const p = span > 0 ? Math.max(0, Math.min(n - 1, -top / (span / (n - 1)))) : 0;
 
-        let touchHideTimer;
-        const reveal = () => {
-          const color = palette[Math.floor(Math.random() * palette.length)];
-          cell.style.setProperty('--cell-color', color);
-          hex.textContent = color;
-          cell.classList.add('active');
-        };
-
-        cell.addEventListener('mouseenter', reveal);
-        cell.addEventListener('mouseleave', () => {
-          cell.classList.remove('active');
-        });
-
-        // touch devices have no hover — tap to reveal, auto-hide after a beat
-        cell.addEventListener('touchstart', () => {
-          reveal();
-          clearTimeout(touchHideTimer);
-          touchHideTimer = setTimeout(() => cell.classList.remove('active'), 1800);
-        }, { passive: true });
-
-        return cell;
-      }
-
-      function buildGrid() {
-        const heroCellSize = window.innerWidth / 24;
-        const cols = Math.max(1, Math.round(grid.clientWidth / heroCellSize));
-        const cellSize = grid.clientWidth / cols;
-        const rows = Math.max(1, Math.round(grid.clientHeight / cellSize));
-
-        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-        grid.style.setProperty('--hex-font-size', Math.max(6, Math.min(11, cellSize / 4.2)) + 'px');
-
-        grid.innerHTML = '';
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i < cols * rows; i++) {
-          fragment.appendChild(makeCell());
-        }
-        grid.appendChild(fragment);
-      }
-
-      buildGrid();
-      window.addEventListener('load', buildGrid);
-
-      // Watch the container itself (not just window resize) so breakpoint
-      // changes, font swaps, and orientation changes all trigger a rebuild.
-      let gridResizeTimer;
-      const scheduleRebuild = () => {
-        clearTimeout(gridResizeTimer);
-        gridResizeTimer = setTimeout(buildGrid, 150);
-      };
-      if (window.ResizeObserver) {
-        new ResizeObserver(scheduleRebuild).observe(grid.parentElement);
-      } else {
-        window.addEventListener('resize', scheduleRebuild);
-      }
-    })();
-
-    // Draggable collage photos, constrained to the .about-photo frame
-    (function () {
-      const container = document.querySelector('.about-photo');
-      if (!container) return;
-
-      container.querySelectorAll('.about-photo-item').forEach(item => {
-        let dragging = false;
-        let startX = 0, startY = 0, startLeft = 0, startTop = 0;
-
-        item.addEventListener('pointerdown', e => {
-          const containerRect = container.getBoundingClientRect();
-          const itemRect = item.getBoundingClientRect();
-
-          item.style.left = (itemRect.left - containerRect.left) + 'px';
-          item.style.top = (itemRect.top - containerRect.top) + 'px';
-          item.style.right = 'auto';
-          item.style.bottom = 'auto';
-
-          startX = e.clientX;
-          startY = e.clientY;
-          startLeft = parseFloat(item.style.left);
-          startTop = parseFloat(item.style.top);
-          dragging = true;
-
-          item.classList.add('dragging');
-          item.setPointerCapture(e.pointerId);
-          e.preventDefault();
-        });
-
-        item.addEventListener('pointermove', e => {
-          if (!dragging) return;
-          const containerRect = container.getBoundingClientRect();
-          const itemRect = item.getBoundingClientRect();
-
-          let newLeft = startLeft + (e.clientX - startX);
-          let newTop = startTop + (e.clientY - startY);
-          newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemRect.width));
-          newTop = Math.max(0, Math.min(newTop, containerRect.height - itemRect.height));
-
-          item.style.left = newLeft + 'px';
-          item.style.top = newTop + 'px';
-        });
-
-        const endDrag = () => {
-          dragging = false;
-          item.classList.remove('dragging');
-        };
-        item.addEventListener('pointerup', endDrag);
-        item.addEventListener('pointercancel', endDrag);
+      sheets.forEach((s, i) => {
+        const t = Math.max(0, Math.min(1, i - p));   // 1 = still parked, 0 = arrived
+        s.style.setProperty('--y', (t * restY(i)) + 'px');
+        s.style.zIndex = i + 1;
       });
-    })();
+
+      const front = Math.round(p);
+      if (front !== last) {
+        last = front;
+        panels.forEach((pl, i) => pl.classList.toggle('is-open', i === front));
+      }
+    }
+
+    // scroll events are not delivered in every embedded viewer, so poll as well
+    addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', () => { sizeTrack(); sync(); });
+    setInterval(sync, 100);
+    sizeTrack(); sync();
+
+    /* A tab scrolls to its own sheet. */
+    sheets.forEach((sheet, i) => {
+      sheet.querySelector('.tab').addEventListener('click', () => {
+        const y = track.getBoundingClientRect().top + scrollY + i * STEP * innerHeight;
+        scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      });
+    });
+
+    /* Drag the stickers; capture waits 3px so a tab click still lands. */
+    file.querySelectorAll('.sticker').forEach(item => {
+      const home = item.closest('.sheet');
+      let down = false, moved = false, sx = 0, sy = 0, left = 0, top = 0;
+      item.addEventListener('pointerdown', e => {
+        if (e.button !== 0) return;
+        down = true; moved = false; sx = e.clientX; sy = e.clientY;
+      });
+      item.addEventListener('pointermove', e => {
+        if (!down) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!moved) {
+          if (Math.abs(dx) < 3 && Math.abs(dy) < 3) return;
+          const box = home.getBoundingClientRect(), me = item.getBoundingClientRect();
+          left = me.left - box.left; top = me.top - box.top;
+          Object.assign(item.style, { left: left+'px', top: top+'px', right: 'auto', bottom: 'auto' });
+          item.classList.add('dragging');
+          try { item.setPointerCapture(e.pointerId); } catch (_) {}
+          moved = true;
+        }
+        const box = home.getBoundingClientRect(), me = item.getBoundingClientRect();
+        item.style.left = Math.max(0, Math.min(left + dx, box.width  - me.width))  + 'px';
+        item.style.top  = Math.max(0, Math.min(top  + dy, box.height - me.height)) + 'px';
+      });
+      const end = () => { down = false; item.classList.remove('dragging'); };
+      item.addEventListener('pointerup', end);
+      item.addEventListener('pointercancel', end);
+    });
+  })();
   </script>
 
   <script src="js/rail.js" defer></script>
