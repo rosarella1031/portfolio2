@@ -1,0 +1,310 @@
+/* ===== Editorial — a wide 16-column case study layout =====
+
+   Modelled on gautiermld.com/projects/freshdirect. Everything here was
+   measured off that page at a 1440 viewport rather than eyeballed:
+
+     grid        16 columns, 20px gutters, 20px page margin
+     text row    number at col 2, headline at cols 4-7, body at cols 9-15
+     rhythm      200px above a text row, 120px below; media 10px apart
+     headline    52/65, -1.56px  (serif, in a 335px column, so it wraps)
+     body        16/24, -0.48px, light, in a 601px column
+     metadata    grey "(Role)" above the value
+
+   Two deliberate departures, both forced by this site rather than taste:
+
+   The page margin is a clamp topping out at 4.5rem, not 20px. The contents
+   rail is fixed at left:0 and about 55px wide; at a 20px margin every
+   full-bleed image would run underneath it. 4.5rem clears the rail and lands
+   the media at 1296px on a 1440 screen, which is this site's --max.
+
+   The number column keeps its label. The reference numbers its sections and
+   nothing more; these case studies have eleven sections, not three, and "07"
+   alone is not a way to find your place.
+
+   Loaded disabled on every case study and switched on with ?editorial, which
+   also switches project-split.css off. Nothing here touches project.css, so
+   removing the query string lands exactly on the current design. */
+
+/* ===== Grid ===================================================== */
+
+.content {
+  --gm-gutter: clamp(1.25rem, 4vw, 4.5rem);
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  column-gap: 20px;
+  align-content: start;
+  padding: clamp(3rem, 7vh, 5rem) var(--gm-gutter) 8rem;
+  counter-reset: gm-section;
+}
+
+/* Sections inherit the parent's tracks, so a headline in section 9 sits on
+   the same line as one in section 1. Declared after a plain 16-column
+   fallback: a browser without subgrid drops this line and keeps the tracks
+   above, which are the same widths minus the shared alignment. */
+.content > .content-section {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-columns: subgrid;
+  column-gap: 20px;
+  /* Must be explicit. The headline below spans 999 rows so the body can start
+     level with it, and every one of those phantom rows pays the row gap — a
+     56px gap inherited from project.css turned one section into 56,000px of
+     empty page. Setting column-gap alone does not clear it. */
+  row-gap: 0;
+  align-content: start;
+
+  /* 200px above, 120px below on the reference. Margin would collapse between
+     two adjacent text sections and lose one of them; padding does not. */
+  padding: clamp(4rem, 13vh, 12.5rem) 0 clamp(2.5rem, 8vh, 7.5rem);
+  margin-bottom: 0;
+  counter-increment: gm-section;
+}
+
+/* A section that is only media does not want 200px of air above it. */
+.content > .content-section:not(:has(> .section-title)) {
+  padding-top: clamp(1.5rem, 4vh, 3rem);
+}
+
+/* ===== The three-part text row ================================== */
+
+/* Two sections wrap their text in .overview-layout > .overview-main, so the
+   label and title are grandchildren of the section and out of reach of the
+   column rules. display:contents dissolves that wrapper into the grid, which
+   puts its children on exactly the same tracks as every other section's. */
+.content-section > .overview-layout > .overview-main { display: contents; }
+
+/* Number and label. The reference sets a bare "01" here; the label under it
+   is this site's, and is why the column is 2 wide rather than 1. */
+.content-section > .section-label,
+.overview-main > .section-label {
+  grid-column: 2 / span 2;
+  grid-row: 1;
+  align-self: start;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 0;
+}
+.content-section > .section-label::before,
+.overview-main > .section-label::before {
+  content: counter(gm-section, decimal-leading-zero);
+  display: block;
+  font-family: 'General Sans', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+
+/* Headline. Narrow on purpose — the break over several lines is the look.
+   Five columns rather than the reference's four: its headlines average four
+   words and wrap to three lines, these average ten and wrapped to six or
+   seven at that width. Five lands them back at four or five lines, which
+   keeps the reference's proportion instead of its literal measurement. */
+.content-section > .section-title,
+.overview-main > .section-title {
+  grid-column: 4 / span 5;
+  grid-row: 1 / span 999;
+  align-self: start;
+  max-width: none;
+  font-family: 'EB Garamond', serif;
+  /* 3.6vw puts this at 52px on a 1440 screen, matching the reference. */
+  font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  margin-bottom: 0;
+}
+
+/* Body. Everything not claimed by a rule below lands here. Lowest
+   specificity in the file, so the media rules simply outrank it. */
+.content-section > *,
+.overview-main > * {
+  grid-column: 10 / span 7;
+  max-width: none;
+}
+.content-section > p,
+.content-section > ol,
+.content-section > ul,
+.overview-main > p,
+.overview-main > ol,
+.overview-main > ul {
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  max-width: none;
+  margin-bottom: 1.35rem;
+}
+.content-section > ol,
+.content-section > ul,
+.overview-main > ol,
+.overview-main > ul { padding-left: 1.2rem; }
+.content-section > ol li,
+.content-section > ul li { margin-bottom: 0.5rem; }
+
+/* ===== Media ==================================================== */
+
+/* Full bleed, and close together — the reference runs its images 10px apart
+   so a run of them reads as one block rather than as separate figures. */
+.content-section > .img-block,
+.content-section > .scroll-gallery,
+.content-section > .detail-problems,
+.content-section > .detail-scroll,
+.content-section > .problem-list,
+.content-section > .stats-row,
+.content-section > .meta-row,
+.content-section > .overview-layout,
+.content-section > p.img-caption,
+.overview-main > .img-block,
+.overview-main > .scroll-gallery,
+.overview-main > .problem-list,
+.overview-main > .stats-row,
+.overview-main > .meta-row,
+.overview-main > p.img-caption {
+  grid-column: 1 / -1;
+}
+
+.content-section > .img-block,
+.overview-main > .img-block {
+  margin: 10px 0;
+  min-height: 0;
+}
+.content-section > .img-block:empty { min-height: 420px; }
+.content-section > p.img-caption {
+  margin: 0.75rem 0 2rem;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-3);
+}
+
+/* An asymmetric pair, the reference's other media module: 11 columns beside
+   5, alternating side down the page. Opt in by wrapping two figures —
+   <div class="media-pair"> or .media-pair.flip for the mirrored version.
+   Nothing in these case studies uses it yet; it is here because the layout
+   is thin without it. */
+.content-section > .media-pair {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 11fr 5fr;
+  gap: 20px;
+  margin: 10px 0;
+}
+.content-section > .media-pair.flip { grid-template-columns: 5fr 11fr; }
+.content-section > .media-pair > .img-block { margin: 0; min-height: 0; }
+
+/* ===== Header and hero ========================================== */
+
+/* The reference hangs its title and lead off column 5 and drops the
+   metadata into the empty columns beside them. */
+.content > .content-header {
+  grid-column: 5 / -1;
+  max-width: none;
+  margin-bottom: clamp(2rem, 6vh, 4.5rem);
+}
+.content-header .project-title {
+  font-family: 'General Sans', sans-serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.5rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+/* The lead paragraph carries the weight here, not the title. */
+.content-header .project-summary {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+  line-height: 1.26;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  max-width: none;
+}
+
+.content > .hero-image {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
+/* ===== Metadata ================================================= */
+
+/* "(Role)" in grey above the value, both at body size — the reference's
+   treatment, replacing the uppercase mono key. */
+.meta-k {
+  font-family: 'General Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text-3);
+  margin-bottom: 0.15rem;
+}
+.meta-k::before { content: '('; }
+.meta-k::after  { content: ')'; }
+.meta-v {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+.meta-row { max-width: none; }
+
+/* ===== Overview ================================================= */
+
+/* .overview-main is display:contents (above), so this wrapper has to carry
+   the section's tracks through to the label, title and body inside it. */
+.content-section > .overview-layout {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-columns: subgrid;
+  column-gap: 20px;
+  row-gap: 0;          /* see the note on .content-section — same trap */
+  align-items: start;
+}
+/* The aside sits under the body in the same column rather than beside it.
+   Beside would mean splitting seven columns into two narrow ones, which is
+   the crowding this layout exists to avoid. */
+.overview-layout > .overview-note {
+  grid-column: 10 / -1;
+  margin-top: 2.5rem;
+}
+
+/* ===== Stats ==================================================== */
+
+.stats-row { max-width: none; }
+
+/* ===== Below 1000px ============================================= */
+
+/* One column, and the number goes back to sitting above its headline. The
+   16-column grid is the layout; there is nothing to keep at phone width. */
+@media (max-width: 1000px) {
+  .content {
+    display: block;
+    padding: 3rem 1.5rem 5rem;
+  }
+  .content > .content-section {
+    display: flex;
+    flex-direction: column;
+    padding: 3rem 0 1.5rem;
+  }
+  .content-section > *,
+  .overview-main > * { grid-column: auto; }
+  .content-section > .overview-layout > .overview-main { display: block; }
+  .content-section > .section-label,
+  .overview-main > .section-label { margin-bottom: 0.75rem; }
+  .content-section > .section-label::before,
+  .overview-main > .section-label::before {
+    display: inline;
+    margin: 0 0.5rem 0 0;
+    font-size: 1rem;
+  }
+  .content-section > .section-title,
+  .overview-main > .section-title {
+    font-size: clamp(1.6rem, 6.5vw, 2rem);
+    margin-bottom: 1rem;
+  }
+  .overview-layout > .overview-note { margin-top: 0; }
+  .content > .content-header { margin-bottom: 2rem; }
+  .content-section > .media-pair,
+  .content-section > .media-pair.flip { grid-template-columns: 1fr; }
+  .content-section > .overview-layout { display: flex; flex-direction: column; gap: 2rem; }
+}
