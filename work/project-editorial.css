@@ -12,10 +12,12 @@
 
    Two deliberate departures, both forced by this site rather than taste:
 
-   The page margin is a clamp topping out at 4.5rem, not 20px. The contents
-   rail is fixed at left:0 and about 55px wide; at a 20px margin every
-   full-bleed image would run underneath it. 4.5rem clears the rail and lands
-   the media at 1296px on a 1440 screen, which is this site's --max.
+   The content is capped at 1296px and centred, where the reference runs edge
+   to edge at a 20px margin. Two reasons. The contents rail is fixed at left:0
+   and about 55px wide, so a 20px margin would run every full-bleed image
+   underneath it. And past about 1500px the reference's own proportions turn
+   into a very long line — 1296px is this site's --max, so a case study ends
+   up the same width as the home page. Both numbers are dials; see below.
 
    The number column keeps its label. The reference numbers its sections and
    nothing more; these case studies have eleven sections, not three, and "07"
@@ -25,14 +27,72 @@
    also switches project-split.css off. Nothing here touches project.css, so
    removing the query string lands exactly on the current design. */
 
-/* ===== Grid ===================================================== */
+/* ===== Dials ====================================================
+   Every type size in this layout is set here. Change a number in this block
+   and it takes effect everywhere; the rules below only refer to these names.
+   The one exception is the counter in the phone layout, which sits inline
+   beside its label and is pinned to 1rem down in the media query.
+
+   The clamps read clamp(floor, grows-with-window, ceiling). The middle term
+   is a percentage of window width — 3.6vw is 52px on a 1440 screen — so the
+   ceiling is what you hit on a large monitor and the floor is what a laptop
+   falls back to. To make the headline smaller, lower the ceiling first; the
+   floor only matters below about 1100px wide.
+
+   Counted across all eleven Brix headlines at a 1200px window — the column
+   is narrow, so the size shows up as line count more than as height:
+
+     ceiling            lines (range)   median
+     3.25rem  52px      2-7             5        the reference's size
+     2.75rem  44px      2-5             4
+     2.375rem 38px      1-4             4
+     2rem     32px      1-4             3                                   */
 
 .content {
+  /* headline */
+  --gm-title:     clamp(1.9rem, 3.6vw, 3.25rem);
+  --gm-title-lh:  1.25;
+  --gm-title-ls:  -0.03em;
+
+  /* body copy and lists */
+  --gm-body:      1rem;
+  --gm-body-lh:   1.5;
+  --gm-body-ls:   -0.01em;
+
+  /* the 01 / 02 counter, and the small label under it */
+  --gm-number:    1.35rem;
+  --gm-label:     0.7rem;
+
+  /* page header: the project name, then the serif lead under it */
+  --gm-h1:        clamp(1.6rem, 2.6vw, 2.5rem);
+  --gm-lead:      clamp(1.5rem, 2.6vw, 2.35rem);
+
+  /* metadata — (Role) and its value */
+  --gm-meta:      1rem;
+
+  /* figure captions */
+  --gm-caption:   0.85rem;
+
+  /* headline once the layout has collapsed to one column, under 1000px */
+  --gm-title-sm:  clamp(1.6rem, 6.5vw, 2rem);
+
+  /* ===== Grid ==================================================== */
+
+  /* How wide the whole thing is allowed to get, and the air either side of
+     it. The reference runs edge to edge at a 20px margin, which on a wide
+     monitor is a very long line; --gm-max stops it and centres what is left.
+     1296px is this site's own --max, so a case study is the same width as
+     the home page. --gm-gutter is the minimum air, and takes over below
+     about 1450px where the cap is no longer what is binding. */
+  --gm-max:    1296px;
   --gm-gutter: clamp(1.25rem, 4vw, 4.5rem);
+
   display: grid;
   grid-template-columns: repeat(16, minmax(0, 1fr));
   column-gap: 20px;
   align-content: start;
+  max-width: calc(var(--gm-max) + 2 * var(--gm-gutter));
+  margin-inline: auto;
   padding: clamp(3rem, 7vh, 5rem) var(--gm-gutter) 8rem;
   counter-reset: gm-section;
 }
@@ -82,7 +142,7 @@
   grid-row: 1;
   align-self: start;
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.7rem;
+  font-size: var(--gm-label);
   font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -94,7 +154,7 @@
   content: counter(gm-section, decimal-leading-zero);
   display: block;
   font-family: 'General Sans', sans-serif;
-  font-size: 1.35rem;
+  font-size: var(--gm-number);
   letter-spacing: -0.03em;
   text-transform: none;
   color: var(--text);
@@ -113,11 +173,10 @@
   align-self: start;
   max-width: none;
   font-family: 'EB Garamond', serif;
-  /* 3.6vw puts this at 52px on a 1440 screen, matching the reference. */
-  font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+  font-size: var(--gm-title);
   font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: -0.03em;
+  line-height: var(--gm-title-lh);
+  letter-spacing: var(--gm-title-ls);
   margin-bottom: 0;
 }
 
@@ -134,9 +193,9 @@
 .overview-main > p,
 .overview-main > ol,
 .overview-main > ul {
-  font-size: 1rem;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
+  font-size: var(--gm-body);
+  line-height: var(--gm-body-lh);
+  letter-spacing: var(--gm-body-ls);
   max-width: none;
   margin-bottom: 1.35rem;
 }
@@ -177,7 +236,7 @@
 .content-section > .img-block:empty { min-height: 420px; }
 .content-section > p.img-caption {
   margin: 0.75rem 0 2rem;
-  font-size: 0.85rem;
+  font-size: var(--gm-caption);
   font-weight: 400;
   color: var(--text-3);
 }
@@ -208,14 +267,14 @@
 }
 .content-header .project-title {
   font-family: 'General Sans', sans-serif;
-  font-size: clamp(1.6rem, 2.6vw, 2.5rem);
+  font-size: var(--gm-h1);
   letter-spacing: -0.03em;
   line-height: 1;
 }
 /* The lead paragraph carries the weight here, not the title. */
 .content-header .project-summary {
   font-family: 'EB Garamond', serif;
-  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+  font-size: var(--gm-lead);
   line-height: 1.26;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -233,9 +292,9 @@
    treatment, replacing the uppercase mono key. */
 .meta-k {
   font-family: 'General Sans', sans-serif;
-  font-size: 1rem;
+  font-size: var(--gm-meta);
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--gm-body-ls);
   text-transform: none;
   color: var(--text-3);
   margin-bottom: 0.15rem;
@@ -243,8 +302,8 @@
 .meta-k::before { content: '('; }
 .meta-k::after  { content: ')'; }
 .meta-v {
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  font-size: var(--gm-meta);
+  letter-spacing: var(--gm-body-ls);
 }
 .meta-row { max-width: none; }
 
@@ -299,7 +358,7 @@
   }
   .content-section > .section-title,
   .overview-main > .section-title {
-    font-size: clamp(1.6rem, 6.5vw, 2rem);
+    font-size: var(--gm-title-sm);
     margin-bottom: 1rem;
   }
   .overview-layout > .overview-note { margin-top: 0; }
