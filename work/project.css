@@ -958,6 +958,10 @@
 .compare-label--before { left: 1rem; }
 .compare-label--after  { right: 1rem; }
 
+/* A hairline, not a rule. Solid --text at 2px read as a bar drawn across the
+   figure rather than a seam between two of them. White alone would vanish on
+   these pale grounds, so the line is white with a faint dark edge: the white
+   carries it over dark artwork, the edge carries it over light. */
 .compare-line {
   position: absolute;
   top: 0;
@@ -965,7 +969,8 @@
   left: var(--pos);
   width: 2px;
   margin-left: -1px;
-  background: var(--text);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 0.5px rgba(26, 24, 23, 0.18);
   z-index: 4;
   pointer-events: none;
 }
@@ -982,7 +987,7 @@
   border-radius: 50%;
   border: 1px solid var(--border);
   background: #fff;
-  box-shadow: 0 2px 12px rgba(90, 70, 45, 0.18);
+  box-shadow: 0 1px 3px rgba(90, 70, 45, 0.10);
   cursor: ew-resize;
   display: grid;
   place-items: center;
@@ -994,7 +999,7 @@
 }
 .compare-handle:hover,
 .compare.is-dragging .compare-handle {
-  box-shadow: 0 4px 18px rgba(90, 70, 45, 0.26);
+  box-shadow: 0 2px 7px rgba(90, 70, 45, 0.16);
 }
 .compare-handle:focus-visible {
   outline: 2px solid var(--text);
