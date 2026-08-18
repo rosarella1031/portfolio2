@@ -861,3 +861,155 @@
   .scroll-gallery-item { width: 100%; max-width: 100%; }
 }
 
+
+/* ===== Before / after wipe =====
+
+   Two panes stacked in one frame; dragging the handle moves the split. The
+   left of the divider shows "before" and the right shows "after", which is
+   why the after pane is the one that gets clipped rather than the before.
+
+   Put it inside an .img-block and it inherits that block's width and the
+   page's whole figure treatment — full bleed in the editorial layout, the
+   split-breaking rule in the half-and-half one — without knowing about
+   either. Either pane can be left empty and shows a placeholder label.
+
+   Markup:
+     <div class="img-block">
+       <div class="compare">
+         <div class="compare-pane compare-before"><img …></div>
+         <div class="compare-pane compare-after"><img …></div>
+       </div>
+     </div>
+   js/compare.js adds the divider, handle and labels. */
+.compare {
+  --pos: 50%;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #F8F8F8;
+  /* vertical drags still scroll the page; only sideways is ours */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: ew-resize;
+}
+
+.compare-pane {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.compare-pane img,
+.compare-pane video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* the media must never swallow the drag */
+  pointer-events: none;
+}
+
+/* Two slightly different grounds, so an empty comparison still reads as two
+   things rather than one flat rectangle with a line down it. */
+.compare-before { background: #F4F3F1; }
+.compare-after  { background: #EAE8E4; }
+
+/* The after pane is clipped from the left edge to the split. */
+.compare-after { clip-path: inset(0 0 0 var(--pos)); }
+
+/* Each placeholder label sits in the middle of its own half rather than the
+   middle of its pane. Centred, the before label lands under the after pane
+   whenever the split is left of centre, and disappears. */
+.compare-pane[data-empty]::after {
+  content: attr(data-empty);
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.compare-before[data-empty]::after { left: 25%; }
+.compare-after[data-empty]::after  { left: 75%; }
+
+.compare-label {
+  position: absolute;
+  top: 1rem;
+  z-index: 3;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: rgba(252, 252, 252, 0.9);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.compare-label--before { left: 1rem; }
+.compare-label--after  { right: 1rem; }
+
+.compare-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.compare-handle {
+  position: absolute;
+  top: 50%;
+  left: var(--pos);
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(90, 70, 45, 0.18);
+  cursor: ew-resize;
+  display: grid;
+  place-items: center;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.compare-handle:hover,
+.compare.is-dragging .compare-handle {
+  box-shadow: 0 4px 18px rgba(90, 70, 45, 0.26);
+}
+.compare-handle:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+.compare.is-dragging { cursor: ew-resize; }
+
+@media (prefers-reduced-motion: reduce) {
+  .compare-handle { transition: none; }
+}
+
+@media (max-width: 768px) {
+  .compare { aspect-ratio: 4 / 3; }
+  .compare-label { top: 0.6rem; font-size: 0.65rem; padding: 0.25rem 0.55rem; }
+  .compare-label--before { left: 0.6rem; }
+  .compare-label--after  { right: 0.6rem; }
+  .compare-handle { width: 38px; height: 38px; }
+}
