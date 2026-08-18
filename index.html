@@ -174,6 +174,10 @@
       aspect-ratio: 5 / 6;
       border: 0;
       padding: 0;
+      /* A button does not inherit the page font. Without this the card copy
+         came out in the browser's default Arial — the heading only looked
+         right because it names its own face. */
+      font-family: inherit;
       background: none;
       cursor: pointer;
       transform: translateX(-50%) translateX(var(--dx)) translateY(var(--dy)) rotate(var(--rot));

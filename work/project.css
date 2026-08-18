@@ -1,6 +1,8 @@
-@import url('https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=switzer@100,200,300,400,500,600,700,800,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+/* General Sans already comes in through css/style.css, which every page that
+   loads this one also loads. Switzer used to be imported here and was never
+   referenced by a single rule. */
+/* 500 only — it is the single weight this file ever asks for. */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500&display=swap');
 
 /* ===== Measure =====
    Body copy sat at 680px, which runs ~92 characters per line — well past
@@ -713,10 +715,17 @@
 }
 
 .stat-number {
+  font-family: 'EB Garamond', serif;
   /* the figure is counted up by js/count-up.js — fixed-width digits keep the
-     number from twitching sideways on every frame */
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
+     number from twitching sideways on every frame. lining-nums because EB
+     Garamond defaults to old-style figures, where 2 sits lower than 8 — fine
+     inside a sentence, wrong for a number meant to be read as a display. */
+  font-variant-numeric: tabular-nums lining-nums;
+  /* A step up from the 3.5vw/2.75rem this was set at under General Sans.
+     Garamond's figures are about a quarter narrower at the same size, so the
+     old value read noticeably lighter here; this takes back part of that,
+     not all of it. */
+  font-size: clamp(2.25rem, 4vw, 3.125rem);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1;
