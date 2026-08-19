@@ -12,6 +12,7 @@
   <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="hero-demo.css" />
   <link rel="stylesheet" href="project-split.css" id="split-sheet" />
   <link rel="stylesheet" href="project-editorial.css" id="editorial-sheet" disabled />
   <script>
@@ -106,7 +107,24 @@
 
       <!-- Hero image -->
       <div class="hero-image">
-        <video src="../assets/brix-hero-2.webm" autoplay loop muted playsinline></video>
+        <!-- Plays itself and takes clicks; js/hero-demo.js drives it. With the
+             script blocked this stays an empty framed panel, so nothing here
+             claims to be a screenshot of something it is not. -->
+        <div class="hero-demo" data-hero-demo>
+          <div class="hd-pane">
+            <div class="hd-label"><span>Mapping agent</span><span>Ideal candidate profile</span></div>
+            <div class="hd-prompt" data-hd-prompt></div>
+            <div class="hd-drafts" data-hd-drafts></div>
+          </div>
+          <div class="hd-pane">
+            <div class="hd-label"><span>Search agent</span><span data-hd-count></span></div>
+            <div class="hd-results" data-hd-results></div>
+          </div>
+          <div class="hd-foot">
+            <span class="hd-hint"><span class="hd-dot"></span><span data-hd-hint>Playing</span></span>
+            <button type="button" class="hd-replay" data-hd-replay>Replay</button>
+          </div>
+        </div>
       </div>
 
       <!-- Sections -->
@@ -387,5 +405,6 @@
   <script src="../js/count-up.js" defer></script>
   <script src="../js/detail-scroll.js" defer></script>
   <script src="../js/compare.js" defer></script>
+  <script src="../js/hero-demo.js" defer></script>
 </body>
 </html>

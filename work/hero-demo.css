@@ -1,0 +1,273 @@
+/* ===== Brix hero — a playable version of the product's core moment =====
+
+   The case study's argument is that picking one of three drafted profiles is
+   the highest-leverage thing a recruiter does. This is that moment, running:
+   a prompt lands, three profiles draft themselves, one gets chosen, and a
+   shortlist answers to it.
+
+   It plays on its own and it is genuinely operable — the script and the
+   visitor push the same buttons. See js/hero-demo.js for the driving.
+
+   Everything is DOM, so the type is real type: selectable, searchable, sharp
+   at any zoom, and legible to a screen reader. */
+
+.hero-demo {
+  --pad: clamp(0.9rem, 1.4vw, 1.5rem);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-size: clamp(0.7rem, 0.82vw, 0.82rem);
+  line-height: 1.45;
+  color: var(--text);
+  text-align: left;
+}
+
+.hd-pane {
+  background: var(--bg);
+  padding: var(--pad);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+.hd-label {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.68em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex: none;
+}
+
+/* ── prompt ─────────────────────────────────────────────────────────── */
+.hd-prompt {
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  background: var(--tag-bg);
+  font-size: 0.95em;
+  color: var(--text);
+  min-height: 2.2em;
+}
+.hd-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  background: var(--text);
+  vertical-align: -0.15em;
+  margin-left: 1px;
+}
+.hero-demo.is-typing .hd-caret { animation: hd-blink 1s steps(1) infinite; }
+@keyframes hd-blink { 50% { opacity: 0; } }
+
+/* ── draft profiles ─────────────────────────────────────────────────── */
+.hd-drafts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hd-draft {
+  appearance: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+  display: grid;
+  gap: 0.3rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .35s var(--ease), transform .35s var(--ease),
+              border-color .2s, background .2s;
+}
+.hd-draft.is-in { opacity: 1; transform: none; }
+.hd-draft:hover { border-color: var(--text-3); }
+.hd-draft:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* the unchosen drafts step back rather than disappear — the point of the
+   moment is that there were three, and that one was picked over the others */
+.hero-demo.has-choice .hd-draft { opacity: 0.42; }
+.hero-demo.has-choice .hd-draft.is-chosen {
+  opacity: 1;
+  border-color: var(--text);
+  background: var(--tag-bg);
+}
+
+.hd-draft-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.hd-draft-num {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.72em;
+  color: var(--text-3);
+  flex: none;
+}
+.hd-draft-title { font-weight: 500; }
+.hd-draft-why {
+  color: #747474;
+  font-size: 0.92em;
+  min-height: 1.35em;
+}
+.hd-crit { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.hd-crit span {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.68em;
+  letter-spacing: 0.03em;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  white-space: nowrap;
+}
+
+/* ── results ────────────────────────────────────────────────────────── */
+.hd-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hd-empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.72em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.hd-row {
+  display: grid;
+  grid-template-columns: 2.6em minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .35s var(--ease), transform .45s var(--ease),
+              border-color .2s, background .2s;
+}
+.hd-row.is-in { opacity: 1; transform: none; }
+.hd-row.is-lifted { border-color: var(--text); background: var(--tag-bg); }
+
+.hd-score {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.86em;
+  color: var(--text);
+}
+.hd-row-main { min-width: 0; }
+.hd-row-name { font-weight: 500; }
+.hd-row-why {
+  color: #747474;
+  font-size: 0.9em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hd-rate {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 6px;
+  width: 1.9em;
+  height: 1.9em;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 0.9em;
+  transition: color .2s, border-color .2s, background .2s;
+  flex: none;
+}
+.hd-rate:hover { color: var(--text); border-color: var(--text-3); }
+.hd-rate:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.hd-rate[aria-pressed="true"] { color: var(--text); border-color: var(--text); background: var(--tag-bg); }
+
+/* ── footer: the only chrome that admits this is a demo ─────────────── */
+.hd-foot {
+  grid-column: 1 / -1;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 0.4rem var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.66em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.hd-hint { display: flex; align-items: center; gap: 0.4rem; }
+.hd-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-3);
+  flex: none;
+  transition: background .3s;
+}
+.hero-demo.is-live .hd-dot { background: #4B9E6A; }
+.hd-replay {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 5px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--text-3);
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+}
+.hd-replay:hover { color: var(--text); border-color: var(--text-3); }
+.hd-replay:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* ── narrow ─────────────────────────────────────────────────────────── */
+/* Stacked, the two panes need roughly twice the height — and .hero-image is
+   a fixed 16/9 box, which would just crop them. Let the hero size to its
+   content at this width instead. */
+@media (max-width: 900px) {
+  .hero-image:has(.hero-demo) { aspect-ratio: auto; }
+  .hero-demo {
+    grid-template-columns: 1fr;
+    height: auto;
+    font-size: 0.78rem;
+  }
+  .hd-drafts, .hd-results { overflow: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hd-draft, .hd-row { transition: none; }
+  .hero-demo.is-typing .hd-caret { animation: none; }
+}
