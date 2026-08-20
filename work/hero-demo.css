@@ -121,7 +121,8 @@
   top: calc(72 * var(--u));
   left: 0;
   right: 0;
-  border-top: 1px solid var(--line);
+  /* Border/Card #f4f4f4, not Border/Subdued — I had it a step too dark. */
+  border-top: 1px solid var(--card);
 }
 
 .hero-demo.beat-4 .hd-chat,
