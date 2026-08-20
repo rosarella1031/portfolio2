@@ -231,7 +231,6 @@
   border: 1px solid var(--line);
   border-radius: calc(12 * var(--u));
   background: var(--surface);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   padding: calc(14 * var(--u));
   display: grid;
   gap: calc(12 * var(--u));
