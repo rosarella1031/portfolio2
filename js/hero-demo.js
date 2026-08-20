@@ -241,6 +241,15 @@
         '</div></div>' +
       '</div>' +
 
+    '</div>' +
+
+    /* Outside .hd-stage on purpose: as an overlay it covered the bottom of
+       the design. It was lost entirely when that move was made by string
+       replacement — the element lookups below kept referring to it, so the
+       hint never updated and Replay had nothing to bind to. */
+    '<div class="hd-foot">' +
+      '<span class="hd-hint"><span class="hd-dot"></span><span data-hint>Playing</span></span>' +
+      '<button type="button" class="hd-replay" data-replay>Replay</button>' +
     '</div>';
 
   var $  = function (s) { return root.querySelector(s); };
@@ -249,7 +258,7 @@
     chip: $('[data-chip-icp]'), workTitle: $('[data-work-title]'),
     steps: $('[data-steps]'), reason: $('[data-reason]'),
     nav: $('[data-nav]'), doc: $('[data-doc]'),
-    hint: $('[data-hint]'),   // both gone with the status strip
+    hint: $('[data-hint]'),
     replay: $('[data-replay]')
   };
 

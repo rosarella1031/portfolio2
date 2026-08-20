@@ -192,6 +192,26 @@
 
 /* Cuts, not cross-fades — a blink is a cut. Percentages follow the
    component's own reactions: 400ms at rest, 791ms rising, 180ms back. */
+/* The hop itself. Lost when the block above was rewritten: the animation
+   still named it, but with no keyframes to find it simply did nothing.
+
+   Figma's spring is mass 1, stiffness 200, damping 48 — a damping ratio of
+   1.70, over-damped, so it never overshoots, which is what lets a plain
+   cubic-bezier stand in. Fitting the closed-form response gives
+   (.15, .25, .2, .95) to an RMS of 0.005. The jump is the body moving
+   (1.2, -7.2) and rotating -3deg, read off the two variants.
+
+   A timing function inside a keyframe governs the segment that starts there,
+   so the spring sits on the rest stop and the ease-in on the top. */
+@keyframes hd-hop {
+  0%    { transform: none; }
+  29.2% { transform: none;
+          animation-timing-function: cubic-bezier(.15, .25, .2, .95); }
+  86.9% { transform: translate(2.7%, -15.9%) rotate(-3deg);
+          animation-timing-function: ease-in; }
+  100%  { transform: none; }
+}
+
 @keyframes hd-frames {
   0%    { background-position:   0% 0; }   /* rest, eyes open        */
   29.2% { background-position:  66.67% 0; } /* rising, lighting shifts */
@@ -608,3 +628,46 @@
   .hd-chat, .hd-screen, .hd-step, .hd-nav-sub, .hd-progress i { transition: none; }
   .hero-demo.is-typing .hd-caret { animation: none; }
 }
+
+/* ── status strip ────────────────────────────────────────────────
+   Mine, not the product's, which is why it sits below the stage rather than
+   floating over it — as an overlay it hid the bottom of the design. These
+   rules were lost the same way the markup was when that move was made by
+   string replacement, so the footer came back unstyled. */
+.hd-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.hd-hint { display: flex; align-items: center; gap: 0.45rem; }
+.hd-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-3);
+  flex: none;
+  transition: background .3s;
+}
+.hero-demo.is-live .hd-dot { background: #4B9E6A; }
+.hd-replay {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 5px;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--text-3);
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+.hd-replay:hover { color: var(--text); border-color: var(--text-3); }
+.hd-replay:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
