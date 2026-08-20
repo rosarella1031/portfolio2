@@ -644,7 +644,6 @@
   gap: calc(12 * var(--u));
   padding: calc(8 * var(--u)) calc(16 * var(--u));
   background: var(--bg);
-  border-top: 1px solid var(--border);
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 0.66rem;
   letter-spacing: 0.06em;
