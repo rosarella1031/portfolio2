@@ -108,7 +108,7 @@
   /* ---- shell -------------------------------------------------------- */
   root.innerHTML =
     '<div class="hd-stage">' +
-      '<div class="hd-rail">' + icon(I.panel) + icon(I.edit) + '</div>' +
+      '<div class="hd-icons">' + icon(I.panel) + icon(I.edit) + '</div>' +
 
       '<div class="hd-chat"><div class="hd-chat-scroll" data-chat></div>' +
         '<div class="hd-composer"><span>Ask Brix AI</span>' +
