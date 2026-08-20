@@ -1,273 +1,455 @@
-/* ===== Brix hero — a playable version of the product's core moment =====
+/* The Figma frames are 1440x900, so this hero is 16/10 rather than the
+   16/9 the other case studies use — at 16/9 the panel would be cropped. */
+.hero-image--demo { aspect-ratio: 16 / 10; }
 
-   The case study's argument is that picking one of three drafted profiles is
-   the highest-leverage thing a recruiter does. This is that moment, running:
-   a prompt lands, three profiles draft themselves, one gets chosen, and a
-   shortlist answers to it.
+/* ===== Brix hero — the product's own mapping flow, running =====
 
-   It plays on its own and it is genuinely operable — the script and the
-   visitor push the same buttons. See js/hero-demo.js for the driving.
+   Rebuilt in DOM from the seven-frame storyboard in the brix-interaction
+   Figma file, not composited from exported images. The interface is almost
+   entirely type, rectangles and a handful of icons, which is the case where
+   DOM wins outright: the text stays selectable and sharp at any zoom, the
+   whole thing is a few KB rather than several MB, and the four moving parts
+   — the typing, the checklist, the streamed reasoning, the progress bar —
+   are real animation rather than a flipbook.
 
-   Everything is DOM, so the type is real type: selectable, searchable, sharp
-   at any zoom, and legible to a screen reader. */
+   Authored at the Figma frame's own 1440x900 and scaled to fit by container
+   units: --u is one design pixel, so every number below is the number read
+   off the file. A transform: scale() would have been simpler and would have
+   rasterised the type at the wrong size first, then stretched it.
+
+   Colours and type are the file's variables, not sampled from a screenshot:
+     Background/Main   #F7F7FB      Text/Default   #1F1F38
+     Surface/Default   #FFFFFF      Text/Subdued   #6b6b80
+     Surface/Filter    #f3f5ff      Text/Focused   #581eeb
+     Surface/AI Icon   #ede9ff      Text/AI Summ.  #48455a
+     Border/Subdued    #e8e8ed      Border/Card    #f4f4f4
+     Plus Jakarta Sans 14/24, 16/24, 12/16                              */
 
 .hero-demo {
-  --pad: clamp(0.9rem, 1.4vw, 1.5rem);
+  container-type: inline-size;
   position: relative;
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
   overflow: hidden;
-  font-size: clamp(0.7rem, 0.82vw, 0.82rem);
-  line-height: 1.45;
-  color: var(--text);
+  background: #F7F7FB;
   text-align: left;
+  /* the product's own face, not the portfolio's */
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #1F1F38;
+  -webkit-font-smoothing: antialiased;
 }
 
-.hd-pane {
-  background: var(--bg);
-  padding: var(--pad);
+.hd-stage {
+  --u: calc(100cqw / 1440);        /* one design pixel */
+  --ink:      #1F1F38;
+  --sub:      #6b6b80;
+  --focus:    #581eeb;
+  --summary:  #48455a;
+  --line:     #e8e8ed;
+  --card:     #f4f4f4;
+  --filter:   #f3f5ff;
+  --aiicon:   #ede9ff;
+  --surface:  #ffffff;
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  font-size: calc(14 * var(--u));
+  line-height: calc(24 / 14);
+}
+
+/* ── the app's own left rail ─────────────────────────────────────── */
+.hd-rail {
+  flex: none;
+  width: calc(96 * var(--u));
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: calc(16 * var(--u));
+  padding: calc(16 * var(--u));
+  color: var(--sub);
+}
+.hd-rail svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+
+/* ── chat column, present from beat 4 on ─────────────────────────── */
+.hd-chat {
+  flex: none;
+  width: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  min-width: 0;
+  transition: width .5s cubic-bezier(.33, 1, .68, 1);
+}
+.hero-demo.beat-4 .hd-chat,
+.hero-demo.beat-5 .hd-chat,
+.hero-demo.beat-6 .hd-chat,
+.hero-demo.beat-7 .hd-chat { width: calc(212 * var(--u)); }
+
+.hd-chat-scroll {
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
+  padding: 0 calc(16 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+  justify-content: flex-end;
+  padding-bottom: calc(12 * var(--u));
 }
 
-.hd-label {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.68em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
+.hd-bubble {
+  align-self: flex-end;
+  max-width: calc(260 * var(--u));
+  background: var(--filter);
+  border-radius: calc(10 * var(--u));
+  padding: calc(10 * var(--u)) calc(12 * var(--u));
+  font-size: calc(13 * var(--u));
+  line-height: calc(20 / 13);
+  white-space: pre-line;
+}
+.hd-bubble .hd-at { color: var(--focus); }
+
+.hd-agent-line { display: flex; align-items: center; gap: calc(8 * var(--u)); }
+.hd-avatar {
+  width: calc(22 * var(--u));
+  height: calc(22 * var(--u));
+  flex: none;
+  display: block;
+}
+.hd-agent-line span { font-size: calc(13 * var(--u)); color: var(--ink); }
+
+/* the working card, and the artifact card it becomes */
+.hd-card {
+  border: 1px solid var(--line);
+  border-radius: calc(10 * var(--u));
+  background: var(--surface);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  padding: calc(12 * var(--u));
+  display: grid;
+  gap: calc(10 * var(--u));
+}
+.hd-card-title {
+  font-size: calc(13 * var(--u));
+  font-weight: 500;
+}
+.hd-progress {
+  height: calc(3 * var(--u));
+  border-radius: calc(2 * var(--u));
+  background: var(--card);
+  overflow: hidden;
+}
+.hd-progress i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--focus);
+  border-radius: inherit;
+}
+.hd-card-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  font-size: calc(11 * var(--u));
+  color: var(--sub);
+}
+.hd-stop {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  border-radius: calc(5 * var(--u));
+  background: #2b2b45;
   flex: none;
 }
 
-/* ── prompt ─────────────────────────────────────────────────────────── */
-.hd-prompt {
-  flex: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.55rem 0.7rem;
-  background: var(--tag-bg);
-  font-size: 0.95em;
-  color: var(--text);
-  min-height: 2.2em;
-}
-.hd-caret {
-  display: inline-block;
-  width: 1px;
-  height: 1em;
-  background: var(--text);
-  vertical-align: -0.15em;
-  margin-left: 1px;
-}
-.hero-demo.is-typing .hd-caret { animation: hd-blink 1s steps(1) infinite; }
-@keyframes hd-blink { 50% { opacity: 0; } }
-
-/* ── draft profiles ─────────────────────────────────────────────────── */
-.hd-drafts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.hd-draft {
+/* the three ICP rows inside the artifact card */
+.hd-icp-row {
   appearance: none;
-  text-align: left;
   font: inherit;
   color: inherit;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  padding: 0.6rem 0.7rem;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+  border: 1px solid var(--line);
+  border-radius: calc(8 * var(--u));
+  background: var(--surface);
+  padding: calc(8 * var(--u)) calc(10 * var(--u));
+  font-size: calc(11.5 * var(--u));
   cursor: pointer;
-  display: grid;
-  gap: 0.3rem;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity .35s var(--ease), transform .35s var(--ease),
-              border-color .2s, background .2s;
+  transition: border-color .18s, background .18s;
 }
-.hd-draft.is-in { opacity: 1; transform: none; }
-.hd-draft:hover { border-color: var(--text-3); }
-.hd-draft:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.hd-icp-row:hover { border-color: #cfcfe0; }
+.hd-icp-row.is-on { border-color: var(--focus); background: var(--filter); }
+.hd-icp-row:focus-visible { outline: calc(2 * var(--u)) solid var(--focus); outline-offset: calc(1 * var(--u)); }
+.hd-icp-row b { font-weight: 500; color: var(--sub); flex: none; }
+.hd-icp-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* the unchosen drafts step back rather than disappear — the point of the
-   moment is that there were three, and that one was picked over the others */
-.hero-demo.has-choice .hd-draft { opacity: 0.42; }
-.hero-demo.has-choice .hd-draft.is-chosen {
-  opacity: 1;
-  border-color: var(--text);
-  background: var(--tag-bg);
-}
-
-.hd-draft-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-.hd-draft-num {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.72em;
-  color: var(--text-3);
+.hd-composer {
   flex: none;
-}
-.hd-draft-title { font-weight: 500; }
-.hd-draft-why {
-  color: #747474;
-  font-size: 0.92em;
-  min-height: 1.35em;
-}
-.hd-crit { display: flex; flex-wrap: wrap; gap: 0.25rem; }
-.hd-crit span {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.68em;
-  letter-spacing: 0.03em;
-  color: var(--text-3);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.1rem 0.35rem;
-  white-space: nowrap;
+  margin: calc(12 * var(--u)) calc(16 * var(--u)) calc(16 * var(--u));
+  border: 1px solid var(--line);
+  border-radius: calc(12 * var(--u));
+  padding: calc(10 * var(--u));
+  display: grid;
+  gap: calc(10 * var(--u));
+  font-size: calc(12 * var(--u));
+  color: var(--sub);
+  background: var(--surface);
 }
 
-/* ── results ────────────────────────────────────────────────────────── */
-.hd-results {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.hd-empty {
+/* ── the big right-hand stage ────────────────────────────────────── */
+.hd-main {
   flex: 1;
+  min-width: 0;
+  position: relative;
   display: grid;
   place-items: center;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.72em;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
 }
 
-.hd-row {
+.hd-screen {
+  position: absolute;
+  inset: 0;
   display: grid;
-  grid-template-columns: 2.6em minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.5rem 0.6rem;
-  background: var(--bg);
+  place-items: center;
   opacity: 0;
-  transform: translateY(6px);
-  transition: opacity .35s var(--ease), transform .45s var(--ease),
-              border-color .2s, background .2s;
+  pointer-events: none;
+  transition: opacity .4s ease;
 }
-.hd-row.is-in { opacity: 1; transform: none; }
-.hd-row.is-lifted { border-color: var(--text); background: var(--tag-bg); }
+.hd-screen.is-on { opacity: 1; pointer-events: auto; }
 
-.hd-score {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: 0.86em;
-  color: var(--text);
+/* search entry, beats 1–3 */
+.hd-search { display: grid; justify-items: center; gap: calc(30 * var(--u)); width: 100%; }
+.hd-search-head {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  font-size: calc(28 * var(--u));
+  font-weight: 700;
+  letter-spacing: calc(-0.4 * var(--u));
 }
-.hd-row-main { min-width: 0; }
-.hd-row-name { font-weight: 500; }
-.hd-row-why {
-  color: #747474;
-  font-size: 0.9em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.hd-search-head .hd-avatar { width: calc(30 * var(--u)); height: calc(30 * var(--u)); }
+.hd-wordmark { display: block; height: calc(26 * var(--u)); width: auto; color: var(--focus); }
 
-.hd-rate {
-  appearance: none;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  border-radius: 6px;
-  width: 1.9em;
-  height: 1.9em;
+.hd-input {
+  width: calc(676 * var(--u));
+  border: 1px solid var(--line);
+  border-radius: calc(14 * var(--u));
+  background: var(--surface);
+  padding: calc(16 * var(--u));
+  display: grid;
+  gap: calc(14 * var(--u));
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.hd-input-text {
+  font-size: calc(16 * var(--u));
+  line-height: calc(24 / 16);
+  color: var(--ink);
+  min-height: calc(24 * var(--u));
+}
+.hd-input-text.is-placeholder { color: var(--sub); }
+.hd-caret {
+  display: inline-block;
+  width: calc(1.5 * var(--u));
+  height: calc(18 * var(--u));
+  background: var(--ink);
+  vertical-align: calc(-3 * var(--u));
+  margin-left: calc(1 * var(--u));
+}
+.hero-demo.is-typing .hd-caret { animation: hd-blink 1.05s steps(1) infinite; }
+@keyframes hd-blink { 50% { opacity: 0; } }
+
+.hd-chips { display: flex; align-items: center; gap: calc(8 * var(--u)); }
+.hd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(5 * var(--u));
+  border: 1px solid var(--line);
+  border-radius: calc(8 * var(--u));
+  padding: calc(5 * var(--u)) calc(9 * var(--u));
+  font-size: calc(12 * var(--u));
+  line-height: calc(16 / 12);
+  color: var(--sub);
+  background: var(--surface);
+  transition: color .25s, background .25s, border-color .25s;
+}
+.hd-chip svg { width: calc(13 * var(--u)); height: calc(13 * var(--u)); }
+.hd-chip.is-on { color: var(--focus); background: var(--filter); border-color: var(--filter); }
+.hd-chip--round { border-radius: 50%; width: calc(26 * var(--u)); height: calc(26 * var(--u)); padding: 0; justify-content: center; }
+.hd-send {
+  margin-left: auto;
+  width: calc(30 * var(--u));
+  height: calc(30 * var(--u));
+  border-radius: 50%;
+  background: var(--aiicon);
   display: grid;
   place-items: center;
-  cursor: pointer;
-  color: var(--text-3);
-  font-size: 0.9em;
-  transition: color .2s, border-color .2s, background .2s;
-  flex: none;
+  color: #3b3b5c;
 }
-.hd-rate:hover { color: var(--text); border-color: var(--text-3); }
-.hd-rate:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
-.hd-rate[aria-pressed="true"] { color: var(--text); border-color: var(--text); background: var(--tag-bg); }
+.hd-send svg { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
 
-/* ── footer: the only chrome that admits this is a demo ─────────────── */
-.hd-foot {
-  grid-column: 1 / -1;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  padding: 0.4rem var(--pad);
+/* working screens, beats 4–6 */
+.hd-work { display: grid; justify-items: center; gap: calc(18 * var(--u)); width: calc(720 * var(--u)); }
+.hd-work .hd-wordmark { height: calc(46 * var(--u)); color: #A0A0B0; }
+.hd-work-title { font-size: calc(15 * var(--u)); color: var(--ink); }
+
+.hd-steps { display: grid; gap: calc(14 * var(--u)); margin-top: calc(20 * var(--u)); }
+.hd-step {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  font-size: calc(14 * var(--u));
+  color: var(--sub);
+  opacity: .35;
+  transition: opacity .45s ease, color .45s ease;
+}
+.hd-step.is-on { opacity: 1; color: var(--ink); }
+.hd-step svg { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; }
+
+.hd-reason { display: grid; gap: calc(14 * var(--u)); width: 100%; margin-top: calc(10 * var(--u)); }
+.hd-reason-line {
+  display: flex;
+  gap: calc(10 * var(--u));
+  font-size: calc(13 * var(--u));
+  line-height: calc(20 / 13);
+  color: var(--summary);
+}
+.hd-reason-line .hd-avatar { width: calc(16 * var(--u)); height: calc(16 * var(--u)); margin-top: calc(2 * var(--u)); }
+
+/* the document panel, beat 7 */
+.hd-doc {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.hd-doc-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.66em;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-3);
+  gap: calc(12 * var(--u));
+  padding: calc(16 * var(--u)) calc(20 * var(--u));
+  font-size: calc(15 * var(--u));
+  font-weight: 500;
 }
-.hd-hint { display: flex; align-items: center; gap: 0.4rem; }
+.hd-doc-tools { display: flex; align-items: center; gap: calc(12 * var(--u)); color: var(--sub); }
+.hd-doc-tools svg { width: calc(15 * var(--u)); height: calc(15 * var(--u)); }
+.hd-sources {
+  display: inline-flex; align-items: center; gap: calc(6 * var(--u));
+  border: 1px solid var(--line); border-radius: calc(999 * var(--u));
+  padding: calc(4 * var(--u)) calc(10 * var(--u));
+  font-size: calc(11.5 * var(--u));
+}
+.hd-source-dot {
+  width: calc(15 * var(--u)); height: calc(15 * var(--u));
+  border-radius: 50%; display: inline-block;
+  margin-left: calc(-6 * var(--u));
+  border: calc(1.5 * var(--u)) solid #fff;
+}
+
+.hd-doc-body {
+  display: grid;
+  grid-template-columns: calc(190 * var(--u)) minmax(0, 1fr);
+  min-height: 0;
+}
+.hd-doc-nav {
+  padding: calc(4 * var(--u)) calc(14 * var(--u));
+  display: grid;
+  align-content: start;
+  gap: calc(2 * var(--u));
+  overflow: hidden;
+}
+.hd-nav-item {
+  appearance: none; font: inherit; text-align: left; border: 0; background: none;
+  color: var(--ink);
+  font-size: calc(13 * var(--u));
+  line-height: calc(19 / 13);
+  padding: calc(6 * var(--u)) calc(8 * var(--u));
+  border-radius: calc(6 * var(--u));
+  cursor: pointer;
+  transition: background .18s, color .18s;
+}
+.hd-nav-item:hover { background: #f4f4f8; }
+.hd-nav-item.is-on { color: var(--focus); }
+.hd-nav-item:focus-visible { outline: calc(2 * var(--u)) solid var(--focus); outline-offset: calc(1 * var(--u)); }
+.hd-nav-sub {
+  display: grid; align-content: start; gap: calc(2 * var(--u));
+  padding-left: calc(10 * var(--u));
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height .4s cubic-bezier(.33,1,.68,1);
+}
+.hd-nav-item.is-on + .hd-nav-sub { max-height: calc(200 * var(--u)); }
+.hd-nav-sub span {
+  font-size: calc(12.5 * var(--u));
+  color: var(--sub);
+  padding: calc(4 * var(--u)) calc(8 * var(--u));
+}
+
+.hd-doc-content {
+  padding: calc(4 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u)) calc(12 * var(--u));
+  overflow: hidden;
+  min-height: 0;
+}
+.hd-doc-h {
+  font-size: calc(17 * var(--u));
+  font-weight: 700;
+  margin: 0 0 calc(16 * var(--u));
+}
+.hd-doc-sec { margin-bottom: calc(14 * var(--u)); }
+.hd-doc-sec h4 {
+  font-size: calc(13.5 * var(--u));
+  font-weight: 500;
+  margin: 0 0 calc(6 * var(--u));
+}
+.hd-doc-sec ul { margin: 0; padding-left: calc(18 * var(--u)); }
+.hd-doc-sec li {
+  font-size: calc(13 * var(--u));
+  line-height: calc(20 / 13);
+  color: var(--summary);
+  margin-bottom: calc(3 * var(--u));
+}
+
+/* ── the strip that admits this is a demo ────────────────────────── */
+.hd-foot {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12 * var(--u));
+  padding: calc(7 * var(--u)) calc(14 * var(--u));
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(calc(8 * var(--u)));
+  -webkit-backdrop-filter: blur(calc(8 * var(--u)));
+  border-top: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: calc(10.5 * var(--u));
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sub);
+  z-index: 5;
+}
+.hd-hint { display: flex; align-items: center; gap: calc(7 * var(--u)); }
 .hd-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--text-3);
-  flex: none;
+  width: calc(5 * var(--u)); height: calc(5 * var(--u));
+  border-radius: 50%; background: #c3c3d0; flex: none;
   transition: background .3s;
 }
 .hero-demo.is-live .hd-dot { background: #4B9E6A; }
 .hd-replay {
-  appearance: none;
-  border: 1px solid var(--border);
-  background: none;
-  border-radius: 5px;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  color: var(--text-3);
-  padding: 0.2rem 0.5rem;
+  appearance: none; font: inherit; letter-spacing: inherit; text-transform: inherit;
+  border: 1px solid var(--line); background: none; color: var(--sub);
+  border-radius: calc(5 * var(--u));
+  padding: calc(3 * var(--u)) calc(8 * var(--u));
   cursor: pointer;
 }
-.hd-replay:hover { color: var(--text); border-color: var(--text-3); }
-.hd-replay:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
-
-/* ── narrow ─────────────────────────────────────────────────────────── */
-/* Stacked, the two panes need roughly twice the height — and .hero-image is
-   a fixed 16/9 box, which would just crop them. Let the hero size to its
-   content at this width instead. */
-@media (max-width: 900px) {
-  .hero-image:has(.hero-demo) { aspect-ratio: auto; }
-  .hero-demo {
-    grid-template-columns: 1fr;
-    height: auto;
-    font-size: 0.78rem;
-  }
-  .hd-drafts, .hd-results { overflow: visible; }
-}
+.hd-replay:hover { color: var(--ink); border-color: #cfcfe0; }
+.hd-replay:focus-visible { outline: calc(2 * var(--u)) solid var(--focus); outline-offset: calc(1 * var(--u)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .hd-draft, .hd-row { transition: none; }
+  .hd-chat, .hd-screen, .hd-step, .hd-nav-sub, .hd-progress i { transition: none; }
   .hero-demo.is-typing .hd-caret { animation: none; }
 }
