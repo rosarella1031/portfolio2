@@ -157,11 +157,14 @@
    1.9 at the top of the hop, which would need them exported as a separate
    layer. */
 .hd-avatar {
-  /* Box sizes are the containers the frames actually use: Group 221 is 44
-     around the chat line, Group 215 is 24 on a reasoning line, and the
-     小机器人 instance is 30 on the search screen. */
-  width: calc(44 * var(--u));
-  height: calc(44 * var(--u));
+  /* Box sizes are the containers the frames actually use, traced to the
+     screen each one sits on rather than by size alone — the 44 belongs to
+     the search-filter screen, not the chat, which is what I had wrong:
+       chat line      小机器人 30, inside chat4 361x141 of the agent area
+       reasoning line Group 215 24, inside Frame 2018776441 673x88
+       search heading Group 221 44, inside Frame 2018776540 390x52 */
+  width: calc(30 * var(--u));
+  height: calc(30 * var(--u));
   flex: none;
   display: block;
   background: url('../assets/brix-avatar.png') no-repeat;
@@ -310,7 +313,7 @@
   font-weight: 700;
   letter-spacing: calc(-0.4 * var(--u));
 }
-.hd-search-head .hd-avatar { width: calc(30 * var(--u)); height: calc(30 * var(--u)); }
+.hd-search-head .hd-avatar { width: calc(44 * var(--u)); height: calc(44 * var(--u)); }
 .hd-wordmark { display: block; height: calc(26 * var(--u)); width: auto; color: var(--focus); }
 
 .hd-input {
