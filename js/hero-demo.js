@@ -128,18 +128,21 @@
     ['Skills', ['Expert-level knowledge of transformer architectures and optimization techniques',
                 'Deep understanding of LLM and VLM architecture and quantization methods',
                 'Extensive experience with model compression (pruning, quantization, distillation)',
-                'Proficiency with PyTorch and TensorFlow optimization',
-                'Advanced knowledge of ONNX Runtime, TensorRT, and other inference engines']],
+                'Proficiency in Python with PyTorch and TensorFlow optimization',
+                'Advanced knowledge of ONNX Runtime, TensorRT, and other inference engines',
+                'Model tracking and release through MLflow or Kubeflow']],
     ['Education', ['Ph.D. in Computer Science, Machine Learning, or Deep Learning',
                    'M.S. in Computer Science with specialization in AI from Stanford, UC Berkeley, CMU, or MIT',
                    'Research publications in model optimization, efficient deep learning, or on-device AI']],
     ['Experience', ['Led AI model optimization projects resulting in 5-10x latency improvements',
                     'Developed custom quantization schemes for transformer models',
-                    'Implemented efficient inference pipelines for edge devices',
+                    'Implemented efficient inference pipelines and carried them into production',
                     'Experience optimizing models on specific hardware accelerators (NPUs, GPUs)']],
     ['Companies', ['Tesla (AI/Autopilot team)', 'NVIDIA (AI Research, DRIVE team)', 'Qualcomm (AI Research)']],
     ['Keyword', ['model optimization', 'quantization', 'edge inference', 'TensorRT', 'ONNX']],
-    ['Others', ['Open-source contributions to inference tooling', 'Conference talks on on-device AI']]
+    ['Others', ['Open-source contributions to inference tooling',
+                'Conference talks on on-device AI',
+                'US time zones; remote accepted']]
   ];
   /* Two more reads of the same brief. Each keeps the must-haves — Python with
      PyTorch or TensorFlow, models in production, MLflow or Kubeflow, a
