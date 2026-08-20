@@ -422,7 +422,9 @@
   max-height: 0;
   transition: max-height .4s cubic-bezier(.33,1,.68,1);
 }
-.hd-nav-item.is-on + .hd-nav-sub { max-height: calc(200 * var(--u)); }
+/* Seven sections need 218; the old 200 cut "Others" off by 18. Headroom for
+   a couple more rather than a value that has to be revisited. */
+.hd-nav-item.is-on + .hd-nav-sub { max-height: calc(320 * var(--u)); }
 .hd-nav-sec {
   appearance: none;
   border: 0;
@@ -447,17 +449,31 @@
 
 .hd-doc-content {
   padding: calc(4 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u)) calc(12 * var(--u));
-  /* hidden, but still scrolled by script — see goToSection() for why it is
-     not a real scroller */
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
   position: relative;
+  /* Chained, not contained: once the document reaches its end the page takes
+     over, so nobody scrolling past the hero gets stuck in it. */
+  overscroll-behavior-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d7d7e0 transparent;
 }
-/* room to walk the last section up to the top */
+.hd-doc-content::-webkit-scrollbar { width: calc(8 * var(--u)); }
+.hd-doc-content::-webkit-scrollbar-track { background: transparent; }
+.hd-doc-content::-webkit-scrollbar-thumb {
+  background: #d7d7e0;
+  border-radius: calc(4 * var(--u));
+}
+.hd-doc-content::-webkit-scrollbar-thumb:hover { background: #c3c3d0; }
+
+/* A little run-out so the last section can sit clear of the bottom edge —
+   not a full panel's worth, which would read as the document having failed
+   to load rather than having ended. */
 .hd-doc-content::after {
   content: '';
   display: block;
-  height: calc(360 * var(--u));
+  height: calc(120 * var(--u));
 }
 .hd-doc-h {
   font-size: calc(17 * var(--u));

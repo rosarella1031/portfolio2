@@ -285,12 +285,9 @@
 
   /* Clicking a section in the nav walks the document to it.
 
-     .hd-doc-content stays overflow:hidden and is moved by script alone. It
-     could just as well be a real scroller — the frames even draw a scrollbar
-     — but a wheel-scrollable panel this tall sitting in a hero swallows the
-     page scroll for a screenful, and a visitor who only wanted to get past
-     the hero has to fight it. Script-only keeps the nav useful without
-     taking the page away from anyone. */
+     The document is a real scroller, as the frames draw it. Scroll chaining
+     is left at its default so that reaching the end hands the page back —
+     the alternative traps anyone who only wanted to get past the hero. */
   var scrollTween = null;
 
   function goToSection(k) {
