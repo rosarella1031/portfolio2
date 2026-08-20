@@ -255,9 +255,13 @@
 }
 
 .overview-note {
-  flex: 1;
+  flex: 0 1 320px;
   min-width: 220px;
   max-width: 320px;
+  /* Flush right. flex: 1 let it grow but max-width capped the box at 320, so
+     the leftover ran out past it and the note floated mid-right with dead
+     space after it; auto puts that space in front instead. */
+  margin-left: auto;
   padding-left: 1.5rem;
   position: relative;
 }
