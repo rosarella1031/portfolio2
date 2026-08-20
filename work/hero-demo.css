@@ -468,10 +468,11 @@
 }
 .hd-reason:empty { display: none; }
 
-/* The status list does not disappear when thinking starts — it is still
-   there under the first reasoning line in the recording, on its way out. */
-.hd-steps { transition: opacity .5s var(--ease, ease); }
-.hd-steps.is-spent { opacity: 0.28; }
+/* The status list is on its way out once thinking starts, not gone at once
+   and not left sitting there: it is still visible under the first reasoning
+   line in the recording and has cleared entirely by the next. */
+.hd-steps { transition: opacity .55s var(--ease, ease); }
+.hd-steps.is-spent { opacity: 0; }
 .hd-reason-line {
   display: flex;
   gap: calc(10 * var(--u));

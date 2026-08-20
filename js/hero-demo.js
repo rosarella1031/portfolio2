@@ -108,6 +108,8 @@
     typeQuery:      30,   // per character of the search query
     afterTyping:   950,   // pause on the lit ICP analysis chip
     sendPress:     170,   // how long the send button holds pressed
+    pushIn:        380,   // a new turn sliding the transcript up
+    stepsFade:     700,   // the status list clearing once thinking starts
     typeReply:       7,   // per character of the agent's four questions
     rollEvery:     900,   // how often the status list advances at beat 4
     afterQuestions:1500,  // hold once the questions are out
@@ -494,6 +496,28 @@
     return true;
   }
 
+  /* A turn arrives by pushing the ones above it up, rather than appearing and
+     jerking them a whole height in one frame. The new node is inserted with a
+     negative top margin equal to its own height, so nothing moves; animating
+     that back to zero grows the column, and since it is bottom-anchored the
+     older turns slide up out of the top. */
+  async function pushIn(html, mine) {
+    el.chat.insertAdjacentHTML('beforeend', html);
+    var node = el.chat.lastElementChild;
+    if (reduced) return node;
+    var gap = parseFloat(getComputedStyle(el.chat).rowGap) || 0;
+    var h = node.getBoundingClientRect().height + gap;
+    node.style.marginTop = -h + 'px';
+    node.style.opacity = '0';
+    node.getBoundingClientRect();                       // flush before transitioning
+    node.style.transition = 'margin-top .45s cubic-bezier(.33, 1, .68, 1), opacity .3s';
+    node.style.marginTop = '0px';
+    node.style.opacity = '1';
+    await sleep(T.pushIn);
+    if (mine === token) { node.style.transition = ''; node.style.marginTop = ''; }
+    return node;
+  }
+
   async function play() {
     var mine = ++token;
     reset();
@@ -562,13 +586,16 @@
        there under the first reasoning line, fading, and the heading only
        becomes "Building your own ICP" after that line lands. */
     beat(5);
-    el.chat.insertAdjacentHTML('beforeend',
-      '<div class="hd-bubble">' + JD + '</div>' +
-      '<div class="hd-agent-line">' + avatar() + '</div>' +
+    await pushIn('<div class="hd-bubble">' + JD + '</div>', mine);
+    if (mine !== token) return;
+    await pushIn('<div class="hd-agent-line">' + avatar() + '</div>', mine);
+    if (mine !== token) return;
+    await pushIn(
       '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
       '<div class="hd-progress"><i data-bar></i></div>' +
       '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
-      art('stop', 'hd-stop') + '</div></div>');
+      art('stop', 'hd-stop') + '</div></div>', mine);
+    if (mine !== token) return;
     var bar = el.chat.querySelector('[data-bar]');
 
     for (var r2 = 0; r2 < REASON.length; r2++) {
@@ -589,8 +616,13 @@
       }
       if (bar) bar.style.width = ((r2 + 1) / REASON.length * 80).toFixed(1) + '%';
       if (r2 === 0) {
-        el.steps.classList.add('is-spent');          // fades out beneath the reasoning
+        // fades out beneath the reasoning, then leaves — by 11s in the
+        // recording there is nothing of it left
+        el.steps.classList.add('is-spent');
         el.workTitle.textContent = 'Building your own ICP…';
+        (function (t) {
+          setTimeout(function () { if (t === token) el.steps.innerHTML = ''; }, T.stepsFade);
+        })(token);
       }
       // keep the newest line on the bottom edge, as the recording does
       el.reason.scrollTop = el.reason.scrollHeight;
