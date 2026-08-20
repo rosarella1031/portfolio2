@@ -141,11 +141,44 @@
 .hd-bubble .hd-at { color: var(--focus); }
 
 .hd-agent-line { display: flex; align-items: center; gap: calc(8 * var(--u)); }
+/* The agent, and its hop.
+
+   Both taken from the component on page 2 of the interaction file rather than
+   invented. The loop there is: rest 400ms, smart-animate to the jump over
+   791ms on a spring, then back over 180ms with an ease-in — 1371ms in all.
+
+   That spring is mass 1, stiffness 200, damping 48, which works out to a
+   damping ratio of 1.70. Over-damped, so it never overshoots, which is why a
+   plain cubic-bezier can stand in for it: fitting the closed-form response
+   gives (.15, .25, .2, .95) to an RMS of 0.005.
+
+   The jump itself is the whole body moving (1.2, -7.2) and rotating -3deg,
+   read off the two variants. Not reproduced: the eyes squint from 5.4 tall to
+   1.9 at the top of the hop, which would need them exported as a separate
+   layer. */
 .hd-avatar {
   width: calc(24 * var(--u));
   height: calc(24 * var(--u));
   flex: none;
   display: block;
+  background: url('../assets/brix-avatar.png') center / contain no-repeat;
+  animation: hd-hop 1371ms infinite;
+  will-change: transform;
+}
+
+@keyframes hd-hop {
+  /* A timing function set inside a keyframe governs the segment that starts
+     there, not the one that ends there — so the spring belongs on the rest
+     keyframe and the ease-in on the top of the hop. */
+  0%    { transform: none; }
+  29.2% { transform: none;                                        /* 400ms at rest */
+          animation-timing-function: cubic-bezier(.15, .25, .2, .95); }
+  86.9% { transform: translate(2.7%, -15.9%) rotate(-3deg);       /* 791ms rising */
+          animation-timing-function: ease-in; }
+  100%  { transform: none; }                                      /* 180ms falling */
+}
+@media (prefers-reduced-motion: reduce) {
+  .hd-avatar { animation: none; }
 }
 .hd-agent-line span { font-size: calc(14 * var(--u)); color: var(--ink); }
 
