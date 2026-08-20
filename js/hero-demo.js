@@ -62,7 +62,8 @@
     undo:   'M3 7v6h6M3.5 13a9 9 0 1 0 2.1-5.7L3 10',
     redo:   'M21 7v6h-6M20.5 13a9 9 0 1 1-2.1-5.7L21 10',
     copy:   'M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1',
-    close:  'M18 6 6 18M6 6l12 12'
+    close:  'M18 6 6 18M6 6l12 12',
+    search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3'
   };
 
   /* ---- content ------------------------------------------------------
@@ -87,7 +88,9 @@
                     'Developed custom quantization schemes for transformer models',
                     'Implemented efficient inference pipelines for edge devices',
                     'Experience optimizing models on specific hardware accelerators (NPUs, GPUs)']],
-    ['Companies', ['Tesla (AI/Autopilot team)', 'NVIDIA (AI Research, DRIVE team)', 'Qualcomm (AI Research)']]
+    ['Companies', ['Tesla (AI/Autopilot team)', 'NVIDIA (AI Research, DRIVE team)', 'Qualcomm (AI Research)']],
+    ['Keyword', ['model optimization', 'quantization', 'edge inference', 'TensorRT', 'ONNX']],
+    ['Others', ['Open-source contributions to inference tooling', 'Conference talks on on-device AI']]
   ];
   var ICPS = [
     { n: 'ICP 1', title: 'AI Model Optimization Specialist',      body: ICP1 },
@@ -97,13 +100,42 @@
 
   var QUERY  = 'Senior AI engineer in San Francisco, 5+ years experience';
   var PROMPT = 'Try search "Senior AI engineer in San Francisco with 5 years of experience."';
-  var JD = 'but must be in US time zones.\nMust-have skills:\n- Proficiency in Python and deep learning frameworks (e.g. PyTorch, TensorFlow)\n- Experience with deploying models to production\n- Familiarity with ML Ops tools like MLflow or Kubeflow';
-  var STEPS  = [['brief', 'Extracting job title and location'],
-                ['bolt',  'Parsing required skills and experience'],
-                ['layers','Interpreting job scope and expectations']];
-  var REASON = 'Identifying prominent job boards like LinkedIn. This leads me to consider ' +
+  var ASK    = '@ICP analysis Help me identify ICPs: Senior AI engineer in San Francisco, ' +
+               '5+ years experience';
+  var JD = 'but must be in US time zones.\nMust-have skills:\n- Proficiency in Python and deep ' +
+           'learning frameworks (e.g. PyTorch, TensorFlow)\n- Experience with deploying models to ' +
+           'production\n- Familiarity with ML Ops tools like MLflow or Kubeflow\nNice-to-have ' +
+           'skills:\n- Prior experience in a fast-scaling startup\n- Publications or patents in AI/ML';
+
+  /* The agent asks everything at once rather than one turn at a time — the
+     recording shows all four numbered together, which is the whole reason a
+     recruiter can answer in one go. */
+  var QUESTIONS = 'Thanks. I will search globally to help define the ideal candidate profiles.\n' +
+    'Questions for you:\n' +
+    '1. What is your preferred company size?\n' +
+    '2. Do you require experience in a specific industry?\n' +
+    '3. Is remote work acceptable?\n' +
+    '4. What are must-have vs nice-to-have skills?';
+
+  /* Beat 4's right pane: a rolling status, newest at the top, the oldest
+     fading out below it — not a checklist that ticks on and stays. */
+  var ROLL = [
+    ['layers', 'Mapping against hiring signals and data'],
+    ['brief',  'Extracting job title and location'],
+    ['bolt',   'Parsing required skills and experience'],
+    ['layers', 'Interpreting job scope and expectations']
+  ];
+
+  /* Beat 5's reasoning, which accumulates rather than replacing itself. */
+  var REASON = [
+    ['avatar', 'Identifying prominent job boards like LinkedIn. This leads me to consider ' +
                'specialized AI Engineer job boards and creative recruitment platforms for ' +
-               'sourcing senior AI Engineers.';
+               'sourcing senior AI Engineers.'],
+    ['none',   'Identifying candidate pools from mid-to-large tech companies (100-1000 employees)..'],
+    ['none',   'Prioritizing profiles with experience working in structured engineering teams.'],
+    ['none',   'Searching for AI Engineers who have mentored or led junior team members..'],
+    ['search', 'Filtering for experience in enterprise SaaS and cloud infrastructure domains.']
+  ];
 
   /* ---- shell -------------------------------------------------------- */
   root.innerHTML =
@@ -225,7 +257,9 @@
     var h = '<div class="hd-bubble">' + JD + '</div>' +
             '<div class="hd-agent-line">' + avatar() +
               '<span>I have identified 3 ideal candidate profiles for you.</span></div>' +
-            '<div class="hd-card"><div class="hd-card-title">Ideal candidate profiles</div>';
+            '<div class="hd-card"><div class="hd-card-head">' +
+              '<span class="hd-card-title">Ideal candidate profiles</span>' +
+              '<span class="hd-card-stamp">Created 1min ago</span></div>';
     for (var i = 0; i < ICPS.length; i++)
       h += '<button type="button" class="hd-icp-row" data-icp="' + i + '">' +
            '<b>' + ICPS[i].n + '</b><span>' + ICPS[i].title + '</span></button>';
@@ -306,56 +340,85 @@
     el.chip.classList.add('is-on');
     await sleep(950); if (mine !== token) return;
 
-    /* beat 4 — submitted */
+    /* beat 4 — submitted. The agent asks its four questions at once while
+       the right pane rolls its status, newest line on top. */
     beat(4); screen('work');
     el.chat.innerHTML =
       '<div class="hd-bubble"><span class="hd-at">@ICP analysis</span> Help me identify ICPs: ' +
       'Senior AI engineer in San Francisco, 5+ years experience</div>' +
-      '<div class="hd-agent-line">' + avatar() + '<span>Just a moment&hellip;</span></div>';
-    el.workTitle.textContent = 'Spinning up mapping…';
-    var sh = '';
-    for (var s = 0; s < STEPS.length; s++)
-      sh += '<div class="hd-step" data-step="' + s + '">' + icon(I[STEPS[s][0]]) + STEPS[s][1] + '</div>';
-    el.steps.innerHTML = sh;
-    await sleep(360);
-    for (var k = 0; k < STEPS.length - 1; k++) {
-      if (mine !== token) return;
-      el.steps.querySelector('[data-step="' + k + '"]').classList.add('is-on');
-      await sleep(760);
-    }
-    await sleep(500); if (mine !== token) return;
+      '<div class="hd-agent-line">' + avatar() + '</div>' +
+      '<div class="hd-reply" data-reply></div>';
+    el.workTitle.textContent = 'Where great hires begin';
+    el.steps.innerHTML = '';
+    el.reason.innerHTML = '';
 
-    /* beat 5 — reasoning */
+    var reply = el.chat.querySelector('[data-reply]');
+    var rolled = 0;
+    var roller = setInterval(function () {
+      if (mine !== token) { clearInterval(roller); return; }
+      var r = ROLL[rolled % ROLL.length];
+      var row = document.createElement('div');
+      row.className = 'hd-step is-on';
+      row.innerHTML = icon(I[r[0]]) + '<span>' + r[1] + '</span>';
+      el.steps.insertBefore(row, el.steps.firstChild);
+      while (el.steps.children.length > 3) el.steps.removeChild(el.steps.lastChild);
+      var kids = el.steps.children;
+      for (var q = 0; q < kids.length; q++) kids[q].style.opacity = [1, 1, 0.35][q];
+      rolled++;
+    }, 900);
+
+    for (var c2 = 0; c2 < QUESTIONS.length; c2++) {
+      if (mine !== token) { clearInterval(roller); return; }
+      reply.textContent = QUESTIONS.slice(0, c2 + 1);
+      await sleep(7);
+    }
+    await sleep(1500);
+    clearInterval(roller);
+    if (mine !== token) return;
+
+    /* beat 5 — the reasoning accumulates, line by line */
     beat(5);
     el.steps.innerHTML = '';
-    el.workTitle.textContent = 'Building your talent pool…';
+    el.workTitle.textContent = 'Building your own ICP…';
     el.chat.innerHTML =
       '<div class="hd-bubble">' + JD + '</div>' +
       '<div class="hd-agent-line">' + avatar() + '</div>' +
       '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
       '<div class="hd-progress"><i data-bar></i></div>' +
-      '<div class="hd-card-foot"><span>ICP analysis &middot; 20 resources</span>' +
+      '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
       '<span class="hd-stop"></span></div></div>';
-    el.reason.innerHTML = '<div class="hd-reason-line">' + avatar() + '<span data-stream></span></div>';
-    var stream = el.reason.querySelector('[data-stream]');
     var bar = el.chat.querySelector('[data-bar]');
-    for (var c = 0; c < REASON.length; c++) {
+
+    for (var r2 = 0; r2 < REASON.length; r2++) {
       if (mine !== token) return;
-      stream.textContent = REASON.slice(0, c + 1);
-      if (bar) bar.style.width = (c / REASON.length * 55).toFixed(1) + '%';
-      await sleep(9);
+      var lead = REASON[r2][0];
+      var line = document.createElement('div');
+      line.className = 'hd-reason-line';
+      line.innerHTML = (lead === 'avatar' ? avatar() :
+                        lead === 'search' ? '<span class="hd-lead">' + icon(I.search) + '</span>' :
+                        '<span class="hd-lead"></span>') + '<span></span>';
+      el.reason.appendChild(line);
+      var slot = line.lastElementChild;
+      var txt = REASON[r2][1];
+      for (var c3 = 0; c3 < txt.length; c3++) {
+        if (mine !== token) return;
+        slot.textContent = txt.slice(0, c3 + 1);
+        await sleep(6);
+      }
+      if (bar) bar.style.width = ((r2 + 1) / REASON.length * 80).toFixed(1) + '%';
+      await sleep(260);
     }
 
-    /* beat 6 — reading on */
+    /* beat 6 — reading on, progress closes out */
     beat(6);
     el.reason.insertAdjacentHTML('beforeend',
-      '<div class="hd-reason-line">' + avatar() + '<span>Reading&hellip;</span></div>');
-    for (var p = 55; p <= 100; p += 5) {
+      '<div class="hd-reason-line">' + avatar() + '<span>Reading…</span></div>');
+    for (var p2 = 80; p2 <= 100; p2 += 4) {
       if (mine !== token) return;
-      if (bar) bar.style.width = p + '%';
-      await sleep(120);
+      if (bar) bar.style.width = p2 + '%';
+      await sleep(150);
     }
-    await sleep(650); if (mine !== token) return;
+    await sleep(700); if (mine !== token) return;
 
     /* beat 7 — the profiles land */
     beat(7); screen('doc');

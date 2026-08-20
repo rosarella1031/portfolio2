@@ -126,6 +126,14 @@
 }
 .hd-agent-line span { font-size: calc(14 * var(--u)); color: var(--ink); }
 
+/* the agent's batched questions, straight into the column with no bubble */
+.hd-reply {
+  font-size: calc(14 * var(--u));
+  line-height: calc(22 / 14);
+  color: var(--ink);
+  white-space: pre-line;
+}
+
 .hd-card {
   border: 1px solid var(--line);
   border-radius: calc(12 * var(--u));
@@ -136,6 +144,13 @@
   gap: calc(12 * var(--u));
 }
 .hd-card-title { font-size: calc(14 * var(--u)); font-weight: 500; }
+.hd-card-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: calc(10 * var(--u));
+  padding-bottom: calc(10 * var(--u));
+  border-bottom: 1px solid var(--card);
+}
+.hd-card-stamp { font-size: calc(11 * var(--u)); color: var(--sub); flex: none; }
 .hd-progress {
   height: calc(3 * var(--u));
   border-radius: calc(2 * var(--u));
@@ -280,7 +295,16 @@
 .hd-work .hd-wordmark { height: calc(46 * var(--u)); color: #A0A0B0; }
 .hd-work-title { font-size: calc(15 * var(--u)); color: var(--ink); }
 
-.hd-steps { display: grid; gap: calc(14 * var(--u)); margin-top: calc(20 * var(--u)); }
+.hd-steps {
+  display: grid;
+  gap: calc(14 * var(--u));
+  margin-top: calc(28 * var(--u));
+  width: 100%;
+  /* three rows tall, so the list rolls inside a fixed block rather than
+     shoving the tagline around as lines come and go */
+  min-height: calc(3 * 38 * var(--u));
+  align-content: start;
+}
 .hd-step {
   display: flex;
   align-items: center;
@@ -292,6 +316,7 @@
 }
 .hd-step.is-on { opacity: 1; color: var(--ink); }
 .hd-step svg { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; }
+.hd-step span { min-width: 0; }
 
 .hd-reason { display: grid; gap: calc(14 * var(--u)); width: 100%; margin-top: calc(10 * var(--u)); }
 .hd-reason-line {
@@ -301,7 +326,16 @@
   line-height: calc(20 / 13);
   color: var(--summary);
 }
-.hd-reason-line .hd-avatar { width: calc(16 * var(--u)); height: calc(16 * var(--u)); margin-top: calc(2 * var(--u)); }
+.hd-reason-line .hd-avatar,
+.hd-reason-line .hd-lead {
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+  flex: none;
+  margin-top: calc(1 * var(--u));
+  color: var(--sub);
+}
+.hd-reason-line .hd-lead svg { width: 100%; height: 100%; display: block; }
+.hd-reason-line > span:last-child { min-width: 0; }
 
 /* the document panel, beat 7 */
 .hd-doc {
