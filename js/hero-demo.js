@@ -43,7 +43,7 @@
            'xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + AVATAR + '</svg>';
   };
   var icon = function (d, extra) {
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" ' +
            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
            (extra || '') + '<path d="' + d + '"/></svg>';
   };
@@ -58,11 +58,11 @@
     bulb:   'M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z',
     plus:   'M12 5v14M5 12h14',
     send:   'M22 2 11 13M22 2l-7 20-4-9-9-4z',
-    clock:  'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 6v6l4 2',
-    undo:   'M3 7v6h6M3.5 13a9 9 0 1 0 2.1-5.7L3 10',
-    redo:   'M21 7v6h-6M20.5 13a9 9 0 1 1-2.1-5.7L21 10',
-    copy:   'M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zM5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1',
-    close:  'M18 6 6 18M6 6l12 12',
+    clock:  'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+    undo:   'M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3',
+    redo:   'm15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3',
+    copy:   'M16.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v8.25A2.25 2.25 0 0 0 6 16.5h2.25m8.25-8.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-7.5A2.25 2.25 0 0 1 8.25 18v-7.5A2.25 2.25 0 0 1 10.5 8.25h6Z',
+    close:  'M6 18 18 6M6 6l12 12',
     search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3'
   };
 
