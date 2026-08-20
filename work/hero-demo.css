@@ -284,7 +284,9 @@
   .hd-send { transition: none; }
   .hero-demo.is-sending .hd-send { transform: none; }
 }
-.hd-plus   { width: calc(30 * var(--u)); height: calc(30 * var(--u)); flex: none; display: block; }
+/* The row runs at one size. The file has the plus at 30 against everything
+   else at 28; per Faye that 30 is the drawing's slip. */
+.hd-plus   { width: calc(28 * var(--u)); height: calc(28 * var(--u)); flex: none; display: block; }
 .hd-chip-i { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; display: block; }
 
 .hd-icp-row {
