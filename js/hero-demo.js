@@ -154,22 +154,32 @@
 
   /* Beat 4's right pane: a rolling status, newest at the top, the oldest
      fading out below it — not a checklist that ticks on and stays. */
+  /* The status list rolls while the agent reads the brief. Same five the
+     recording cycles through. */
   var ROLL = [
-    ['layers', 'Mapping against hiring signals and data'],
-    ['brief',  'Extracting job title and location'],
     ['bolt',   'Parsing required skills and experience'],
-    ['layers', 'Interpreting job scope and expectations']
+    ['layers', 'Interpreting job scope and expectations'],
+    ['brief',  'Extracting job title and location'],
+    ['layers', 'Mapping against hiring signals and data'],
+    ['brief',  'Assessing seniority and team shape']
   ];
 
   /* Beat 5's reasoning, which accumulates rather than replacing itself. */
+  /* Transcribed from the recording. Ten lines accumulate over roughly eight
+     seconds while the panel scrolls, the oldest fading off the top. */
   var REASON = [
     ['avatar', 'Identifying prominent job boards like LinkedIn. This leads me to consider ' +
                'specialized AI Engineer job boards and creative recruitment platforms for ' +
                'sourcing senior AI Engineers.'],
-    ['none',   'Identifying candidate pools from mid-to-large tech companies (100-1000 employees)..'],
+    ['none',   'Identifying candidate pools from mid- to large-tech companies (100-1000 employees).'],
     ['none',   'Prioritizing profiles with experience working in structured engineering teams.'],
-    ['none',   'Searching for AI Engineers who have mentored or led junior team members..'],
-    ['search', 'Filtering for experience in enterprise SaaS and cloud infrastructure domains.']
+    ['none',   'Searching for AI Engineers who have mentored or led junior team members.'],
+    ['none',   'Filtering for experience in enterprise SaaS and cloud infrastructure domains.'],
+    ['none',   'Focusing on roles involving ML model deployment at production scale.'],
+    ['none',   'Parsing technical skills: Python, PyTorch, TensorFlow as must-haves.'],
+    ['none',   'Cross-referencing ML Ops exposure\u2014highlighting candidates using MLflow and Kubeflow.'],
+    ['none',   'Reviewing GitHub repositories tagged with active model tracking tools.'],
+    ['none',   'Looking for US-based candidates open to remote work within Pacific & Central time zones.']
   ];
 
   /* ---- shell -------------------------------------------------------- */
@@ -483,6 +493,8 @@
         await sleep(T.typeReason);
       }
       if (bar) bar.style.width = ((r2 + 1) / REASON.length * 80).toFixed(1) + '%';
+      // keep the newest line on the bottom edge, as the recording does
+      el.reason.scrollTop = el.reason.scrollHeight;
       await sleep(T.betweenReasons);
     }
 

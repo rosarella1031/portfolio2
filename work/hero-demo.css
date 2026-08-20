@@ -406,7 +406,20 @@
 .hd-step svg { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; }
 .hd-step span { min-width: 0; }
 
-.hd-reason { display: grid; gap: calc(12 * var(--u)); width: 100%; margin-top: calc(16 * var(--u)); }
+/* Ten lines will not fit the panel, and in the recording they do not need
+   to — the list scrolls and the oldest fade off the top. Fixed height plus a
+   mask, with the script keeping it pinned to the bottom. */
+.hd-reason {
+  display: grid;
+  align-content: end;
+  gap: calc(12 * var(--u));
+  width: 100%;
+  margin-top: calc(16 * var(--u));
+  height: calc(300 * var(--u));
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(46 * var(--u)));
+          mask-image: linear-gradient(to bottom, transparent 0, #000 calc(46 * var(--u)));
+}
 .hd-reason:empty { display: none; }
 .hd-reason-line {
   display: flex;
