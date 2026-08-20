@@ -127,6 +127,11 @@
   gap: calc(14 * var(--u));
   justify-content: flex-end;
 }
+/* Turns must keep their own height. As flex children they shrink by default,
+   so a new one arriving squashed every turn above it instead of pushing them
+   up and out of the top — which is what the transcript is supposed to do,
+   and why the column never appeared to grow. */
+.hd-chat-scroll > * { flex: none; }
 
 .hd-bubble {
   align-self: flex-end;
