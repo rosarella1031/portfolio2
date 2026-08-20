@@ -486,6 +486,13 @@
   min-height: 220px;
 }
 
+/* A column inside the row, so each half can carry its own label. The caption
+   rule is written for a caption that sits between two figures in a stack, and
+   pulls itself up by 1.25rem to close that gap; here it heads its own column
+   and has nothing above it to close against. */
+.img-col { display: grid; align-content: start; }
+.img-row .img-col .img-caption { margin: 0 0 0.5rem; }
+
 /* ===== Detail problems (two columns, e.g. Business Goal / User Needs) ===== */
 .detail-problems {
   display: flex;
