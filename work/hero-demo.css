@@ -196,12 +196,11 @@
   background-position: 0 0;
 }
 
-/* It only moves while the agent is working — the beats where it is asking,
-   gathering and drafting. On the search screen nothing has been asked yet,
-   and once the profiles are out it has finished. */
-.hero-demo.beat-4 .hd-avatar,
-.hero-demo.beat-5 .hd-avatar,
-.hero-demo.beat-6 .hd-avatar {
+/* Only the one currently working moves. Scoping this by beat set every mark
+   in the transcript going at once, so a turn the agent had long finished —
+   the "Thanks, I will search globally" one — kept hopping behind the card.
+   js/hero-demo.js hands .is-live to whichever turn is in progress. */
+.hd-avatar.is-live {
   animation: hd-frames 1371ms steps(1, end) infinite,
              hd-hop 1371ms infinite;
   will-change: background-position, transform;
@@ -238,9 +237,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-demo.beat-4 .hd-avatar,
-  .hero-demo.beat-5 .hd-avatar,
-  .hero-demo.beat-6 .hd-avatar { animation: none; }
+  .hd-avatar.is-live { animation: none; }
 }
 .hd-agent-line span { font-size: calc(14 * var(--u)); color: var(--ink); }
 

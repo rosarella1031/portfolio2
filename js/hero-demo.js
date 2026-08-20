@@ -464,6 +464,7 @@
 
   function reset() {
     beat(1);
+    liveAvatar(null);
     screen('search');
     el.chat.innerHTML = '';
     el.reason.innerHTML = '';
@@ -504,6 +505,17 @@
      negative top margin equal to its own height, so nothing moves; animating
      that back to zero grows the column, and since it is bottom-anchored the
      older turns slide up out of the top. */
+  /* Exactly one mark is working at a time. Handing .is-live to the turn in
+     progress — and taking it off every other — is what stops a finished turn
+     carrying on hopping further up the transcript. */
+  function liveAvatar(scope) {
+    var all = root.querySelectorAll('.hd-avatar.is-live');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('is-live');
+    if (!scope) return;
+    var a = scope.querySelector ? scope.querySelector('.hd-avatar') : null;
+    if (a) a.classList.add('is-live');
+  }
+
   async function pushIn(html, mine) {
     el.chat.insertAdjacentHTML('beforeend', html);
     var node = el.chat.lastElementChild;
@@ -554,6 +566,7 @@
     el.steps.innerHTML = '';
     el.reason.innerHTML = '';
 
+    liveAvatar(el.chat.querySelector('.hd-agent-line'));
     var reply = el.chat.querySelector('[data-reply]');
     var rolled = 0;
     var roller = setInterval(function () {
@@ -618,8 +631,9 @@
 
     await pushIn('<div class="hd-bubble">' + JD + '</div>', mine);
     if (mine !== token) return;
-    await pushIn('<div class="hd-agent-line">' + avatar() + '</div>', mine);
+    var agentLine = await pushIn('<div class="hd-agent-line">' + avatar() + '</div>', mine);
     if (mine !== token) return;
+    liveAvatar(agentLine);
     await pushIn(
       '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
       '<div class="hd-progress"><i data-bar></i></div>' +
@@ -663,6 +677,7 @@
     beat(6);
     el.reason.insertAdjacentHTML('beforeend',
       '<div class="hd-reason-line">' + avatar() + '<span>Reading…</span></div>');
+    liveAvatar(el.reason.lastElementChild);
     for (var p2 = 80; p2 <= 100; p2 += 4) {
       if (mine !== token) return;
       if (bar) bar.style.width = p2 + '%';
@@ -672,6 +687,7 @@
 
     /* beat 7 — the profiles land */
     beat(7); screen('doc');
+    liveAvatar(null);
     chatArtifact();
     show(0);
     if (el.hint) el.hint.textContent = 'Click a profile';
@@ -707,6 +723,7 @@
         sh += '<div class="hd-step is-on" style="opacity:' + [1, 1, 0.35][i] + '">' +
               icon(I[ROLL[i][0]]) + '<span>' + ROLL[i][1] + '</span></div>';
       el.steps.innerHTML = sh;
+      liveAvatar(el.chat.querySelector('.hd-agent-line'));
       return;
     }
 
@@ -732,6 +749,8 @@
       }
       if (n === 6) rh += '<div class="hd-reason-line">' + avatar() + '<span>Reading…</span></div>';
       el.reason.innerHTML = rh;
+      liveAvatar(n === 6 ? el.reason.lastElementChild
+                         : el.chat.querySelector('.hd-agent-line'));
       return;
     }
 
