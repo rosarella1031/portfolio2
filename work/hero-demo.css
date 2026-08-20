@@ -157,11 +157,21 @@
    1.9 at the top of the hop, which would need them exported as a separate
    layer. */
 .hd-avatar {
-  width: calc(24 * var(--u));
-  height: calc(24 * var(--u));
+  /* Box sizes are the containers the frames actually use: Group 221 is 44
+     around the chat line, Group 215 is 24 on a reasoning line, and the
+     小机器人 instance is 30 on the search screen. */
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
   flex: none;
   display: block;
-  background: url('../assets/brix-avatar.png') center / contain no-repeat;
+  background: url('../assets/brix-avatar.png') no-repeat;
+  /* Sized under the box on purpose. The export is trimmed to its ink, so
+     centring it seats the body 16 points higher than the frames do — there
+     the blob runs y=10..41 of 44, low in its box, not centred in it. Leaving
+     vertical slack is what makes the position below do anything at all;
+     with `contain` the art fits the height exactly and cannot be moved. */
+  background-size: auto 90%;
+  background-position: 50% 90%;
 }
 
 /* It only hops while the agent is actually working — the beats where it is
@@ -407,8 +417,8 @@
 }
 .hd-reason-line .hd-avatar,
 .hd-reason-line .hd-lead {
-  width: calc(18 * var(--u));
-  height: calc(18 * var(--u));
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
   flex: none;
   margin-top: calc(1 * var(--u));
   color: var(--sub);
