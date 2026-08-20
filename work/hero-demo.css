@@ -281,7 +281,10 @@
 /* the composer is its own 122-tall band at the foot of the panel */
 .hd-composer {
   flex: none;
-  margin: calc(16 * var(--u));
+  /* 20, matching the chat's own inset above it, so the composer's edges line
+     up with the bubbles rather than sitting 4 wider. The file has 16 here —
+     that was the mistake, not this. */
+  margin: calc(20 * var(--u));
   border: 1px solid var(--line);
   border-radius: calc(14 * var(--u));
   padding: calc(14 * var(--u));
