@@ -31,6 +31,11 @@
 .hero-demo {
   container-type: inline-size;
   --u: calc(100cqw / 1440);        /* one design pixel */
+  /* Borders scale with the drawing like everything else. Left at a flat 1px
+     they stayed 1 device pixel while --u shrank, so on a phone — where --u is
+     about 0.23 — every edge rendered roughly four times heavier than drawn.
+     The floor keeps them from disappearing at small sizes. */
+  --hair: max(0.4px, calc(1 * var(--u)));
   position: relative;
   width: 100%;
   display: flex;
@@ -248,7 +253,7 @@
 }
 
 .hd-card {
-  border: 1px solid var(--line);
+  border: var(--hair) solid var(--line);
   border-radius: calc(12 * var(--u));
   background: var(--surface);
   padding: calc(14 * var(--u));
@@ -260,7 +265,7 @@
   display: flex; align-items: baseline; justify-content: space-between;
   gap: calc(10 * var(--u));
   padding-bottom: calc(10 * var(--u));
-  border-bottom: 1px solid var(--card);
+  border-bottom: var(--hair) solid var(--card);
 }
 .hd-card-stamp { font-size: calc(11 * var(--u)); color: var(--sub); flex: none; }
 .hd-progress {
@@ -316,7 +321,7 @@
 .hd-icp-row {
   appearance: none; font: inherit; color: inherit; text-align: left; width: 100%;
   display: flex; align-items: center; gap: calc(10 * var(--u));
-  border: 1px solid var(--line);
+  border: var(--hair) solid var(--line);
   border-radius: calc(9 * var(--u));
   background: var(--surface);
   padding: calc(10 * var(--u)) calc(12 * var(--u));
@@ -352,7 +357,7 @@
      up with the bubbles rather than sitting 4 wider. The file has 16 here —
      that was the mistake, not this. */
   margin: calc(20 * var(--u));
-  border: 1px solid var(--line);
+  border: var(--hair) solid var(--line);
   border-radius: calc(12 * var(--u));
   padding: calc(12 * var(--u));
   display: grid;
@@ -412,7 +417,7 @@
 
 .hd-input {
   width: calc(676 * var(--u));
-  border: 1px solid var(--line);
+  border: var(--hair) solid var(--line);
   border-radius: calc(14 * var(--u));
   background: var(--surface);
   padding: calc(16 * var(--u));
@@ -442,7 +447,7 @@
   display: inline-flex;
   align-items: center;
   gap: calc(5 * var(--u));
-  border: 1px solid var(--line);
+  border: var(--hair) solid var(--line);
   border-radius: calc(8 * var(--u));
   padding: calc(5 * var(--u)) calc(9 * var(--u));
   font-size: calc(12 * var(--u));
@@ -541,7 +546,7 @@
 .hd-doc-head {
   height: calc(72 * var(--u));
   /* the hairline under the header, in the file's lightest border token */
-  border-bottom: 1px solid var(--card);
+  border-bottom: var(--hair) solid var(--card);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -554,7 +559,7 @@
 .hd-doc-tools svg { width: calc(20 * var(--u)); height: calc(20 * var(--u)); }
 .hd-sources {
   display: inline-flex; align-items: center; gap: calc(8 * var(--u));
-  border: 1px solid var(--line); border-radius: calc(999 * var(--u));
+  border: var(--hair) solid var(--line); border-radius: calc(999 * var(--u));
   padding: calc(4 * var(--u)) calc(10 * var(--u));
   font-size: calc(11.5 * var(--u));
 }
@@ -724,6 +729,7 @@
 .hero-demo.is-live .hd-dot { background: #4B9E6A; }
 .hd-replay {
   appearance: none;
+  /* page chrome, sized in rem — it does not scale with the drawing */
   border: 1px solid var(--border);
   background: none;
   border-radius: 5px;
