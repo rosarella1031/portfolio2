@@ -162,6 +162,14 @@
   flex: none;
   display: block;
   background: url('../assets/brix-avatar.png') center / contain no-repeat;
+}
+
+/* It only hops while the agent is actually working — the beats where it is
+   asking, gathering and drafting. On the search screen nothing has been asked
+   yet, and once the profiles are out it has finished; in both it rests. */
+.hero-demo.beat-4 .hd-avatar,
+.hero-demo.beat-5 .hd-avatar,
+.hero-demo.beat-6 .hd-avatar {
   animation: hd-hop 1371ms infinite;
   will-change: transform;
 }
