@@ -176,7 +176,8 @@
     '<div class="hd-stage">' +
       '<div class="hd-icons">' + icon(I.panel) + icon(I.edit) + '</div>' +
 
-      '<div class="hd-chat"><div class="hd-chat-scroll" data-chat></div>' +
+      '<div class="hd-chat"><div class="hd-chat-in">' +
+        '<div class="hd-chat-scroll" data-chat></div>' +
         '<div class="hd-composer"><span>Ask Brix AI</span>' +
           '<div class="hd-chips">' +
             '<span class="hd-chip hd-chip--round">' + icon(I.plus) + '</span>' +
@@ -184,6 +185,7 @@
             '<span class="hd-chip">' + icon(I.bulb) + 'Advanced search</span>' +
             '<span class="hd-send">' + icon(I.send) + '</span>' +
           '</div>' +
+        '</div>' +
         '</div>' +
       '</div>' +
 

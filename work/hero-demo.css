@@ -82,21 +82,35 @@
 .hd-icons svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); display: block; }
 
 /* ── chat column, present from beat 4 on ─────────────────────────── */
+/* Two elements on purpose. The outer one carries the width, so the layout
+   opens and closes; the inner keeps a fixed 401 and is anchored to the outer's
+   right edge, so it is clipped rather than reflowed.
+
+   Animating width alone re-laid out the panel's contents on every frame — the
+   JD bubble rewrapped, the composer squashed — which reads as the panel being
+   stretched open rather than sliding in, however well the curve is tuned. */
 .hd-chat {
   flex: none;
   width: 0;
   overflow: hidden;
   background: var(--surface);
   display: flex;
-  flex-direction: column;
-  /* clears the toolbar sitting over it */
-  padding-top: calc(72 * var(--u));
+  justify-content: flex-end;
   /* Measured off the reference recording: two open/close cycles at 40fps,
      tracking the panel's own edge. 185ms opening, 236ms closing, and a
      markedly front-loaded curve — about 70% of the travel is done in the
      first third. The old .5s ease was two and a half times too slow. */
   transition: width .2s cubic-bezier(.25, .5, .15, .9);
 }
+.hd-chat-in {
+  flex: none;
+  width: calc(401 * var(--u));
+  display: flex;
+  flex-direction: column;
+  /* clears the toolbar sitting over it */
+  padding-top: calc(72 * var(--u));
+}
+
 .hero-demo.beat-4 .hd-chat,
 .hero-demo.beat-5 .hd-chat,
 .hero-demo.beat-6 .hd-chat,
