@@ -286,8 +286,10 @@
         '<div class="hd-screen" data-screen="work"><div class="hd-work">' +
           wordmark('hd-wordmark') +
           '<div class="hd-work-title" data-work-title></div>' +
-          '<div class="hd-steps" data-steps></div>' +
+          /* reason first: once thinking starts it appears above the status
+             list, which is on its way out beneath it */
           '<div class="hd-reason" data-reason></div>' +
+          '<div class="hd-steps" data-steps></div>' +
         '</div></div>' +
 
         '<div class="hd-screen" data-screen="doc"><div class="hd-doc">' +
@@ -461,6 +463,7 @@
     el.chat.innerHTML = '';
     el.reason.innerHTML = '';
     el.steps.innerHTML = '';
+    el.steps.classList.remove('is-spent');
     el.chip.classList.remove('is-on');
     root.classList.remove('has-query', 'is-sending');
     el.query.className = 'hd-input-text is-placeholder';
@@ -548,17 +551,24 @@
     clearInterval(roller);
     if (mine !== token) return;
 
-    /* beat 5 — the reasoning accumulates, line by line */
+    /* beat 5 — the reasoning accumulates, line by line.
+
+       The chat is a transcript, so this appends. Replacing it threw away the
+       user's opening line and the agent's four questions, which the recording
+       keeps — it only scrolls them up. The column is bottom-anchored and
+       clipped, so older turns leave the top on their own.
+
+       The status list is not cleared either: in the recording it is still
+       there under the first reasoning line, fading, and the heading only
+       becomes "Building your own ICP" after that line lands. */
     beat(5);
-    el.steps.innerHTML = '';
-    el.workTitle.textContent = 'Building your own ICP…';
-    el.chat.innerHTML =
+    el.chat.insertAdjacentHTML('beforeend',
       '<div class="hd-bubble">' + JD + '</div>' +
       '<div class="hd-agent-line">' + avatar() + '</div>' +
       '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
       '<div class="hd-progress"><i data-bar></i></div>' +
       '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
-      art('stop', 'hd-stop') + '</div></div>';
+      art('stop', 'hd-stop') + '</div></div>');
     var bar = el.chat.querySelector('[data-bar]');
 
     for (var r2 = 0; r2 < REASON.length; r2++) {
@@ -578,6 +588,10 @@
         await sleep(T.typeReason);
       }
       if (bar) bar.style.width = ((r2 + 1) / REASON.length * 80).toFixed(1) + '%';
+      if (r2 === 0) {
+        el.steps.classList.add('is-spent');          // fades out beneath the reasoning
+        el.workTitle.textContent = 'Building your own ICP…';
+      }
       // keep the newest line on the bottom edge, as the recording does
       el.reason.scrollTop = el.reason.scrollHeight;
       await sleep(T.betweenReasons);

@@ -467,6 +467,11 @@
           mask-image: linear-gradient(to bottom, transparent 0, #000 calc(46 * var(--u)));
 }
 .hd-reason:empty { display: none; }
+
+/* The status list does not disappear when thinking starts — it is still
+   there under the first reasoning line in the recording, on its way out. */
+.hd-steps { transition: opacity .5s var(--ease, ease); }
+.hd-steps.is-spent { opacity: 0.28; }
 .hd-reason-line {
   display: flex;
   gap: calc(10 * var(--u));
