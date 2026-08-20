@@ -260,7 +260,25 @@
    rounded square. They only need sizing; the styling is inside them, which is
    why the old rules that built a disc and centred a glyph are gone. */
 .hd-stop   { width: calc(24 * var(--u)); height: calc(24 * var(--u)); flex: none; display: block; }
-.hd-send   { width: calc(28 * var(--u)); height: calc(28 * var(--u)); flex: none; display: block; margin-left: auto; }
+.hd-send {
+  width: calc(28 * var(--u));
+  height: calc(28 * var(--u));
+  flex: none;
+  display: block;
+  margin-left: auto;
+  /* Three states, the first two sampled off the recording and both landing on
+     tokens the file already has: Border/Subdued while the field is empty,
+     Surface/AI Icon once there is something to send. The pressed step down is
+     mine — the capture cuts to the next screen before it shows one. */
+  --send-disc: #E8E8ED;
+  transition: transform .12s ease-out;
+}
+.hero-demo.has-query  .hd-send { --send-disc: #EDE9FF; }
+.hero-demo.is-sending .hd-send { --send-disc: #DCD3FF; transform: scale(0.92); }
+@media (prefers-reduced-motion: reduce) {
+  .hd-send { transition: none; }
+  .hero-demo.is-sending .hd-send { transform: none; }
+}
 .hd-plus   { width: calc(30 * var(--u)); height: calc(30 * var(--u)); flex: none; display: block; }
 .hd-chip-i { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; display: block; }
 
