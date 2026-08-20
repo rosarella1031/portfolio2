@@ -66,6 +66,28 @@
     search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3'
   };
 
+  /* ---- timing --------------------------------------------------------
+     Every duration in the tour is here and nowhere else, in milliseconds.
+     Change a number and the whole beat retimes. The two typing figures are
+     per character, so they scale with how much copy each beat carries.
+
+     To inspect one beat without waiting for the loop, load the page with
+     ?beat=4 (any of 1-7) — it renders that beat and holds there. */
+  var T = {
+    beforeTyping:  900,   // empty search sits before anything happens
+    typeQuery:      30,   // per character of the search query
+    afterTyping:   950,   // pause on the lit ICP analysis chip
+    typeReply:       7,   // per character of the agent's four questions
+    rollEvery:     900,   // how often the status list advances at beat 4
+    afterQuestions:1500,  // hold once the questions are out
+    typeReason:      6,   // per character of each reasoning line
+    betweenReasons: 260,  // gap between reasoning lines
+    progressStep:  150,   // each 4% of the progress bar at beat 6
+    beforeProfiles: 700,  // beat 6 to beat 7
+    holdOnResult:  4200,  // beat 7 before the loop restarts
+    handBackAfter: 9000   // idle before the tour resumes after a click
+  };
+
   /* ---- content ------------------------------------------------------
      ICP #1 is transcribed from the Figma frame. #2 and #3 carry the same
      body on purpose, as placeholders — their titles are the real ones from
@@ -193,10 +215,10 @@
         '</div></div>' +
       '</div>' +
 
-      '<div class="hd-foot">' +
-        '<span class="hd-hint"><span class="hd-dot"></span><span data-hint>Playing</span></span>' +
-        '<button type="button" class="hd-replay" data-replay>Replay</button>' +
-      '</div>' +
+    '</div>' +
+    '<div class="hd-foot">' +
+      '<span class="hd-hint"><span class="hd-dot"></span><span data-hint>Playing</span></span>' +
+      '<button type="button" class="hd-replay" data-replay>Replay</button>' +
     '</div>';
 
   var $  = function (s) { return root.querySelector(s); };
@@ -288,7 +310,7 @@
        calling maybeRun() here would re-enter play(), land back in
        finalState() and discard the profile they just picked. */
     if (reduced) return;
-    idle = setTimeout(function () { userDriving = false; maybeRun(); }, 9000);
+    idle = setTimeout(function () { userDriving = false; maybeRun(); }, T.handBackAfter);
   }
 
   function reset() {
@@ -317,7 +339,7 @@
     for (var i = 0; i < text.length; i++) {
       if (mine !== token) return false;
       caret.insertAdjacentText('beforebegin', text[i]);
-      await sleep(text[i] === ' ' ? 22 : 30);
+      await sleep(text[i] === ' ' ? T.typeQuery * 0.75 : T.typeQuery);
     }
     root.classList.remove('is-typing');
     caret.remove();
@@ -331,14 +353,14 @@
     root.classList.add('is-live');
     if (reduced) { finalState(); return; }
 
-    await sleep(900); if (mine !== token) return;
+    await sleep(T.beforeTyping); if (mine !== token) return;
 
     beat(2);
     if (!(await type(QUERY, mine))) return;
 
     beat(3);
     el.chip.classList.add('is-on');
-    await sleep(950); if (mine !== token) return;
+    await sleep(T.afterTyping); if (mine !== token) return;
 
     /* beat 4 — submitted. The agent asks its four questions at once while
        the right pane rolls its status, newest line on top. */
@@ -365,14 +387,14 @@
       var kids = el.steps.children;
       for (var q = 0; q < kids.length; q++) kids[q].style.opacity = [1, 1, 0.35][q];
       rolled++;
-    }, 900);
+    }, T.rollEvery);
 
     for (var c2 = 0; c2 < QUESTIONS.length; c2++) {
       if (mine !== token) { clearInterval(roller); return; }
       reply.textContent = QUESTIONS.slice(0, c2 + 1);
-      await sleep(7);
+      await sleep(T.typeReply);
     }
-    await sleep(1500);
+    await sleep(T.afterQuestions);
     clearInterval(roller);
     if (mine !== token) return;
 
@@ -403,10 +425,10 @@
       for (var c3 = 0; c3 < txt.length; c3++) {
         if (mine !== token) return;
         slot.textContent = txt.slice(0, c3 + 1);
-        await sleep(6);
+        await sleep(T.typeReason);
       }
       if (bar) bar.style.width = ((r2 + 1) / REASON.length * 80).toFixed(1) + '%';
-      await sleep(260);
+      await sleep(T.betweenReasons);
     }
 
     /* beat 6 — reading on, progress closes out */
@@ -416,16 +438,16 @@
     for (var p2 = 80; p2 <= 100; p2 += 4) {
       if (mine !== token) return;
       if (bar) bar.style.width = p2 + '%';
-      await sleep(150);
+      await sleep(T.progressStep);
     }
-    await sleep(700); if (mine !== token) return;
+    await sleep(T.beforeProfiles); if (mine !== token) return;
 
     /* beat 7 — the profiles land */
     beat(7); screen('doc');
     chatArtifact();
     show(0);
     if (el.hint) el.hint.textContent = 'Click a profile';
-    await sleep(4200); if (mine !== token) return;
+    await sleep(T.holdOnResult); if (mine !== token) return;
     if (!userDriving && running) return play();
   }
 
@@ -433,6 +455,59 @@
     clearTimeout(idle); userDriving = false; running = true;
     play().then(function () { running = false; });
   });
+
+  /* Paints one beat at rest. Shares chatArtifact()/show() with the tour, so
+     what you see here is what the tour lands on rather than a mock-up of it. */
+  function showBeat(n) {
+    reset();
+    if (el.hint) el.hint.textContent = 'Beat ' + n + ' of 7 — held';
+    if (n >= 2) { el.query.className = 'hd-input-text'; el.query.textContent = QUERY; }
+    if (n >= 3) el.chip.classList.add('is-on');
+    if (n <= 3) { beat(n); screen('search'); return; }
+
+    if (n === 4) {
+      beat(4); screen('work');
+      el.chat.innerHTML =
+        '<div class="hd-bubble"><span class="hd-at">@ICP analysis</span> Help me identify ICPs: ' +
+        'Senior AI engineer in San Francisco, 5+ years experience</div>' +
+        '<div class="hd-agent-line">' + avatar() + '</div>' +
+        '<div class="hd-reply">' + QUESTIONS + '</div>';
+      el.workTitle.textContent = 'Where great hires begin';
+      var sh = '';
+      for (var i = 0; i < 3; i++)
+        sh += '<div class="hd-step is-on" style="opacity:' + [1, 1, 0.35][i] + '">' +
+              icon(I[ROLL[i][0]]) + '<span>' + ROLL[i][1] + '</span></div>';
+      el.steps.innerHTML = sh;
+      return;
+    }
+
+    if (n === 5 || n === 6) {
+      beat(n); screen('work');
+      el.workTitle.textContent = 'Building your own ICP…';
+      el.chat.innerHTML =
+        '<div class="hd-bubble">' + JD + '</div>' +
+        '<div class="hd-agent-line">' + avatar() + '</div>' +
+        '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
+        '<div class="hd-progress"><i style="width:' + (n === 5 ? '48%' : '100%') + '"></i></div>' +
+        '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
+        '<span class="hd-stop"></span></div></div>';
+      var rh = '';
+      var upto = n === 5 ? 3 : REASON.length;
+      for (var r = 0; r < upto; r++) {
+        var lead = REASON[r][0];
+        rh += '<div class="hd-reason-line">' +
+              (lead === 'avatar' ? avatar() :
+               lead === 'search' ? '<span class="hd-lead">' + icon(I.search) + '</span>' :
+               '<span class="hd-lead"></span>') +
+              '<span>' + REASON[r][1] + '</span></div>';
+      }
+      if (n === 6) rh += '<div class="hd-reason-line">' + avatar() + '<span>Reading…</span></div>';
+      el.reason.innerHTML = rh;
+      return;
+    }
+
+    beat(7); screen('doc'); chatArtifact(); show(0);
+  }
 
   /* ---- when to run --------------------------------------------------- */
   function onScreen() {
@@ -453,7 +528,13 @@
      the poll running there re-entered play() every 400ms — which, since the
      reduced branch returns synchronously, re-rendered the whole demo two and
      a half times a second and threw away whatever profile you had clicked. */
-  if (reduced) {
+  /* ?beat=N renders one beat and holds it, so a single moment can be looked
+     at or screenshotted without waiting for the loop to come round. It is a
+     working tool, not a published state — nothing links to it. */
+  var pinned = (location.search.match(/[?&]beat=(\d)/) || [])[1];
+  if (pinned) {
+    showBeat(+pinned);
+  } else if (reduced) {
     finalState();
   } else {
     reset();
