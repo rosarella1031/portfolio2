@@ -215,10 +215,6 @@
         '</div></div>' +
       '</div>' +
 
-    '</div>' +
-    '<div class="hd-foot">' +
-      '<span class="hd-hint"><span class="hd-dot"></span><span data-hint>Playing</span></span>' +
-      '<button type="button" class="hd-replay" data-replay>Replay</button>' +
     '</div>';
 
   var $  = function (s) { return root.querySelector(s); };
@@ -227,7 +223,8 @@
     chip: $('[data-chip-icp]'), workTitle: $('[data-work-title]'),
     steps: $('[data-steps]'), reason: $('[data-reason]'),
     nav: $('[data-nav]'), doc: $('[data-doc]'),
-    hint: $('[data-hint]'), replay: $('[data-replay]')
+    hint: $('[data-hint]'),   // both gone with the status strip
+    replay: $('[data-replay]')
   };
 
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -255,7 +252,10 @@
       html += '<button type="button" class="hd-nav-item' + (k === i ? ' is-on' : '') +
               '" data-nav-item="' + k + '">' + ICPS[k].n.replace('ICP ', 'ICP #') + ': ' +
               ICPS[k].title + '</button><div class="hd-nav-sub">';
-      if (k === i) for (var s = 0; s < d.body.length; s++) html += '<span>' + d.body[s][0] + '</span>';
+      if (k === i)
+        for (var s = 0; s < d.body.length; s++)
+          html += '<button type="button" class="hd-nav-sec' + (s === 0 ? ' is-on' : '') +
+                  '" data-sec="' + s + '">' + d.body[s][0] + '</button>';
       html += '</div>';
     }
     el.nav.innerHTML = html;
@@ -266,13 +266,55 @@
       })(navs[q]);
     }
 
+    var secs = el.nav.querySelectorAll('[data-sec]');
+    for (var t = 0; t < secs.length; t++) {
+      (function (btn) {
+        btn.addEventListener('click', function () { takeOver(); goToSection(+btn.getAttribute('data-sec')); });
+      })(secs[t]);
+    }
+
     var body = '<h3 class="hd-doc-h">' + d.n.replace('ICP ', 'ICP #') + ': ' + d.title + '</h3>';
     for (var b = 0; b < d.body.length; b++) {
-      body += '<div class="hd-doc-sec"><h4>' + d.body[b][0] + ':</h4><ul>';
+      body += '<div class="hd-doc-sec" data-doc-sec="' + b + '"><h4>' + d.body[b][0] + ':</h4><ul>';
       for (var li = 0; li < d.body[b][1].length; li++) body += '<li>' + d.body[b][1][li] + '</li>';
       body += '</ul></div>';
     }
     el.doc.innerHTML = body;
+    el.doc.scrollTop = 0;
+  }
+
+  /* Clicking a section in the nav walks the document to it.
+
+     .hd-doc-content stays overflow:hidden and is moved by script alone. It
+     could just as well be a real scroller — the frames even draw a scrollbar
+     — but a wheel-scrollable panel this tall sitting in a hero swallows the
+     page scroll for a screenful, and a visitor who only wanted to get past
+     the hero has to fight it. Script-only keeps the nav useful without
+     taking the page away from anyone. */
+  var scrollTween = null;
+
+  function goToSection(k) {
+    var target = el.doc.querySelector('[data-doc-sec="' + k + '"]');
+    if (!target) return;
+
+    var secs = el.nav.querySelectorAll('[data-sec]');
+    for (var i = 0; i < secs.length; i++)
+      secs[i].classList.toggle('is-on', +secs[i].getAttribute('data-sec') === k);
+
+    // headings sit hard against the top of the panel otherwise
+    var to = Math.max(0, Math.min(target.offsetTop - el.doc.offsetTop - 8,
+                                  el.doc.scrollHeight - el.doc.clientHeight));
+    if (reduced) { el.doc.scrollTop = to; return; }
+
+    clearInterval(scrollTween);
+    var from = el.doc.scrollTop, span = to - from, t0 = Date.now(), ms = 380;
+    if (!span) return;
+    scrollTween = setInterval(function () {
+      var p = Math.min(1, (Date.now() - t0) / ms);
+      // ease-out cubic, so it settles rather than stopping dead
+      el.doc.scrollTop = from + span * (1 - Math.pow(1 - p, 3));
+      if (p >= 1) clearInterval(scrollTween);
+    }, 16);
   }
 
   function chatArtifact() {

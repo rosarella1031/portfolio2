@@ -1,9 +1,8 @@
 /* The Figma frames are 1440x900, so this hero is 16/10 rather than the
    16/9 the other case studies use — at 16/9 the panel would be cropped. */
-/* The stage keeps the frames' own 1440x900. The status strip is mine, not
-   the product's, so it sits under the stage rather than floating over it —
-   as an overlay it was covering 25px of the composer and 41px of the
-   document. The hero therefore sizes to content instead of to a ratio. */
+/* The hero is the stage and nothing else — no caption bar, no chrome of
+   mine under it. .hd-stage carries the frames' own 1440x900, so the hero
+   sizes to that rather than declaring a ratio of its own. */
 .hero-image--demo { aspect-ratio: auto; }
 
 /* ===== Brix hero — the product's own mapping flow, running =====
@@ -424,16 +423,41 @@
   transition: max-height .4s cubic-bezier(.33,1,.68,1);
 }
 .hd-nav-item.is-on + .hd-nav-sub { max-height: calc(200 * var(--u)); }
-.hd-nav-sub span {
+.hd-nav-sec {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  display: block;
+  width: 100%;
   font-size: calc(12.5 * var(--u));
   color: var(--sub);
   padding: calc(4 * var(--u)) calc(8 * var(--u));
+  border-radius: calc(5 * var(--u));
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.hd-nav-sec:hover { color: var(--ink); background: #f4f4f8; }
+.hd-nav-sec.is-on { color: var(--focus); }
+.hd-nav-sec:focus-visible {
+  outline: calc(2 * var(--u)) solid var(--focus);
+  outline-offset: calc(1 * var(--u));
 }
 
 .hd-doc-content {
   padding: calc(4 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u)) calc(12 * var(--u));
+  /* hidden, but still scrolled by script — see goToSection() for why it is
+     not a real scroller */
   overflow: hidden;
   min-height: 0;
+  position: relative;
+}
+/* room to walk the last section up to the top */
+.hd-doc-content::after {
+  content: '';
+  display: block;
+  height: calc(360 * var(--u));
 }
 .hd-doc-h {
   font-size: calc(17 * var(--u));
@@ -453,40 +477,6 @@
   color: var(--summary);
   margin-bottom: calc(3 * var(--u));
 }
-
-/* ── the strip that admits this is a demo ────────────────────────── */
-.hd-foot {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(12 * var(--u));
-  padding: calc(7 * var(--u)) calc(14 * var(--u));
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: calc(10.5 * var(--u));
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--sub);
-  z-index: 5;
-}
-.hd-hint { display: flex; align-items: center; gap: calc(7 * var(--u)); }
-.hd-dot {
-  width: calc(5 * var(--u)); height: calc(5 * var(--u));
-  border-radius: 50%; background: #c3c3d0; flex: none;
-  transition: background .3s;
-}
-.hero-demo.is-live .hd-dot { background: #4B9E6A; }
-.hd-replay {
-  appearance: none; font: inherit; letter-spacing: inherit; text-transform: inherit;
-  border: 1px solid var(--line); background: none; color: var(--sub);
-  border-radius: calc(5 * var(--u));
-  padding: calc(3 * var(--u)) calc(8 * var(--u));
-  cursor: pointer;
-}
-.hd-replay:hover { color: var(--ink); border-color: #cfcfe0; }
-.hd-replay:focus-visible { outline: calc(2 * var(--u)) solid var(--focus); outline-offset: calc(1 * var(--u)); }
 
 @media (prefers-reduced-motion: reduce) {
   .hd-chat, .hd-screen, .hd-step, .hd-nav-sub, .hd-progress i { transition: none; }
