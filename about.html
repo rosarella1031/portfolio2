@@ -49,7 +49,11 @@
          underneath and the tabs read as detached strips. The negative top
          keeps the overhanging tabs — overflow: hidden would cut those off. */
       clip-path: inset(-60px 0 0 0);
-      touch-action: none;
+      /* pan-y, not none. This is sticky and fills most of a phone screen,
+         and the whole page is scroll-driven — at none it swallowed the
+         gesture and nothing moved. The stickers keep none: a child can
+         restrict a gesture further, never widen it. */
+      touch-action: pan-y;
     }
     .sheet {
       position: absolute;

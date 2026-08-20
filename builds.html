@@ -321,6 +321,11 @@
       .canvas-viewport {
         position: static; overflow: visible; cursor: auto;
         padding: 2rem 1.25rem 4rem;
+        /* The desktop canvas takes the whole gesture so a drag pans it. Here
+           there is no panning — the canvas is a plain grid — and leaving this
+           at none meant the element covering the entire page swallowed every
+           touch, so the page could not be scrolled at all. */
+        touch-action: auto;
       }
       .canvas {
         position: static; width: auto; height: auto;
