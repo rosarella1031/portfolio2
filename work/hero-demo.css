@@ -109,6 +109,19 @@
   flex-direction: column;
   /* clears the toolbar sitting over it */
   padding-top: calc(72 * var(--u));
+  position: relative;
+}
+/* The toolbar closes with a rule across the panel. The icons themselves are
+   positioned on the stage, since they show on the search screen too where no
+   panel exists — so the line belongs to the panel, drawn at the foot of the
+   space they sit in. */
+.hd-chat-in::before {
+  content: '';
+  position: absolute;
+  top: calc(72 * var(--u));
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--line);
 }
 
 .hero-demo.beat-4 .hd-chat,
@@ -349,7 +362,6 @@
   padding: calc(16 * var(--u));
   display: grid;
   gap: calc(14 * var(--u));
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .hd-input-text {
   font-size: calc(16 * var(--u));
