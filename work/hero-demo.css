@@ -140,22 +140,14 @@
 }
 .hd-bubble .hd-at { color: var(--focus); }
 
-.hd-agent-line { display: flex; align-items: center; gap: calc(8 * var(--u)); }
-/* The agent, and its hop.
-
-   Both taken from the component on page 2 of the interaction file rather than
-   invented. The loop there is: rest 400ms, smart-animate to the jump over
-   791ms on a spring, then back over 180ms with an ease-in — 1371ms in all.
-
-   That spring is mass 1, stiffness 200, damping 48, which works out to a
-   damping ratio of 1.70. Over-damped, so it never overshoots, which is why a
-   plain cubic-bezier can stand in for it: fitting the closed-form response
-   gives (.15, .25, .2, .95) to an RMS of 0.005.
-
-   The jump itself is the whole body moving (1.2, -7.2) and rotating -3deg,
-   read off the two variants. Not reproduced: the eyes squint from 5.4 tall to
-   1.9 at the top of the hop, which would need them exported as a separate
-   layer. */
+/* In the chat the mark sits on its own line with the sentence beneath it,
+   not beside it — the search heading is the one that runs inline. */
+.hd-agent-line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(10 * var(--u));
+}
 .hd-avatar {
   /* Box sizes are the containers the frames actually use, traced to the
      screen each one sits on rather than by size alone — the 44 belongs to
@@ -337,7 +329,14 @@
   font-weight: 700;
   letter-spacing: calc(-0.4 * var(--u));
 }
-.hd-search-head .hd-avatar { width: calc(44 * var(--u)); height: calc(44 * var(--u)); }
+.hd-search-head .hd-avatar {
+  width: calc(44 * var(--u));
+  height: calc(44 * var(--u));
+  /* Sits a touch above the text's centre line rather than dead on it.
+     Offset with position, not transform — transform is the hop's. */
+  position: relative;
+  top: calc(-3 * var(--u));
+}
 .hd-wordmark { display: block; height: calc(26 * var(--u)); width: auto; color: var(--focus); }
 
 .hd-input {
