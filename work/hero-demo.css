@@ -280,6 +280,10 @@
    placeholder, so its button stays disabled throughout. */
 .hero-demo.has-query  .hd-input .hd-send { --send-disc: #EDE9FF; cursor: pointer; }
 .hero-demo.is-sending .hd-input .hd-send { --send-disc: #DCD3FF; transform: scale(0.92); }
+/* and the composer's follows its own field — it is disabled only while that
+   field is empty, not permanently, which is what I had it doing */
+.hero-demo.has-compose      .hd-composer .hd-send { --send-disc: #EDE9FF; cursor: pointer; }
+.hero-demo.is-sending-chat  .hd-composer .hd-send { --send-disc: #DCD3FF; transform: scale(0.92); }
 @media (prefers-reduced-motion: reduce) {
   .hd-send { transition: none; }
   .hero-demo.is-sending .hd-send { transform: none; }
@@ -307,6 +311,20 @@
 .hd-icp-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* the composer is its own 122-tall band at the foot of the panel */
+.hd-compose-text {
+  font-size: calc(13 * var(--u));
+  line-height: calc(20 / 13);
+  color: var(--ink);
+  white-space: pre-line;
+  /* it grows with the brief, as the recording shows, but not past the panel */
+  max-height: calc(150 * var(--u));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.hd-compose-text.is-placeholder { color: var(--sub); }
+
 .hd-composer {
   flex: none;
   /* 20, matching the chat's own inset above it, so the composer's edges line

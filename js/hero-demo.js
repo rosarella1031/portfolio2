@@ -108,6 +108,8 @@
     typeQuery:      30,   // per character of the search query
     afterTyping:   950,   // pause on the lit ICP analysis chip
     sendPress:     170,   // how long the send button holds pressed
+    typeJD:          4,   // per character of the brief, into the composer
+    beforeSend:    450,   // the pause before pressing send
     pushIn:        380,   // a new turn sliding the transcript up
     stepsFade:     700,   // the status list clearing once thinking starts
     typeReply:       7,   // per character of the agent's four questions
@@ -259,7 +261,7 @@
 
       '<div class="hd-chat"><div class="hd-chat-in">' +
         '<div class="hd-chat-scroll" data-chat></div>' +
-        '<div class="hd-composer"><span>Ask Brix AI</span>' +
+        '<div class="hd-composer"><div class="hd-compose-text is-placeholder" data-compose>Ask Brix AI</div>' +
           '<div class="hd-chips">' +
             '<span class="hd-chip hd-chip--round">' + art('plus', 'hd-plus') + '</span>' +
             '<span class="hd-chip is-on">' + art('doc', 'hd-chip-i') + 'ICP analysis</span>' +
@@ -330,6 +332,7 @@
     chip: $('[data-chip-icp]'), workTitle: $('[data-work-title]'),
     steps: $('[data-steps]'), reason: $('[data-reason]'),
     nav: $('[data-nav]'), doc: $('[data-doc]'),
+    compose: $('[data-compose]'),
     hint: $('[data-hint]'),
     replay: $('[data-replay]')
   };
@@ -586,6 +589,33 @@
        there under the first reasoning line, fading, and the heading only
        becomes "Building your own ICP" after that line lands. */
     beat(5);
+
+    /* The brief is typed into the composer and sent, exactly as the query was
+       on the search screen — the recording shows the field growing to hold it,
+       the send button waking, then the text leaving as a bubble. Skipping
+       that made the longest message on the page arrive from nowhere. */
+    el.compose.className = 'hd-compose-text';
+    el.compose.textContent = '';
+    var cCaret = document.createElement('span');
+    cCaret.className = 'hd-caret';
+    el.compose.appendChild(cCaret);
+    root.classList.add('is-typing');
+    for (var j = 0; j < JD.length; j++) {
+      if (mine !== token) return;
+      cCaret.insertAdjacentText('beforebegin', JD[j]);
+      if (j === 0) root.classList.add('has-compose');
+      await sleep(JD[j] === '\n' ? T.typeJD * 6 : T.typeJD);
+    }
+    root.classList.remove('is-typing');
+    cCaret.remove();
+    await sleep(T.beforeSend); if (mine !== token) return;
+
+    root.classList.add('is-sending-chat');
+    await sleep(T.sendPress); if (mine !== token) return;
+    root.classList.remove('is-sending-chat', 'has-compose');
+    el.compose.className = 'hd-compose-text is-placeholder';
+    el.compose.textContent = 'Ask Brix AI';
+
     await pushIn('<div class="hd-bubble">' + JD + '</div>', mine);
     if (mine !== token) return;
     await pushIn('<div class="hd-agent-line">' + avatar() + '</div>', mine);
