@@ -551,7 +551,7 @@
   min-height: 0;
 }
 .hd-doc-nav {
-  padding: calc(4 * var(--u)) calc(14 * var(--u));
+  padding: calc(20 * var(--u)) calc(14 * var(--u));
   display: grid;
   align-content: start;
   gap: calc(2 * var(--u));
@@ -603,7 +603,9 @@
 }
 
 .hd-doc-content {
-  padding: calc(4 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u)) calc(12 * var(--u));
+  /* 20 off the top; it was sitting 4 below the header and reading cramped.
+     The nav gets the same so the two columns still start on one line. */
+  padding: calc(20 * var(--u)) calc(28 * var(--u)) calc(24 * var(--u)) calc(12 * var(--u));
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
