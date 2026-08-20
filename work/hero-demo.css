@@ -271,10 +271,15 @@
      Surface/AI Icon once there is something to send. The pressed step down is
      mine — the capture cuts to the next screen before it shows one. */
   --send-disc: #E8E8ED;
+  /* disabled until there is something to send */
+  cursor: default;
   transition: transform .12s ease-out;
 }
-.hero-demo.has-query  .hd-send { --send-disc: #EDE9FF; }
-.hero-demo.is-sending .hd-send { --send-disc: #DCD3FF; transform: scale(0.92); }
+/* Scoped to the search field. has-query lives on the root, so unscoped it
+   also lit the composer's button — and that field only ever holds its
+   placeholder, so its button stays disabled throughout. */
+.hero-demo.has-query  .hd-input .hd-send { --send-disc: #EDE9FF; cursor: pointer; }
+.hero-demo.is-sending .hd-input .hd-send { --send-disc: #DCD3FF; transform: scale(0.92); }
 @media (prefers-reduced-motion: reduce) {
   .hd-send { transition: none; }
   .hero-demo.is-sending .hd-send { transform: none; }
