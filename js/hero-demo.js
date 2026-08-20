@@ -117,11 +117,8 @@
     holdOnResult:  4200,  // beat 7 before the loop restarts
     handBackAfter: 9000   // idle before the tour resumes after a click
   };
-
-  /* ---- content ------------------------------------------------------
-     ICP #1 is transcribed from the Figma frame. #2 and #3 carry the same
-     body on purpose, as placeholders — their titles are the real ones from
-     the file's nav, so the shape is right and only the prose is pending. */
+  /* ICP #1 is transcribed from the Figma frame; #2 and #3 are written to the
+     same brief and the same section shape. */
   var ICP1 = [
     ['Titles', ['Senior AI Optimization Engineer',
                 'Principal ML Engineer - Edge Deployment',
@@ -144,10 +141,60 @@
     ['Keyword', ['model optimization', 'quantization', 'edge inference', 'TensorRT', 'ONNX']],
     ['Others', ['Open-source contributions to inference tooling', 'Conference talks on on-device AI']]
   ];
+  /* Two more reads of the same brief. Each keeps the must-haves — Python with
+     PyTorch or TensorFlow, models in production, MLflow or Kubeflow, a
+     structured team, US hours — and differs in where it goes looking, which
+     is the whole point of drafting three. */
+  var ICP2 = [
+    ['Titles', ['Embedded AI Systems Architect',
+                'Senior Systems Engineer - On-Device ML',
+                'Principal Engineer - Edge Runtime',
+                'Staff Engineer - Embedded Platforms',
+                'AI Runtime Team Lead']],
+    ['Skills', ['Python with PyTorch or TensorFlow alongside production C/C++',
+                'Porting trained models onto constrained runtimes and accelerators',
+                'Linux kernel, RTOS and driver-level work beneath the model layer',
+                'Memory, thermal and power budgeting for continuous on-device inference',
+                'MLflow or Kubeflow extended to versioned, over-the-air model rollout']],
+    ['Education', ['M.S. in Computer Engineering, Electrical Engineering, or Computer Science',
+                   'Background in embedded systems, compilers, or computer architecture',
+                   'Patents or publications in on-device inference or hardware-aware ML']],
+    ['Experience', ['Shipped AI features into firmware running on production hardware',
+                    'Owned the runtime layer between model output and system services',
+                    'Built release and rollback pipelines for models already in the field',
+                    'Mentored junior engineers on a platform team of 100-1000']],
+    ['Companies', ['Apple (Silicon, Core ML)', 'Google (Android ML Platform)', 'Amazon (Devices, Alexa)']],
+    ['Keyword', ['embedded ML', 'on-device runtime', 'Core ML', 'RTOS', 'OTA rollout']],
+    ['Others', ['Works daily with hardware and firmware teams', 'US time zones; remote accepted']]
+  ];
+
+  var ICP3 = [
+    ['Titles', ['Senior Autonomy Integration Engineer',
+                'ML Integration Lead - Perception',
+                'Staff Engineer - AV Platform',
+                'Senior Engineer - Perception Deployment',
+                'Autonomy Systems Team Lead']],
+    ['Skills', ['Python with PyTorch or TensorFlow, interfaced into production C++',
+                'Integrating perception and prediction models into a live autonomy stack',
+                'Sensor fusion across camera, lidar and radar',
+                'Replay and triage pipelines for evaluating models against recorded drives',
+                'MLflow or Kubeflow at fleet scale, including continuous retraining']],
+    ['Education', ['M.S. or Ph.D. in Robotics, Computer Vision, or Machine Learning',
+                   'Research in perception, planning, or sensor fusion',
+                   'Publications at CVPR, ICRA, or equivalent venues']],
+    ['Experience', ['Carried perception models from research into a shipping stack',
+                    'Built regression suites that gate model releases on recorded drives',
+                    'Cut false positives in production perception without losing recall',
+                    'Coordinated releases across perception, planning and platform teams']],
+    ['Companies', ['Waymo', 'Cruise', 'Zoox']],
+    ['Keyword', ['perception', 'sensor fusion', 'autonomy stack', 'fleet learning', 'model release']],
+    ['Others', ['Comfortable inside a structured release process', 'US time zones; remote accepted']]
+  ];
+
   var ICPS = [
     { n: 'ICP 1', title: 'AI Model Optimization Specialist',      body: ICP1 },
-    { n: 'ICP 2', title: 'Embedded OS & AI Systems Architect',    body: ICP1 },
-    { n: 'ICP 3', title: 'Autonomous Driving AI Integration Specialist', body: ICP1 }
+    { n: 'ICP 2', title: 'Embedded OS & AI Systems Architect',    body: ICP2 },
+    { n: 'ICP 3', title: 'Autonomous Driving AI Integration Specialist', body: ICP3 }
   ];
 
   var QUERY  = 'Senior AI engineer in San Francisco, 5+ years experience';
