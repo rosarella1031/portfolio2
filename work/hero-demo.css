@@ -58,6 +58,13 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1440 / 900;
+  /* A flex item will not go below its content's height unless told to, and
+     that beat min-height wins over the aspect ratio — so a long transcript
+     stretched the stage from 900 to 1080 and carried the composer out of the
+     bottom with it. Pinned here, the overflow lands where it should: the
+     oldest turns run off the top of the chat and are clipped. */
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   font-size: calc(14 * var(--u));
   line-height: calc(24 / 14);
@@ -92,6 +99,12 @@
 .hd-chat {
   flex: none;
   width: 0;
+  /* A definite height, and permission to be shorter than its contents. Without
+     both, the panel grew to whatever the transcript needed — 1080 against the
+     stage's 900 — and pushed the composer out of the bottom instead of letting
+     the oldest turns run off the top. */
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   background: var(--surface);
   display: flex;
@@ -105,6 +118,8 @@
 .hd-chat-in {
   flex: none;
   width: calc(401 * var(--u));
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   /* clears the toolbar sitting over it */
@@ -321,7 +336,8 @@
   line-height: calc(20 / 13);
   color: var(--ink);
   white-space: pre-line;
-  /* it grows with the brief, as the recording shows, but not past the panel */
+  /* Grows with the brief, as the recording shows — the field's top edge
+     rising while it is typed into is correct. */
   max-height: calc(150 * var(--u));
   overflow: hidden;
   display: flex;
