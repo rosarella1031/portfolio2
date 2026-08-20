@@ -79,6 +79,23 @@
     'data:image/png;base64,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'
   ];
 
+  /* Drawn in the file, not by me: each carries its own fills — the send
+     button is an #E8E8ED disc with an arrow, the stop button an #EDE9FF
+     disc with a rounded square — so they go in whole rather than through
+     icon(), which wraps a single stroked path. */
+  var ART = {
+    send: { vb: '0 0 28 28', d: '<g><circle cx="14" cy="14" r="14" fill="#E8E8ED"/><path fill-rule="evenodd" clip-rule="evenodd" d="M8.4971 8.78528C8.32762 8.71363 8.13175 8.7532 8.00306 8.88508C7.87437 9.01697 7.83897 9.2144 7.91377 9.38307L9.76181 13.55H14.2988C14.5463 13.55 14.747 13.7515 14.747 14C14.747 14.2485 14.5463 14.45 14.2988 14.45H9.76182L7.91377 18.6169C7.83897 18.7856 7.87437 18.983 8.00306 19.1149C8.13175 19.2468 8.32762 19.2864 8.4971 19.2147L19.8508 14.4148C20.017 14.3445 20.125 14.1811 20.125 14C20.125 13.819 20.017 13.6555 19.8508 13.5853L8.4971 8.78528Z" fill="#48455A"/></g>' },
+    plus: { vb: '0 0 30 30', d: '<g clip-path="url(#clip0_0_72)"><path d="M15 29C22.7319 29 29 22.7319 29 15C29 7.26801 22.7319 1 15 1C7.26801 1 1 7.26801 1 15C1 22.7319 7.26801 29 15 29Z" stroke="#E8E8ED" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.64286 14.6429H14.6429M14.6429 14.6429H19.6429M14.6429 14.6429V9.64286M14.6429 14.6429V19.6429" stroke="#6B6B80" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath><rect width="30" height="30" fill="white"/></clipPath></defs>' },
+    doc: { vb: '0 0 16 16', d: '<g><path d="M8.70117 0.950195C9.26043 0.948544 9.79739 1.17713 10.1953 1.58594L10.1973 1.58789L10.2979 1.7002L10.2988 1.70117L13.0596 5.01758C13.3412 5.35456 13.5096 5.77192 13.5439 6.20898V6.21094L13.5449 6.22559H13.5498V12.9414C13.5497 14.0579 12.7182 14.974 11.6611 15.0459H11.6592L11.5303 15.0498H4.47168C3.95801 15.0496 3.46325 14.8453 3.08887 14.4795C2.71489 14.1138 2.48808 13.6139 2.4541 13.0811V13.0791L2.4502 12.9434V3.05859C2.45034 1.9421 3.28182 1.02601 4.33887 0.954102H4.34082L4.4707 0.950195H8.70117ZM4.47266 1.87305C3.88532 1.87305 3.39947 2.34159 3.34375 2.94434L3.33887 3.06055V12.9414C3.339 13.5583 3.78872 14.0619 4.36035 14.1201L4.47461 14.127H11.5283C12.1148 14.127 12.6005 13.6584 12.6562 13.0557L12.6611 12.9414V6.375C12.6611 6.26221 12.6433 6.15113 12.6123 6.04395H10.0645C9.42151 6.04395 8.8962 5.53207 8.83691 4.88281V4.88086L8.83105 4.76172V1.87988C8.82813 1.87956 8.8252 1.8792 8.82227 1.87891V1.87988L8.69824 1.87305H4.47266ZM9.7207 4.75879C9.7206 4.84394 9.749 4.92624 9.80078 4.99121C9.85175 5.05503 9.92185 5.09859 9.99902 5.11426L10.0703 5.12109H11.9697L9.7207 2.41895V4.75879Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.1"/></g>' },
+    bulb: { vb: '0 0 11.16 15.16', d: '<g><path d="M5.58 0.0399609C8.61284 0.0399611 11.12 2.47199 11.12 5.41887C11.12 7.46002 9.87648 9.37131 8.04289 10.2724V12.3505C7.97564 13.1965 7.304 13.8484 6.43156 13.8486H4.66301C3.79101 13.8484 3.11711 13.196 3.11711 12.3466V10.2734C1.21829 9.37277 0.0399609 7.52314 0.0399609 5.41887C0.0400105 2.47199 2.54716 0.0399609 5.58 0.0399609ZM4.04875 12.3466C4.04875 12.7046 4.35671 13.0056 4.72844 13.0058H6.49699C6.86874 13.0056 7.17668 12.7046 7.17668 12.3466V9.77922L7.19914 9.76848L7.46086 9.64152L7.46379 9.64055C9.21625 8.94749 10.3199 7.30965 10.3202 5.48332L10.3075 5.24895C10.1206 2.83966 8.03363 0.946211 5.58 0.946211C2.98197 0.946211 0.906265 2.96327 0.906172 5.48234C0.906172 7.19474 1.87513 8.74112 3.44035 9.49895L3.76164 9.64055L3.76457 9.64152L4.02629 9.76848L4.04875 9.77922V12.3466Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.08"/><path d="M6.99363 13.1332V14.1264C6.99363 14.7233 6.51414 15.1196 5.97117 15.1196H5.12058C4.57581 15.1196 4.09812 14.6581 4.09812 14.1264V13.4506H4.8325V14.1264C4.8325 14.1779 4.86049 14.2482 4.91257 14.3061C4.96405 14.3632 5.0361 14.4047 5.12058 14.4047H5.97117C6.0254 14.4047 6.09896 14.3773 6.15867 14.3266C6.21761 14.2765 6.25925 14.207 6.25925 14.1264V13.1332H6.99363Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.08"/><path d="M5.59004 7.85785C5.70084 7.85785 5.8085 7.91166 5.88789 7.98871C5.9672 8.0657 6.02363 8.17095 6.02363 8.27973V10.7582C6.0236 10.8916 5.98893 10.9991 5.91328 11.0727C5.83762 11.1461 5.72686 11.1791 5.59004 11.1791C5.47936 11.1791 5.3715 11.1262 5.29218 11.0493C5.21292 10.9723 5.15749 10.8669 5.15742 10.7582V8.27973C5.15742 8.17107 5.21301 8.06568 5.29218 7.98871C5.37151 7.91171 5.47933 7.85794 5.59004 7.85785Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.08"/><path d="M7.31773 8.08007C7.31757 8.18855 7.26202 8.29325 7.18297 8.37011C7.10364 8.44711 6.99582 8.50088 6.88511 8.50097L4.3314 8.50097C4.19476 8.50097 4.08479 8.46776 4.00914 8.39452C3.93335 8.32095 3.89887 8.21344 3.89879 8.08007C3.89879 7.97132 3.95426 7.86604 4.03355 7.78905C4.11294 7.71199 4.22059 7.65819 4.3314 7.65819L6.88511 7.65819C6.99582 7.65828 7.10364 7.71205 7.18297 7.78905C7.26214 7.86602 7.31773 7.97142 7.31773 8.08007Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.08"/><path d="M7.34666 10.6543C7.45747 10.6543 7.56513 10.7081 7.64452 10.7852C7.72376 10.8622 7.77928 10.9675 7.77928 11.0762C7.77917 11.1802 7.74374 11.2857 7.67088 11.3653C7.59732 11.4455 7.48797 11.4971 7.34666 11.4971H3.61424C3.50353 11.497 3.39571 11.4432 3.31639 11.3662C3.23734 11.2894 3.18179 11.1847 3.18162 11.0762C3.18162 10.9676 3.23722 10.8622 3.31639 10.7852C3.39571 10.7082 3.50353 10.6544 3.61424 10.6543H7.34666Z" fill="#6B6B80" stroke="#6B6B80" stroke-width="0.08"/></g>' },
+    stop: { vb: '0 0 24 24', d: '<g><circle cx="12" cy="12" r="12" fill="#EDE9FF"/><path d="M15.6 8.64V15.36C15.6 15.4926 15.4926 15.6 15.36 15.6H8.64C8.50745 15.6 8.4 15.4926 8.4 15.36V8.64C8.4 8.50745 8.50745 8.4 8.64 8.4H15.36C15.4926 8.4 15.6 8.50745 15.6 8.64Z" fill="#48455A"/></g>' }
+  };
+
+  var art = function (name, cls) {
+    var a = ART[name];
+    return '<svg class="' + (cls || '') + '" viewBox="' + a.vb + '" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + a.d + '</svg>';
+  };
+
   /* ---- timing --------------------------------------------------------
      Every duration in the tour is here and nowhere else, in milliseconds.
      Change a number and the whole beat retimes. The two typing figures are
@@ -191,10 +208,10 @@
         '<div class="hd-chat-scroll" data-chat></div>' +
         '<div class="hd-composer"><span>Ask Brix AI</span>' +
           '<div class="hd-chips">' +
-            '<span class="hd-chip hd-chip--round">' + icon(I.plus) + '</span>' +
-            '<span class="hd-chip is-on">' + icon(I.doc) + 'ICP analysis</span>' +
-            '<span class="hd-chip">' + icon(I.bulb) + 'Advanced search</span>' +
-            '<span class="hd-send">' + icon(I.send) + '</span>' +
+            '<span class="hd-chip hd-chip--round">' + art('plus', 'hd-plus') + '</span>' +
+            '<span class="hd-chip is-on">' + art('doc', 'hd-chip-i') + 'ICP analysis</span>' +
+            '<span class="hd-chip">' + art('bulb', 'hd-chip-i') + 'Advanced search</span>' +
+            art('send', 'hd-send') +
           '</div>' +
         '</div>' +
         '</div>' +
@@ -207,10 +224,10 @@
           '<div class="hd-input">' +
             '<div class="hd-input-text is-placeholder" data-query></div>' +
             '<div class="hd-chips">' +
-              '<span class="hd-chip hd-chip--round">' + icon(I.plus) + '</span>' +
-              '<span class="hd-chip" data-chip-icp>' + icon(I.doc) + 'ICP analysis</span>' +
-              '<span class="hd-chip">' + icon(I.bulb) + 'Advanced search</span>' +
-              '<span class="hd-send">' + icon(I.send) + '</span>' +
+              '<span class="hd-chip hd-chip--round">' + art('plus', 'hd-plus') + '</span>' +
+              '<span class="hd-chip" data-chip-icp>' + art('doc', 'hd-chip-i') + 'ICP analysis</span>' +
+              '<span class="hd-chip">' + art('bulb', 'hd-chip-i') + 'Advanced search</span>' +
+              art('send', 'hd-send') +
             '</div>' +
           '</div>' +
         '</div></div>' +
@@ -482,7 +499,7 @@
       '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
       '<div class="hd-progress"><i data-bar></i></div>' +
       '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
-      '<span class="hd-stop"></span></div></div>';
+      art('stop', 'hd-stop') + '</div></div>';
     var bar = el.chat.querySelector('[data-bar]');
 
     for (var r2 = 0; r2 < REASON.length; r2++) {
@@ -566,7 +583,7 @@
         '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
         '<div class="hd-progress"><i style="width:' + (n === 5 ? '48%' : '100%') + '"></i></div>' +
         '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
-        '<span class="hd-stop"></span></div></div>';
+        art('stop', 'hd-stop') + '</div></div>';
       var rh = '';
       var upto = n === 5 ? 3 : REASON.length;
       for (var r = 0; r < upto; r++) {

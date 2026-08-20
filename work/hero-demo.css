@@ -235,7 +235,7 @@
   display: grid;
   gap: calc(12 * var(--u));
 }
-.hd-card-title { font-size: calc(14 * var(--u)); font-weight: 500; }
+.hd-card-title { font-size: calc(14 * var(--u)); font-weight: 600; line-height: calc(20 / 14); }
 .hd-card-head {
   display: flex; align-items: baseline; justify-content: space-between;
   gap: calc(10 * var(--u));
@@ -245,20 +245,24 @@
 .hd-card-stamp { font-size: calc(11 * var(--u)); color: var(--sub); flex: none; }
 .hd-progress {
   height: calc(3 * var(--u));
-  border-radius: calc(2 * var(--u));
-  background: var(--card);
+  border-radius: calc(40 * var(--u));
+  background: #d9d9d9;
   overflow: hidden;
 }
-.hd-progress i { display: block; height: 100%; width: 0%; background: var(--focus); border-radius: inherit; }
+.hd-progress i { display: block; height: 100%; width: 0%; background: #8053f1; border-radius: inherit; }
 .hd-card-foot {
   display: flex; align-items: center; justify-content: space-between;
   gap: calc(8 * var(--u));
-  font-size: calc(12 * var(--u)); color: var(--sub);
+  font-size: calc(12 * var(--u)); line-height: calc(24 / 12); color: #73738b;
 }
-.hd-stop {
-  width: calc(20 * var(--u)); height: calc(20 * var(--u));
-  border-radius: calc(6 * var(--u)); background: #2b2b45; flex: none;
-}
+/* These four are complete drawings from the file — the send button is an
+   #E8E8ED disc with an arrow in it, the stop button an #EDE9FF disc with a
+   rounded square. They only need sizing; the styling is inside them, which is
+   why the old rules that built a disc and centred a glyph are gone. */
+.hd-stop   { width: calc(24 * var(--u)); height: calc(24 * var(--u)); flex: none; display: block; }
+.hd-send   { width: calc(28 * var(--u)); height: calc(28 * var(--u)); flex: none; display: block; margin-left: auto; }
+.hd-plus   { width: calc(30 * var(--u)); height: calc(30 * var(--u)); flex: none; display: block; }
+.hd-chip-i { width: calc(16 * var(--u)); height: calc(16 * var(--u)); flex: none; display: block; }
 
 .hd-icp-row {
   appearance: none; font: inherit; color: inherit; text-align: left; width: 100%;
@@ -285,11 +289,12 @@
      that was the mistake, not this. */
   margin: calc(20 * var(--u));
   border: 1px solid var(--line);
-  border-radius: calc(14 * var(--u));
-  padding: calc(14 * var(--u));
+  border-radius: calc(12 * var(--u));
+  padding: calc(12 * var(--u));
   display: grid;
   gap: calc(12 * var(--u));
-  font-size: calc(13 * var(--u));
+  font-size: calc(12 * var(--u));
+  line-height: calc(20 / 12);
   color: var(--sub);
   background: var(--surface);
 }
@@ -382,20 +387,9 @@
   background: var(--surface);
   transition: color .25s, background .25s, border-color .25s;
 }
-.hd-chip svg { width: calc(13 * var(--u)); height: calc(13 * var(--u)); }
+
 .hd-chip.is-on { color: var(--focus); background: var(--filter); border-color: var(--filter); }
-.hd-chip--round { border-radius: 50%; width: calc(26 * var(--u)); height: calc(26 * var(--u)); padding: 0; justify-content: center; }
-.hd-send {
-  margin-left: auto;
-  width: calc(30 * var(--u));
-  height: calc(30 * var(--u));
-  border-radius: 50%;
-  background: var(--aiicon);
-  display: grid;
-  place-items: center;
-  color: #3b3b5c;
-}
-.hd-send svg { width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
+.hd-chip--round { border: 0; padding: 0; background: none; }
 
 /* working screens, beats 4–6 */
 .hd-work {
