@@ -159,7 +159,7 @@
 .hd-avatar {
   /* Box sizes are the containers the frames actually use, traced to the
      screen each one sits on rather than by size alone — the 44 belongs to
-     the search-filter screen, not the chat, which is what I had wrong:
+     the search-filter screen, not the chat:
        chat line      小机器人 30, inside chat4 361x141 of the agent area
        reasoning line Group 215 24, inside Frame 2018776441 673x88
        search heading Group 221 44, inside Frame 2018776540 390x52 */
@@ -167,39 +167,43 @@
   height: calc(30 * var(--u));
   flex: none;
   display: block;
-  background: url('../assets/brix-avatar.png') no-repeat;
-  /* Sized under the box on purpose. The export is trimmed to its ink, so
-     centring it seats the body 16 points higher than the frames do — there
-     the blob runs y=10..41 of 44, low in its box, not centred in it. Leaving
-     vertical slack is what makes the position below do anything at all;
-     with `contain` the art fits the height exactly and cannot be moved. */
-  background-size: auto 90%;
-  background-position: 50% 90%;
+
+  /* Four exported keyframes in a strip, not one still plus a transform. The
+     hop is only half of it: the eyes narrow at the top and the lighting
+     shifts across the body, and neither survives being faked with a
+     translate. The frames are composited onto a common canvas aligned on
+     each one's own body, so stepping between them does not jitter. */
+  background-image: url('../assets/brix-avatar.png');
+  background-repeat: no-repeat;
+  background-size: 400% 100%;
+  background-position: 0 0;
 }
 
-/* It only hops while the agent is actually working — the beats where it is
-   asking, gathering and drafting. On the search screen nothing has been asked
-   yet, and once the profiles are out it has finished; in both it rests. */
+/* It only moves while the agent is working — the beats where it is asking,
+   gathering and drafting. On the search screen nothing has been asked yet,
+   and once the profiles are out it has finished. */
 .hero-demo.beat-4 .hd-avatar,
 .hero-demo.beat-5 .hd-avatar,
 .hero-demo.beat-6 .hd-avatar {
-  animation: hd-hop 1371ms infinite;
-  will-change: transform;
+  animation: hd-frames 1371ms steps(1, end) infinite,
+             hd-hop 1371ms infinite;
+  will-change: background-position, transform;
 }
 
-@keyframes hd-hop {
-  /* A timing function set inside a keyframe governs the segment that starts
-     there, not the one that ends there — so the spring belongs on the rest
-     keyframe and the ease-in on the top of the hop. */
-  0%    { transform: none; }
-  29.2% { transform: none;                                        /* 400ms at rest */
-          animation-timing-function: cubic-bezier(.15, .25, .2, .95); }
-  86.9% { transform: translate(2.7%, -15.9%) rotate(-3deg);       /* 791ms rising */
-          animation-timing-function: ease-in; }
-  100%  { transform: none; }                                      /* 180ms falling */
+/* Cuts, not cross-fades — a blink is a cut. Percentages follow the
+   component's own reactions: 400ms at rest, 791ms rising, 180ms back. */
+@keyframes hd-frames {
+  0%    { background-position:   0% 0; }   /* rest, eyes open        */
+  29.2% { background-position:  66.67% 0; } /* rising, lighting shifts */
+  70%   { background-position:  33.33% 0; } /* near the top, eyes narrow */
+  86.9% { background-position: 100% 0; }   /* falling, still narrowed */
+  100%  { background-position:   0% 0; }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .hd-avatar { animation: none; }
+  .hero-demo.beat-4 .hd-avatar,
+  .hero-demo.beat-5 .hd-avatar,
+  .hero-demo.beat-6 .hd-avatar { animation: none; }
 }
 .hd-agent-line span { font-size: calc(14 * var(--u)); color: var(--ink); }
 
