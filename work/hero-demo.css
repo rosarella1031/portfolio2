@@ -739,3 +739,29 @@
 }
 .hd-replay:hover { color: var(--text); border-color: var(--text-3); }
 .hd-replay:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* ===== "Play around" =====
+   The pointer label, built by js/hero-label.js. It is positioned against
+   .hero-image, which is why that gets a containing block; the demo inside it
+   is already clipped and would cut the label off at the frame. */
+.hero-image--demo { position: relative; }
+.hero-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 3;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--bg);
+  background: var(--text);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .18s ease, visibility .18s;
+  visibility: hidden;
+}
+.hero-label.is-on { opacity: 1; visibility: visible; }
