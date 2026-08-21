@@ -243,6 +243,21 @@
   margin-top: var(--cp-para);
 }
 
+/* ===== Impact numbers =====
+   The one block that leaves the text column. Three figures read as a plaque,
+   not as a paragraph's illustration, so they take the whole width and centre
+   on it — .stats-row's own 680px cap is what would otherwise hold them to
+   the left of a 1296px page. */
+.content-section > .stats-row {
+  grid-column: 1 / -1;
+  justify-content: center;
+  max-width: none;
+  gap: 6rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.content-section > .stats-row .stat { flex: 0 0 auto; text-align: center; }
+
 /* ===== Nested copy =====
    These sit inside blocks rather than beside the section, so none of the
    rules above reach them and they would keep the page's default sizes —
