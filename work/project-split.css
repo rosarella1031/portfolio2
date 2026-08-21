@@ -14,7 +14,7 @@
   column-gap: clamp(2rem, 4vw, 4rem);
   row-gap: 0;
   align-content: start;
-  margin-bottom: 5.5rem;
+  margin-bottom: var(--sp-9);
 }
 
 /* The label gets a row to itself across both columns. That is what pushes the
@@ -46,7 +46,7 @@
    specific than the rule above, so it survives it. In a column this narrow the
    cap only leaves an empty strip on the right. */
 .content-section > p,
-.content-section > ol { line-height: 1.7; }
+.content-section > ol { line-height: var(--t-body-lh); }
 
 .content-section > p,
 .content-section > ol,
