@@ -557,6 +557,12 @@
 .img-row .img-col .img-caption { margin: 0 0 0.5rem; }
 
 /* ===== Detail problems (two columns, e.g. Business Goal / User Needs) ===== */
+/* .content-section is a grid, so sibling margins do not collapse — each side
+   adds its own. A section title contributes 16, which is the title-to-body
+   step; a block set straight after it should get the 48 that any other block
+   after text gets, so it makes up the difference itself. */
+.section-title + .detail-problems { margin-top: var(--sp-6); }
+
 .detail-problems {
   display: flex;
   flex-direction: row;
