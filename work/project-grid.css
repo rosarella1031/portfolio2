@@ -1,0 +1,391 @@
+/* ===== Grid — a 12-column case study layout with a sticky label rail =====
+
+   Modelled on joseph.cv/azuki. Measured off that page at a 1280 viewport
+   rather than eyeballed:
+
+     grid        12 columns, 12px gutters, 12px page margin
+     rail        project title at cols 1-3, sticky at top: 5em, never moves
+     text        cols 5-13 for the intro, narrowed to 5-12 for body sections
+     media       cols 5-13 — only the hero runs the full 12
+     body        15/21 sans
+     headings    15/21 as well — the same size as body
+     captions    12px mono, in grey
+     plates      #EBEBE6, images inset by 40px, some with a hairline border
+     page        #111
+
+   The one thing to understand before changing anything: this layout has no
+   large type at all. A section heading is the same 15px as the paragraph
+   under it, separated only by weight and colour. All of the hierarchy is
+   carried by position in the grid — three empty columns down the left edge,
+   and text that starts at column 5 while media runs to 13. That asymmetry is
+   the entire look, and it stops working the moment a heading gets big enough
+   to do the job on its own.
+
+   Three deliberate departures, all forced by this site rather than by taste:
+
+   The label rail carries the section label, not the project title. The
+   reference is one project with one sticky title; these case studies have
+   twelve sections, and a rail that reads "Brix" for eleven screens is a
+   watermark, not a position. The label already exists in the markup, so it
+   costs nothing to move it there.
+
+   The palette stays this site's. The reference is #111 with light plates;
+   inverting a portfolio for one page makes the page look like it belongs to
+   somebody else. The plates are near enough already — the reference's
+   #EBEBE6 against this site's --bg-card #EDEAE4 — so the media reads the way
+   it does there. See the dark dial at the end of the Dials block to try it.
+
+   The content is capped at --max and centred rather than running to a 12px
+   page margin. Same reason as the editorial sheet: the contents rail is
+   fixed at left: 0, so a 12px margin would run every full-width image
+   underneath it.
+
+   Loaded disabled on every case study and switched on with ?grid, which also
+   switches project-split.css off. Nothing here touches project.css, so
+   removing the query string lands exactly on the current design. */
+
+/* ===== Dials =====================================================
+   Every number worth changing is in this block; the rules below only refer
+   to these names.
+
+   Column arithmetic: at --max 1296 with 12 columns and 12px gutters, one
+   column is (1296 - 11x12) / 12 = 97px. So the rail is 3 columns = 303px,
+   and text from column 5 to 12 is 7 columns = 751px. To widen the rail, move
+   --gz-rail-end and --gz-text-start together — leaving the blank column
+   between them is what keeps the two halves from reading as one block. */
+.content {
+  --gz-gutter:      12px;
+
+  /* Column lines, counted 1-13. Everything is placed against these. */
+  --gz-rail-start:  1;
+  --gz-rail-end:    4;    /* label occupies columns 1-3 */
+  --gz-text-start:  5;    /* one blank column between rail and text */
+  --gz-text-end:    12;   /* prose stops a column short of the media */
+  --gz-media-start: 5;
+  --gz-media-end:   13;
+
+  /* Type. Heading and body are deliberately the same size — see the note
+     above. Raising --gz-title is the first thing to try if the page reads as
+     undifferentiated, but it walks away from the reference as it goes:
+       0.9375rem  15px   the reference's own setting
+       1.125rem   18px   heading is visibly a heading, still quiet
+       1.375rem   22px   a normal case study again                        */
+  --gz-title:       0.9375rem;
+  --gz-title-lh:    1.4;
+  --gz-title-w:     500;
+  --gz-body:        0.9375rem;
+  --gz-body-lh:     1.4;
+  --gz-label:       0.75rem;
+  --gz-caption:     0.75rem;
+  --gz-stat:        1.75rem;   /* see the note on .stat-number below */
+
+  /* Rhythm. The reference runs tight — 8px under a heading, 32px under a
+     metadata row, and nothing at all between stacked media. */
+  --gz-under-title: 0.5rem;
+  --gz-under-para:  1.25rem;
+  --gz-media-gap:   0.75rem;
+  --gz-section-gap: 5rem;
+
+  /* Media plates. Padding is what makes a screenshot sit on a plate rather
+     than bleed to its edge; set it to 0 for flush images. */
+  --gz-plate:       var(--bg-card);
+  --gz-plate-pad:   2.5rem;
+  --gz-plate-line:  1px solid var(--border);
+
+  /* Dark, as the reference has it. Uncomment all four to try it — nothing
+     else in this sheet hard-codes a colour. */
+  /* --bg: #111; --text: #f4f4f4; --text-2: #8a8a8a; --border: #2a2a2a; */
+}
+
+/* ===== The grid ===== */
+.content-section {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  /* Both halves of the gap, not just the column half: the rail spans sixty
+     rows so that it can stick, and a row-gap would be charged once for every
+     empty one of them. project.css sets 3.5rem on .overview-layout, which
+     came to 1064px of nothing. */
+  gap: 0 var(--gz-gutter);
+  align-items: start;
+  margin-bottom: var(--gz-section-gap);
+  padding-top: var(--gz-section-gap);
+  border-top: 1px solid var(--border);
+}
+.content-section:first-of-type { border-top: none; padding-top: 0; }
+
+/* Anything not placed by name lands in the media columns. New markup then
+   arrives in the right place instead of spanning the rail. */
+.content-section > * { grid-column: var(--gz-media-start) / var(--gz-media-end); }
+
+/* The label rail. Spanning every row is what lets it stick for the whole
+   section; `1 / -1` cannot do it here because the rows are implicit, so the
+   span is a number large enough to outlast any section. The extra rows it
+   creates are empty and have no height. */
+.content-section > .section-label {
+  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
+  grid-row: 1 / span 60;
+  position: sticky;
+  top: 5rem;
+  align-self: start;
+  margin: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--gz-label);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* ===== Type ===== */
+.content-section > .section-title {
+  grid-column: var(--gz-text-start) / var(--gz-text-end);
+  font-family: 'General Sans', sans-serif;
+  font-size: var(--gz-title);
+  font-weight: var(--gz-title-w);
+  line-height: var(--gz-title-lh);
+  letter-spacing: 0;
+  color: var(--text);
+  max-width: none;
+  margin: 0 0 var(--gz-under-title);
+}
+
+.content-section > p,
+.content-section > ul,
+.content-section > ol {
+  grid-column: var(--gz-text-start) / var(--gz-text-end);
+  font-size: var(--gz-body);
+  line-height: var(--gz-body-lh);
+  max-width: none;
+  margin: 0 0 var(--gz-under-para);
+}
+
+/* A caption belongs to the plate under it, so it sits in the media columns
+   and keeps the mono voice the labels use. */
+.content-section > p.img-caption {
+  grid-column: var(--gz-media-start) / var(--gz-media-end);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--gz-caption);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-2);
+  margin: 0 0 var(--gz-under-title);
+}
+
+/* ===== Media ===== */
+.content-section > .img-block {
+  background: var(--gz-plate);
+  border: var(--gz-plate-line);
+  padding: var(--gz-plate-pad);
+  margin: 0 0 var(--gz-media-gap);
+  min-height: 0;
+}
+.content-section > .img-block > img,
+.content-section > .img-block > video { display: block; width: 100%; height: auto; object-fit: contain; }
+
+/* Stacked plates in the reference sit flush against each other, so a run of
+   them reads as one sequence rather than as separate figures. */
+.content-section > .img-block + .img-block { margin-top: calc(-1 * var(--gz-media-gap)); }
+
+.content-section > .img-row,
+.content-section > .scroll-gallery,
+.content-section > .stats-row,
+.content-section > .problem-list,
+.content-section > .detail-problems,
+.content-section > .detail-scroll,
+.content-section > .overview-layout {
+  grid-column: var(--gz-media-start) / var(--gz-media-end);
+  margin: 0 0 var(--gz-under-para);
+}
+
+/* The header and hero sit above the grid and run its full width. */
+.content-header { max-width: none; margin-bottom: var(--gz-under-para); }
+.hero-image { margin-bottom: var(--gz-section-gap); }
+
+/* ===== Phone =====
+   Three columns of rail and a blank gutter are not available at 700px, so
+   the rail unsticks and sits above its section as a plain label — which is
+   what the reference does at its own md breakpoint. */
+@media (max-width: 900px) {
+  .content-section {
+    display: block;
+    padding-top: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .content-section > .section-label {
+    position: static;
+    margin-bottom: var(--gz-under-title);
+  }
+  .content-section > .img-block { padding: 1rem; }
+}
+
+/* ===== Components brought down to the grid's scale =====
+   project.css sizes these against a 30px section title. Left alone here they
+   come out larger than the title above them, which inverts the hierarchy the
+   whole layout depends on — a sub-head in a column cannot outrank the thing
+   it sits under. */
+.content-section .problem-heading,
+.content-section .overview-note-label,
+.content-section .detail-problem-item h3 {
+  font-size: var(--gz-title);
+  font-weight: var(--gz-title-w);
+  line-height: var(--gz-title-lh);
+  letter-spacing: 0;
+  margin: 0 0 var(--gz-under-title);
+  gap: 0.5rem;
+}
+.content-section .problem-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--gz-label);
+  font-weight: 400;
+  color: var(--text-2);
+}
+.content-section .problem-item p,
+.content-section .detail-problem-item p,
+.content-section .overview-note p,
+.content-section .detail-step p,
+.content-section .meta-v,
+.content-section .project-summary {
+  font-size: var(--gz-body);
+  line-height: var(--gz-body-lh);
+  margin: 0 0 var(--gz-under-title);
+}
+.content-section .meta-k,
+.content-section .overview-note-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--gz-label);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* The stats are the one place this layout keeps a display size. The reference
+   has nothing like them, so at their page size (50px) they are three times
+   the next largest thing and the section stops belonging to the page. This
+   halves them and leaves them the largest type here by a clear margin.
+   Set --gz-stat to 3.125rem to put them back where the default layout has
+   them. */
+.content-section .stat-number { font-size: var(--gz-stat); }
+
+/* ===== Overview =====
+   Its label is nested inside .overview-layout rather than being a child of
+   the section, so it cannot reach the rail on its own. Re-declaring the
+   twelve columns inside the layout puts it there and keeps the one section
+   that opens the page from being the one section without a rail. */
+.content-section > .overview-layout {
+  grid-column: 1 / 13;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0 var(--gz-gutter);
+  align-items: start;
+}
+.overview-layout > .overview-main { display: contents; }
+.overview-main > .section-label {
+  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
+  grid-row: 1 / span 20;
+  position: sticky;
+  top: 5rem;
+  align-self: start;
+}
+.overview-main > .section-title,
+.overview-main > p,
+.overview-main > .project-link,
+.overview-main > .meta-row { grid-column: var(--gz-text-start) / 11; }
+.overview-layout > .overview-note {
+  grid-column: 11 / 13;
+  grid-row: 1 / span 20;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===== Section rules =====
+   The reference rules its sections across the media columns only, not the
+   full width — the rail sits outside the ruled area, which is what keeps it
+   reading as a margin rather than as a first column. A border on the section
+   itself cannot do that, so the rule is drawn as its own grid item. */
+.content-section { border-top: none; position: relative; }
+.content-section::before {
+  content: '';
+  grid-column: var(--gz-media-start) / var(--gz-media-end);
+  grid-row: 1;
+  align-self: start;
+  height: 1px;
+  background: var(--border);
+  margin-top: calc(-1 * var(--gz-section-gap));
+}
+.content-section:first-of-type::before { display: none; }
+
+@media (max-width: 900px) {
+  .content-section::before { display: none; }
+  .content-section > .overview-layout { display: block; }
+  .overview-layout > .overview-main { display: block; }
+  .overview-main > .section-label { position: static; }
+}
+
+.overview-main > .section-title {
+  font-family: 'General Sans', sans-serif;
+  font-size: var(--gz-title);
+  font-weight: var(--gz-title-w);
+  line-height: var(--gz-title-lh);
+  letter-spacing: 0;
+  color: var(--text);
+  max-width: none;
+  margin: 0 0 var(--gz-under-title);
+}
+
+/* The overview's copy sits inside .overview-main, so the type rules above —
+   which reach only the section's own children — never touch it. Without
+   these it is the one section still set at the page's default sizes. */
+.overview-main > p,
+.overview-note p {
+  font-family: 'General Sans', sans-serif;
+  font-size: var(--gz-body);
+  font-style: normal;
+  line-height: var(--gz-body-lh);
+  max-width: none;
+  margin: 0 0 var(--gz-under-para);
+}
+.overview-main > .project-link {
+  max-width: none;
+  margin: 0 0 var(--gz-under-para);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: var(--gz-body);
+}
+.overview-main > .meta-row {
+  max-width: none;
+  margin: 0;
+  padding-top: var(--gz-under-para);
+  gap: var(--gz-under-title) var(--gz-gutter);
+}
+/* The rail already marks the note as an aside; the tick above it was doing
+   that job when the note sat inside a single column. */
+.overview-note::before { display: none; }
+.overview-note { padding-left: 0; }
+
+/* ===== Page title =====
+   The reference has no display type anywhere — the project name sits in the
+   rail at the same 15px as everything else. Taken literally here the page
+   would open with nothing to land on, so this is the one place the sheet
+   compromises: large enough to be an entry point, small enough not to
+   reintroduce the hierarchy the grid is doing. Set --gz-page-title to
+   0.9375rem for the reference's own setting. */
+.content-header { --gz-page-title: 1.5rem; }
+.content-header .project-title {
+  font-family: 'General Sans', sans-serif;
+  font-size: var(--gz-page-title);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+.content-header .project-summary {
+  font-size: var(--gz-body);
+  line-height: var(--gz-body-lh);
+  max-width: 46rem;
+}
+.content-header .pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--gz-label);
+  font-weight: 400;
+}

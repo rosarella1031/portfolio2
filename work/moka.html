@@ -14,18 +14,22 @@
   <link rel="stylesheet" href="project.css" />
   <link rel="stylesheet" href="project-split.css" id="split-sheet" />
   <link rel="stylesheet" href="project-editorial.css" id="editorial-sheet" disabled />
+  <link rel="stylesheet" href="project-grid.css" id="grid-sheet" disabled />
   <script>
     /* Three layouts off the same markup, picked by query string:
          (none)      half and half, the default
          ?plain      single column, what came before it
          ?editorial  the wide 16-column grid
+         ?grid       the 12-column layout with a sticky label rail
        Each one only enables or disables a sheet, so project.css is always the
        floor and any of them can be removed without leaving a trace. */
     (function () {
       var q = new URLSearchParams(location.search);
       var split = document.getElementById('split-sheet');
       var editorial = document.getElementById('editorial-sheet');
-      if (q.has('editorial')) { split.disabled = true; editorial.disabled = false; }
+      var grid = document.getElementById('grid-sheet');
+      if (q.has('grid')) { split.disabled = true; grid.disabled = false; }
+      else if (q.has('editorial')) { split.disabled = true; editorial.disabled = false; }
       else if (q.has('plain')) { split.disabled = true; }
     })();
   </script>
