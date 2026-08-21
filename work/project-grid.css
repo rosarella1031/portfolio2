@@ -57,6 +57,12 @@
   --gz-gutter:      12px;
 
   /* Column lines, counted 1-13. Everything is placed against these. */
+  /* The rail. --gz-rail-title is the serif title that sits under the label;
+     --gz-rail-label-h is the one-line label height it clears. */
+  --gz-rail-title:    1.25rem;
+  --gz-rail-title-lh: 1.3;
+  --gz-rail-label-h:  1.65rem;
+
   --gz-rail-start:  1;
   --gz-rail-end:    4;    /* label occupies columns 1-3 */
   --gz-text-start:  5;    /* one blank column between rail and text */
@@ -136,17 +142,29 @@
   color: var(--text-2);
 }
 
-/* ===== Type ===== */
+/* ===== Type =====
+   The section title sits under the label in the rail, in the serif. Both are
+   sticky and both span the section's rows, which is the only way to hold a
+   grid item in place for a whole section when the rows are implicit — so the
+   title clears the label by its own offset rather than by sitting in a row
+   under it. --gz-rail-label-h is that offset, and it assumes a label of one
+   line; every label on these pages measures one line at this rail width, and
+   a two-line one would need this raised. */
 .content-section > .section-title {
-  grid-column: var(--gz-text-start) / var(--gz-text-end);
-  font-family: 'General Sans', sans-serif;
-  font-size: var(--gz-title);
-  font-weight: var(--gz-title-w);
-  line-height: var(--gz-title-lh);
+  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
+  grid-row: 1 / span 60;
+  position: sticky;
+  top: calc(5rem + var(--gz-rail-label-h));
+  align-self: start;
+  margin-top: var(--gz-rail-label-h);
+  font-family: 'EB Garamond', serif;
+  font-size: var(--gz-rail-title);
+  font-weight: 400;
+  line-height: var(--gz-rail-title-lh);
   letter-spacing: 0;
   color: var(--text);
   max-width: none;
-  margin: 0 0 var(--gz-under-title);
+  margin-bottom: 0;
 }
 
 .content-section > p,
@@ -287,7 +305,6 @@
   top: 5rem;
   align-self: start;
 }
-.overview-main > .section-title,
 .overview-main > p,
 .overview-main > .project-link,
 .overview-main > .meta-row { grid-column: var(--gz-text-start) / 11; }
@@ -324,101 +341,22 @@
 }
 
 .overview-main > .section-title {
-  font-family: 'General Sans', sans-serif;
-  font-size: var(--gz-title);
-  font-weight: var(--gz-title-w);
-  line-height: var(--gz-title-lh);
+  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
+  grid-row: 1 / span 20;
+  position: sticky;
+  top: calc(5rem + var(--gz-rail-label-h));
+  align-self: start;
+  margin: var(--gz-rail-label-h) 0 0;
+  font-family: 'EB Garamond', serif;
+  font-size: var(--gz-rail-title);
+  font-weight: 400;
+  line-height: var(--gz-rail-title-lh);
   letter-spacing: 0;
   color: var(--text);
   max-width: none;
-  margin: 0 0 var(--gz-under-title);
-}
-
-/* The overview's copy sits inside .overview-main, so the type rules above —
-   which reach only the section's own children — never touch it. Without
-   these it is the one section still set at the page's default sizes. */
-.overview-main > p,
-.overview-note p {
-  font-family: 'General Sans', sans-serif;
-  font-size: var(--gz-body);
-  font-style: normal;
-  line-height: var(--gz-body-lh);
-  max-width: none;
-  margin: 0 0 var(--gz-under-para);
-}
-.overview-main > .project-link {
-  max-width: none;
-  margin: 0 0 var(--gz-under-para);
-  padding: 0.75rem 1rem;
-  border-radius: 4px;
-  font-size: var(--gz-body);
-}
-.overview-main > .meta-row {
-  max-width: none;
-  margin: 0;
-  padding-top: var(--gz-under-para);
-  gap: var(--gz-under-title) var(--gz-gutter);
-}
-/* The rail already marks the note as an aside; the tick above it was doing
-   that job when the note sat inside a single column. */
-.overview-note::before { display: none; }
-.overview-note { padding-left: 0; }
-
-/* ===== Page title =====
-   The reference opens with the image, not the name: the hero is the first
-   element on the page and the project title comes after it, in the rail, at
-   the same 15px as everything else. The fixed header carries the person's
-   name, so the page never needs a large title to say what it is.
-
-   The markup has the header before the hero, and the other two layouts want
-   it there, so the order is changed here rather than in the HTML. .content
-   becomes a column and only the hero moves; everything else keeps source
-   order behind it. */
-.content { display: flex; flex-direction: column; }
-.hero-image { order: -1; margin-bottom: var(--gz-under-para); }
-
-/* The header then takes the same twelve columns as a section: name and tags
-   in the rail, the one-line summary where body copy starts. */
-.content-header {
-  --gz-page-title: 0.9375rem;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 0 var(--gz-gutter);
-  align-items: start;
-  max-width: none;
-  margin-bottom: var(--gz-section-gap);
-}
-.content-header-top {
-  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--gz-under-title);
-  margin: 0;
-}
-.content-header .project-title {
-  font-family: 'General Sans', sans-serif;
-  font-size: var(--gz-page-title);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: var(--gz-title-lh);
-  margin: 0;
-}
-.content-header-tags { padding-top: 0; gap: 0.35rem; }
-.content-header .pill {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: var(--gz-label);
-  font-weight: 400;
-  padding: 0.1rem 0.4rem;
-}
-.content-header .project-summary {
-  grid-column: var(--gz-text-start) / var(--gz-text-end);
-  font-size: var(--gz-body);
-  line-height: var(--gz-body-lh);
-  max-width: none;
-  margin: 0;
 }
 
 @media (max-width: 900px) {
-  .content-header { display: block; margin-bottom: 2rem; }
-  .content-header-top { flex-direction: row; align-items: center; }
+  .content-section > .section-title,
+  .overview-main > .section-title { position: static; margin-top: 0.5rem; }
 }
