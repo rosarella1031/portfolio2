@@ -68,6 +68,10 @@
      and give it padding to put one back. */
   --cp-plate:       transparent;
   --cp-plate-pad:   0;
+
+  /* Impact numbers. 100% spreads them over the whole content width; give it
+     a length to pull them back in together. */
+  --cp-stats-max:   100%;
 }
 
 /* ===== Chapter numbering =====
@@ -245,18 +249,28 @@
 
 /* ===== Impact numbers =====
    The one block that leaves the text column. Three figures read as a plaque,
-   not as a paragraph's illustration, so they take the whole width and centre
-   on it — .stats-row's own 680px cap is what would otherwise hold them to
-   the left of a 1296px page. */
+   not as an illustration of the paragraph beside them, so they take the full
+   width — .stats-row's own 680px cap is what held them to the left of a
+   1296px page.
+
+   Equal columns rather than the flex row's content widths: at 96px of gap
+   the three items measured 143, 108 and 109 wide, which put their centres
+   222 and 205 apart. Even gaps between uneven items are uneven. Thirds of
+   the full width put each figure on its own centre and spread them as far as
+   the page allows. */
 .content-section > .stats-row {
   grid-column: 1 / -1;
-  justify-content: center;
-  max-width: none;
-  gap: 6rem;
-  margin-left: auto;
-  margin-right: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  /* The width is stated because the auto margins would otherwise shrink a
+     grid item to its contents — which is what happened: three cells of 143
+     instead of three thirds of 1064. */
+  width: 100%;
+  max-width: var(--cp-stats-max);
+  margin-inline: auto;
 }
-.content-section > .stats-row .stat { flex: 0 0 auto; text-align: center; }
+.content-section > .stats-row .stat { flex: none; text-align: center; }
 
 /* ===== Nested copy =====
    These sit inside blocks rather than beside the section, so none of the
