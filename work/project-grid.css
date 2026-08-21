@@ -365,27 +365,60 @@
 .overview-note { padding-left: 0; }
 
 /* ===== Page title =====
-   The reference has no display type anywhere — the project name sits in the
-   rail at the same 15px as everything else. Taken literally here the page
-   would open with nothing to land on, so this is the one place the sheet
-   compromises: large enough to be an entry point, small enough not to
-   reintroduce the hierarchy the grid is doing. Set --gz-page-title to
-   0.9375rem for the reference's own setting. */
-.content-header { --gz-page-title: 1.5rem; }
+   The reference opens with the image, not the name: the hero is the first
+   element on the page and the project title comes after it, in the rail, at
+   the same 15px as everything else. The fixed header carries the person's
+   name, so the page never needs a large title to say what it is.
+
+   The markup has the header before the hero, and the other two layouts want
+   it there, so the order is changed here rather than in the HTML. .content
+   becomes a column and only the hero moves; everything else keeps source
+   order behind it. */
+.content { display: flex; flex-direction: column; }
+.hero-image { order: -1; margin-bottom: var(--gz-under-para); }
+
+/* The header then takes the same twelve columns as a section: name and tags
+   in the rail, the one-line summary where body copy starts. */
+.content-header {
+  --gz-page-title: 0.9375rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0 var(--gz-gutter);
+  align-items: start;
+  max-width: none;
+  margin-bottom: var(--gz-section-gap);
+}
+.content-header-top {
+  grid-column: var(--gz-rail-start) / var(--gz-rail-end);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gz-under-title);
+  margin: 0;
+}
 .content-header .project-title {
   font-family: 'General Sans', sans-serif;
   font-size: var(--gz-page-title);
   font-weight: 500;
   letter-spacing: 0;
-  line-height: 1.3;
+  line-height: var(--gz-title-lh);
+  margin: 0;
 }
-.content-header .project-summary {
-  font-size: var(--gz-body);
-  line-height: var(--gz-body-lh);
-  max-width: 46rem;
-}
+.content-header-tags { padding-top: 0; gap: 0.35rem; }
 .content-header .pill {
   font-family: 'IBM Plex Mono', monospace;
   font-size: var(--gz-label);
   font-weight: 400;
+  padding: 0.1rem 0.4rem;
+}
+.content-header .project-summary {
+  grid-column: var(--gz-text-start) / var(--gz-text-end);
+  font-size: var(--gz-body);
+  line-height: var(--gz-body-lh);
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .content-header { display: block; margin-bottom: 2rem; }
+  .content-header-top { flex-direction: row; align-items: center; }
 }
