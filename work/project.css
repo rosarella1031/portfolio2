@@ -185,6 +185,12 @@
   min-width: 0;
   margin-left: 0;
   padding: 5rem 6rem 8rem 7.5rem;
+  /* Capped at the same 1296 the home page and the editorial layout use, so a
+     figure is never asked to fill 2300px on a large monitor — which is both a
+     different width from every other page and more resolution than any export
+     is going to carry. 1512 is that 1296 plus this padding. */
+  max-width: 1512px;
+  margin-inline: auto;
 }
 
 /* prose column — constrains text to readable width */
@@ -1005,10 +1011,10 @@
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text);
-  background: rgba(252, 252, 252, 0.9);
-  border: 1px solid var(--border);
-  padding: 0.3rem 0.7rem;
+  color: #fff;
+  background: rgba(88, 30, 235, 0.92);
+  border: 0;
+  padding: 0.32rem 0.75rem;
   border-radius: 999px;
   pointer-events: none;
   backdrop-filter: blur(6px);
@@ -1021,15 +1027,19 @@
    figure rather than a seam between two of them. White alone would vanish on
    these pale grounds, so the line is white with a faint dark edge: the white
    carries it over dark artwork, the edge carries it over light. */
+/* The divider carries the product's own purple rather than black or white.
+   Both screenshots either side are a near-white interface, so a white line
+   vanished into them and a dark one read as a crop mark; the purple is
+   already in the pixels behind it, so it looks like part of the thing. */
 .compare-line {
   position: absolute;
   top: 0;
   bottom: 0;
   left: var(--pos);
-  width: 2px;
-  margin-left: -1px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 0.5px rgba(26, 24, 23, 0.18);
+  width: 3px;
+  margin-left: -1.5px;
+  background: #581EEB;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85);
   z-index: 4;
   pointer-events: none;
 }
@@ -1040,20 +1050,20 @@
   left: var(--pos);
   transform: translate(-50%, -50%);
   z-index: 5;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid var(--border);
+  border: 2px solid #581EEB;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(90, 70, 45, 0.10);
+  box-shadow: 0 2px 10px rgba(88, 30, 235, 0.22);
   cursor: ew-resize;
   display: grid;
   place-items: center;
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: #581EEB;
   transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
 }
 .compare-handle:hover,
