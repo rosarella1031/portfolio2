@@ -1,0 +1,224 @@
+/* ===== Chapter — numbered openers with a serif side-head =====
+
+   Read off the reference image rather than a live page, so the numbers below
+   are proportions and ratios taken from it, not values lifted from a
+   stylesheet. At the 1280px the image was captured at:
+
+     content     x 40 to 1195, so 1155 wide
+     columns     side-head 350, gap 43, body 762  (30.3% / 3.7% / 66%)
+     chapter     "02 — Understand the Deployment Process", full width, ~44px
+                 serif, oldstyle figures, a hairline rule under it
+     side-head   ~28px serif, ragged, top-aligned with the body's first line
+     body        ~17px sans, ~1.55, grey, with bold near-black runs inline
+     figures     full width, below the text block, no plate of their own
+
+   Three things carry this layout, and all three are cheap to lose:
+
+   The chapter opener. A full-width number and title with a rule under it is
+   the only large type on the page, and it is what makes a long case study
+   feel like it has parts rather than a scroll length. The numbers come from
+   a CSS counter, so they renumber themselves when a section is added or
+   moved — which has already happened twice on this page.
+
+   The side-head. It is a real heading at 28px in the serif, not a label: it
+   sits in its own column, top-aligned with the first line of body copy, and
+   the column stays empty underneath it. That empty column is the layout's
+   air, and filling it is what would make this read as an ordinary two-column
+   page.
+
+   Bold runs inside the body. The reference marks the load-bearing phrase in
+   near-black inside otherwise grey copy — it is how a dense paragraph stays
+   scannable. Nothing here can add them; they have to be written as <strong>
+   in the copy. Without them this layout is quieter than its reference.
+
+   Loaded disabled and switched on with ?chapter, which also switches
+   project-split.css off. Nothing here touches project.css. */
+
+/* ===== Dials ===================================================== */
+.content {
+  /* Columns. --cp-side and --cp-gap are percentages of the content width, so
+     the proportions hold at any window; the body column takes the rest. */
+  --cp-side:        30%;
+  --cp-gap:         3.7%;
+
+  /* Type */
+  --cp-chapter:     clamp(2rem, 3.2vw, 2.75rem);  /* 44 at 1375 and up */
+  --cp-chapter-lh:  1.15;
+  --cp-head:        1.75rem;                      /* 28 side-head */
+  --cp-head-lh:     1.35;
+  --cp-body:        1.0625rem;                    /* 17 */
+  --cp-body-lh:     1.6;
+  --cp-caption:     0.875rem;
+
+  /* Colour. The reference runs the body a step darker than this site's
+     --text-2 and marks the emphasis nearly black. */
+  --cp-body-color:  #5a5a5a;
+  --cp-strong:      var(--text);
+
+  /* Rhythm */
+  --cp-chapter-gap: 5.5rem;   /* above a chapter opener */
+  --cp-after-rule:  3.5rem;   /* opener down to the first side-head */
+  --cp-para:        1.25rem;
+  --cp-media:       3rem;     /* text down to a figure */
+  --cp-media-gap:   1.5rem;   /* figure to figure */
+
+  /* Figures. The reference's own figures carry their backgrounds inside the
+     image, so there is no plate under them. Set --cp-plate to var(--bg-card)
+     and give it padding to put one back. */
+  --cp-plate:       transparent;
+  --cp-plate-pad:   0;
+}
+
+/* ===== Chapter numbering =====
+   Counting sections rather than hard-coding numbers into the markup: this
+   page has already had a section inserted in the middle once. */
+.content { counter-reset: chapter; }
+.content-section { counter-increment: chapter; }
+
+/* ===== The two columns ===== */
+.content-section {
+  display: grid;
+  grid-template-columns: var(--cp-side) 1fr;
+  /* Row gaps are left to margins so that a paragraph, a figure and a chapter
+     opener can each set their own; a single row-gap would give them all the
+     same one. */
+  gap: 0 var(--cp-gap);
+  align-items: start;
+  margin-bottom: 0;
+  padding-top: var(--cp-chapter-gap);
+}
+
+/* Anything not placed by name runs the full width — figures, galleries, the
+   two-column blocks. New markup lands there rather than in a text column. */
+.content-section > * { grid-column: 1 / -1; }
+
+/* ===== The chapter opener ===== */
+.content-section > .section-label {
+  grid-column: 1 / -1;
+  font-family: 'EB Garamond', serif;
+  /* Oldstyle figures: the reference's "02" and "#1" sit on the x-height with
+     descending 2s, which is what keeps a 44px number from shouting. */
+  font-variant-numeric: oldstyle-nums;
+  font-size: var(--cp-chapter);
+  font-weight: 400;
+  line-height: var(--cp-chapter-lh);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text);
+  margin: 0 0 var(--cp-after-rule);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.content-section > .section-label::before {
+  content: counter(chapter, decimal-leading-zero) ' — ';
+}
+
+/* ===== The side-head ===== */
+.content-section > .section-title {
+  grid-column: 1;
+  /* Spanning rows rather than sitting in one: a three-line side-head in a
+     single row makes that row as tall as itself, and the first paragraph —
+     top-aligned in the same row — ends up with a hole under it before the
+     next block. Spread across rows it sizes nothing. */
+  grid-row: auto / span 60;
+  font-family: 'EB Garamond', serif;
+  font-variant-numeric: oldstyle-nums;
+  font-size: var(--cp-head);
+  font-weight: 400;
+  line-height: var(--cp-head-lh);
+  letter-spacing: 0;
+  color: var(--text);
+  max-width: none;
+  margin: 0;
+}
+
+/* ===== Body ===== */
+.content-section > p,
+.content-section > ul,
+.content-section > ol {
+  grid-column: 2;
+  font-size: var(--cp-body);
+  line-height: var(--cp-body-lh);
+  color: var(--cp-body-color);
+  max-width: none;
+  margin: 0 0 var(--cp-para);
+}
+.content-section > ul,
+.content-section > ol { padding-left: 1.25rem; }
+.content-section > ul li,
+.content-section > ol li { margin-bottom: 0.35rem; }
+
+/* The reference's emphasis is a weight and a colour change, not a colour
+   change alone — grey bold reads as noise at this size. */
+.content-section strong { color: var(--cp-strong); font-weight: 600; }
+
+/* ===== Figures ===== */
+.content-section > .img-block {
+  background: var(--cp-plate);
+  padding: var(--cp-plate-pad);
+  min-height: 0;
+  margin: var(--cp-media) 0 0;
+}
+.content-section > .img-block + .img-block { margin-top: var(--cp-media-gap); }
+.content-section > .img-block img,
+.content-section > .img-block video { width: 100%; height: auto; object-fit: contain; }
+
+.content-section > p.img-caption {
+  grid-column: 1 / -1;
+  font-size: var(--cp-caption);
+  font-weight: 500;
+  color: var(--text);
+  margin: var(--cp-media) 0 0.5rem;
+}
+.content-section > .img-caption + .img-block { margin-top: 0; }
+
+.content-section > .img-row,
+.content-section > .scroll-gallery,
+.content-section > .stats-row,
+.content-section > .problem-list,
+.content-section > .detail-problems,
+.content-section > .detail-scroll,
+.content-section > .overview-layout { margin: var(--cp-media) 0 0; }
+
+/* ===== Nested copy =====
+   These sit inside blocks rather than beside the section, so none of the
+   rules above reach them and they would keep the page's default sizes —
+   which are set against a 30px section title, not a 17px body. */
+.content-section .problem-heading,
+.content-section .detail-problem-item h3,
+.content-section .overview-main > .section-title {
+  font-family: 'EB Garamond', serif;
+  font-variant-numeric: oldstyle-nums;
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0;
+  margin: 0 0 0.5rem;
+}
+.content-section .problem-num { font-size: inherit; color: var(--text-3); }
+.content-section .problem-item p,
+.content-section .detail-problem-item p,
+.content-section .detail-step p,
+.content-section .overview-note p,
+.content-section .overview-main > p {
+  font-size: var(--cp-body);
+  line-height: var(--cp-body-lh);
+  color: var(--cp-body-color);
+  max-width: none;
+  margin: 0 0 var(--cp-para);
+}
+
+/* ===== Header and hero ===== */
+.content-header { max-width: none; margin-bottom: 2rem; }
+.content-header .project-summary { font-size: var(--cp-body); line-height: var(--cp-body-lh); }
+.hero-image { margin-bottom: 0; }
+
+/* ===== Phone =====
+   The side-head column cannot hold a 28px serif line at 700px, so the two
+   columns stack and the head sits above its copy — which is where it reads
+   in one column anyway. */
+@media (max-width: 900px) {
+  .content-section { display: block; padding-top: 3rem; }
+  .content-section > .section-label { font-size: 1.75rem; margin-bottom: 2rem; }
+  .content-section > .section-title { margin-bottom: 1rem; }
+}
