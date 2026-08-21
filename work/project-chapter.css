@@ -20,12 +20,12 @@
    a CSS counter, so they renumber themselves when a section is added or
    moved — which has already happened twice on this page.
 
-   The indent. The header runs the full width; everything under it — body,
-   lists, figures — sits in the right-hand 66%, so the left column is empty
-   for the length of every section. That empty column is the layout's air,
-   and filling it is what would make this an ordinary page with figures in
-   it. The one exception is the pinned Design Details scroller, which is two
-   columns of its own and keeps the full width.
+   The lead. The header runs the full width; under it the section's opening
+   paragraph sits alone in the left column in the serif, and everything else
+   — the rest of the body, lists, figures — is in the right-hand 66%. The
+   left column holds that one paragraph and nothing else for the length of
+   the section. The one exception is the pinned Design Details scroller,
+   which is two columns of its own and keeps the full width.
 
    Bold runs inside the body. The reference marks the load-bearing phrase in
    near-black inside otherwise grey copy — it is how a dense paragraph stays
@@ -45,6 +45,8 @@
   /* Type */
   --cp-title:       var(--t-title);               /* 30 section title */
   --cp-title-lh:    var(--t-title-lh);
+  --cp-lead:        1.5rem;                       /* 24 left-column lead */
+  --cp-lead-lh:     1.35;
   --cp-body:        1.0625rem;                    /* 17 */
   --cp-body-lh:     1.6;
   --cp-caption:     0.875rem;
@@ -136,6 +138,35 @@
 }
 .content-section > .section-title,
 .overview-main > .section-title { max-width: none; }
+
+/* ===== The lead =====
+   The section's opening paragraph moves to the left column in the serif,
+   which is what the reference has beside its body copy and what this layout
+   was otherwise leaving empty.
+
+   It is the first paragraph, not the first sentence. CSS cannot cut a
+   sentence out of a paragraph, and doing it in script would put the split
+   into the DOM — which ?edit would then save back into the file, since it
+   writes each block's innerHTML. So a section reads best here when its
+   opening sentence is its own short paragraph; that is an edit to the copy,
+   made in ?edit like any other.
+
+   Spanning rows rather than sitting in one, for the same reason the title
+   did: a tall lead would otherwise make the first body row as tall as
+   itself and leave a hole under the paragraph beside it. */
+.content-section > p:first-of-type:not(.img-caption),
+.overview-main > p:first-of-type:not(.img-caption) {
+  grid-column: 1;
+  grid-row: auto / span 60;
+  font-family: 'EB Garamond', serif;
+  font-variant-numeric: oldstyle-nums;
+  font-size: var(--cp-lead);
+  line-height: var(--cp-lead-lh);
+  letter-spacing: 0;
+  color: var(--text);
+  max-width: none;
+  margin: 0;
+}
 
 /* ===== Body ===== */
 .content-section > p,
