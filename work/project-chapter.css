@@ -193,6 +193,10 @@
 .content-section strong { color: var(--cp-strong); font-weight: 600; }
 
 /* ===== Figures ===== */
+/* An annotated figure keeps the text column like every other figure; its own
+   grid then splits that column between the picture and the note. */
+.content-section > .figure-note { margin: var(--cp-media) 0 0; }
+.content-section > .img-caption + .figure-note { margin-top: 0; }
 .content-section > .img-block {
   background: var(--cp-plate);
   padding: var(--cp-plate-pad);

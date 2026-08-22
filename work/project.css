@@ -497,6 +497,82 @@
   min-height: 300px;
 }
 
+/* ===== Annotated figure =====
+   A figure with its reading beside it. Used on the before/after sliders,
+   where the whole point is what changed and the change is easy to miss —
+   somebody has to say what to look for.
+
+   The note is a fixed column so it stays a margin rather than a second body
+   column; the figure takes what is left. Every layout places .figure-note as
+   a single section child, so this works in all of them without each sheet
+   knowing about it. */
+.figure-note {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--fn-w, 260px);
+  gap: var(--sp-5);
+  align-items: start;
+  margin: var(--sp-5) 0;
+  /* Whether the note fits beside the figure depends on the column the figure
+     is in, not on the window: ?grid and ?chapter give it two thirds of the
+     page, so at the same window width they have far less room than the
+     default layout. A media query would stack all five at once or none. */
+  container-type: inline-size;
+}
+/* Below this the picture would be under 640px — too small to read a
+   screenshot of a full interface, which is the only thing these sliders
+   hold. The note goes under it instead.
+
+   The children are made to span both tracks rather than the container being
+   given one track: an element is never matched by its own container query,
+   so a rule on .figure-note here would silently do nothing. */
+@container (max-width: 924px) {
+  .figure-note > .img-block,
+  .figure-note > .figure-note-body { grid-column: 1 / -1; }
+  .figure-note > .figure-note-body {
+    position: static;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: var(--sp-4) 0 0;
+  }
+}
+.figure-note > .img-block { margin: 0; }
+.figure-note-body {
+  /* Sticky so the reading stays level with the part of the image you are
+     dragging — these sliders are tall and the note would otherwise scroll
+     away from the thing it describes. */
+  position: sticky;
+  top: 5rem;
+  border-left: 1px solid var(--border);
+  padding-left: var(--sp-4);
+}
+.figure-note-body h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: var(--t-label);
+  font-weight: 500;
+  line-height: var(--t-label-lh);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 var(--sp-3);
+}
+.figure-note-body ul { margin: 0; padding: 0; list-style: none; }
+.figure-note-body li {
+  font-size: var(--t-caption);
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-bottom: var(--sp-3);
+}
+.figure-note-body li:last-child { margin-bottom: 0; }
+.figure-note-body b {
+  font-weight: 500;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .figure-note { grid-template-columns: 1fr; gap: var(--sp-4); }
+  .figure-note-body { position: static; }
+}
+
 .content-section > *:not(.img-caption) + .img-caption { margin-top: var(--sp-5); }
 .content-section > .img-caption + .img-block,
 .content-section > .img-caption + .img-row { margin-top: 0; }

@@ -190,6 +190,13 @@
 }
 
 /* ===== Media ===== */
+/* An annotated figure is a figure as far as this sheet is concerned: same
+   columns, same rhythm. Its own grid splits the media area between the
+   picture and the note. */
+.content-section > .figure-note {
+  grid-column: var(--gz-media-start) / var(--gz-media-end);
+  margin: 0 0 var(--gz-media-gap);
+}
 .content-section > .img-block {
   background: var(--gz-plate);
   border: var(--gz-plate-line);

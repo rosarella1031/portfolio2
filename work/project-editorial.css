@@ -223,6 +223,7 @@
 /* Full bleed, and close together — the reference runs its images 10px apart
    so a run of them reads as one block rather than as separate figures. */
 .content-section > .img-row,
+.content-section > .figure-note,
 .content-section > .img-block,
 .content-section > .scroll-gallery,
 .content-section > .detail-problems,

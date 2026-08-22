@@ -58,6 +58,7 @@
    row inside one half is three very narrow columns; these need the whole
    content area or they should not be columns at all. */
 .content-section > .img-row,
+.content-section > .figure-note,
 .content-section > .img-block,
 .content-section > .detail-problems,
 .content-section > .scroll-gallery,
