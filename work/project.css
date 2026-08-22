@@ -500,16 +500,17 @@
 /* ===== Annotated figure =====
    A figure with its reading beside it. Used on the before/after sliders,
    where the whole point is what changed and the change is easy to miss —
-   somebody has to say what to look for.
+   dragging past a reordered list tells you nothing unless somebody says the
+   cards now carry their reason.
 
-   The note is a fixed column so it stays a margin rather than a second body
-   column; the figure takes what is left. Every layout places .figure-note as
-   a single section child, so this works in all of them without each sheet
-   knowing about it. */
+   Same split as the pinned Design Details scroller, and for the same reason:
+   the words only have to hold a short list, the artwork is the thing worth
+   the room. Reading first, picture second — in the markup as well, so the
+   note is what you meet before you look. */
 .figure-note {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--fn-w, 260px);
-  gap: var(--sp-5);
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  column-gap: clamp(2rem, 4vw, 4rem);
   align-items: start;
   margin: var(--sp-5) 0;
   /* Whether the note fits beside the figure depends on the column the figure
@@ -518,23 +519,6 @@
      default layout. A media query would stack all five at once or none. */
   container-type: inline-size;
 }
-/* Below this the picture would be under 640px — too small to read a
-   screenshot of a full interface, which is the only thing these sliders
-   hold. The note goes under it instead.
-
-   The children are made to span both tracks rather than the container being
-   given one track: an element is never matched by its own container query,
-   so a rule on .figure-note here would silently do nothing. */
-@container (max-width: 924px) {
-  .figure-note > .img-block,
-  .figure-note > .figure-note-body { grid-column: 1 / -1; }
-  .figure-note > .figure-note-body {
-    position: static;
-    border-left: none;
-    border-top: 1px solid var(--border);
-    padding: var(--sp-4) 0 0;
-  }
-}
 .figure-note > .img-block { margin: 0; }
 .figure-note-body {
   /* Sticky so the reading stays level with the part of the image you are
@@ -542,8 +526,6 @@
      away from the thing it describes. */
   position: sticky;
   top: 5rem;
-  border-left: 1px solid var(--border);
-  padding-left: var(--sp-4);
 }
 .figure-note-body h4 {
   font-family: 'IBM Plex Mono', monospace;
@@ -553,24 +535,39 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin: 0 0 var(--sp-3);
+  margin: 0 0 var(--sp-4);
 }
 .figure-note-body ul { margin: 0; padding: 0; list-style: none; }
 .figure-note-body li {
-  font-size: var(--t-caption);
-  line-height: 1.55;
+  font-size: var(--t-body);
+  line-height: var(--t-body-lh);
   color: var(--text-2);
-  margin-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
 }
 .figure-note-body li:last-child { margin-bottom: 0; }
-.figure-note-body b {
-  font-weight: 500;
-  color: var(--text);
+.figure-note-body b { font-weight: 500; color: var(--text); }
+
+/* The floor, not a preference. .detail-scroll keeps its two columns even in
+   ?grid, where the artwork comes out at 483px, so matching it means holding
+   the split down to about the same width — 812px of container gives 489.
+   Below 760 the picture would be under 460 and a screenshot of a whole
+   interface stops being readable at all, so the note goes above it.
+
+   The children are made to span both tracks rather than the container being
+   given one track: an element is never matched by its own container query,
+   so a rule on .figure-note here would silently do nothing. */
+@container (max-width: 760px) {
+  .figure-note > .img-block,
+  .figure-note > .figure-note-body { grid-column: 1 / -1; }
+  .figure-note > .figure-note-body {
+    position: static;
+    margin-bottom: var(--sp-5);
+  }
 }
 
 @media (max-width: 900px) {
-  .figure-note { grid-template-columns: 1fr; gap: var(--sp-4); }
-  .figure-note-body { position: static; }
+  .figure-note { grid-template-columns: 1fr; }
+  .figure-note-body { position: static; margin-bottom: var(--sp-4); }
 }
 
 .content-section > *:not(.img-caption) + .img-caption { margin-top: var(--sp-5); }
