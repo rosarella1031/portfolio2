@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Layout comparison — Brix</title>
+<link rel="icon" href="assets/favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" />
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* A working tool, not a page of the site — noindex, linked from nothing.
+   The five layouts are shown live in iframes rather than as screenshots, so
+   this cannot go stale the way an exported image does: change a stylesheet,
+   reload, and all five update. */
+:root {
+  --bg: #fcfcfc; --panel: #fff; --ink: #1A1817; --mid: #666;
+  --dim: #AAA49C; --line: #DDD8CF;
+  --note-w: 300px;   /* the annotation column */
+  --s: 0.3;          /* iframe scale, driven by the slider */
+  --frame-w: 1440px; /* the width each layout is rendered at */
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: 'General Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Toolbar ===== */
+.bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap;
+  padding: 0.85rem 1.25rem;
+  background: rgba(252,252,252,.94); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid);
+}
+.bar strong { color: var(--ink); font-weight: 500; letter-spacing: 0.04em; }
+.bar label { display: flex; align-items: center; gap: 0.55rem; cursor: pointer; }
+.bar input[type=range] { width: 130px; accent-color: var(--ink); }
+.bar input[type=checkbox] { accent-color: var(--ink); }
+.bar .val { color: var(--ink); min-width: 3.2em; }
+
+/* ===== The strip ===== */
+.strip {
+  display: flex; align-items: flex-start; gap: 2.5rem;
+  padding: 1.75rem 1.25rem 3rem;
+  overflow-x: auto;                     /* five units are wider than a screen */
+}
+.unit { display: flex; gap: 1.25rem; flex: none; }
+
+/* ===== Annotation ===== */
+.note {
+  width: var(--note-w); flex: none;
+  position: sticky; top: 4.5rem;        /* clears the toolbar while scrolling down */
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; padding: 1.4rem 1.35rem;
+}
+.note h2 { margin: 0; font-size: 1.25rem; font-weight: 500; line-height: 1.3; }
+.note .sub { margin: 0.15rem 0 0; font-size: 0.8125rem; color: var(--dim); }
+.note dl { margin: 1.35rem 0 0; }
+.note dt {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.09em; text-transform: uppercase; color: var(--dim);
+  margin-top: 1.1rem;
+}
+.note dt:first-of-type { margin-top: 0; }
+.note dd { margin: 0.3rem 0 0; font-size: 0.8125rem; line-height: 1.55; }
+.note dd a { color: inherit; }
+.note .watch { color: var(--mid); }
+.note code {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;
+  background: #f4f2ee; padding: 0.05em 0.3em; border-radius: 3px;
+}
+
+/* ===== The live page =====
+   The iframe is laid out at 1440 and scaled down. transform does not change
+   the space an element takes, so the shell is sized to the scaled result and
+   the iframe is pinned to its top left — otherwise every column would
+   reserve 1440px of width and the strip would be five screens wide. */
+.screen {
+  flex: none;
+  width: calc(var(--frame-w) * var(--s));
+  height: calc(var(--vh, 880px) * 1px);
+  position: relative; overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px;
+}
+.screen iframe {
+  position: absolute; top: 0; left: 0;
+  width: var(--frame-w);
+  height: calc((var(--vh, 880px) * 1px) / var(--s));
+  border: 0;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+}
+.screen .tag {
+  position: absolute; left: 0; bottom: 0; z-index: 2;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--ink); color: var(--bg);
+  padding: 0.3rem 0.5rem; border-radius: 0 5px 0 9px;
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <strong>Brix — five layouts</strong>
+  <label>Scale <input type="range" id="scale" min="18" max="60" value="30" /><span class="val" id="scaleVal">30%</span></label>
+  <label><input type="checkbox" id="sync" checked /> Sync scroll</label>
+  <span id="status"></span>
+</div>
+
+<div class="strip" id="strip">
+
+  <div class="unit">
+    <aside class="note">
+      <h2>1 — Default</h2>
+      <p class="sub">half and half</p>
+      <dl>
+        <dt>URL</dt><dd><a href="work/brix.html" target="_blank">work/brix.html</a></dd>
+        <dt>Reference</dt><dd>None — the site's own</dd>
+        <dt>Structure</dt><dd>Label and title take the left half of each section, body takes the right. Figures ignore the split and run full width.</dd>
+        <dt>Reading</dt><dd>Alternates between a two-column argument and a full-width image.</dd>
+        <dt>Page height</dt><dd><span data-height>—</span></dd>
+        <dt>Watch</dt><dd class="watch">Title and body are the same width, so hierarchy rests on position rather than size. Long titles and long paragraphs compete.</dd>
+      </dl>
+    </aside>
+    <div class="screen"><iframe data-src="work/brix.html" title="Default"></iframe><span class="tag">Default</span></div>
+  </div>
+
+  <div class="unit">
+    <aside class="note">
+      <h2>2 — Plain</h2>
+      <p class="sub">single column</p>
+      <dl>
+        <dt>URL</dt><dd><a href="work/brix.html?plain" target="_blank">?plain</a></dd>
+        <dt>Reference</dt><dd>None — <code>project.css</code> alone</dd>
+        <dt>Structure</dt><dd>One column. This is what everything else is measured against; <code>?plain</code> disables the split sheet.</dd>
+        <dt>Reading</dt><dd>Nothing to scan by. Section labels are the only landmarks.</dd>
+        <dt>Page height</dt><dd><span data-height>—</span></dd>
+        <dt>Watch</dt><dd class="watch">Among the tallest of the five and the least navigable — length with no structure to break it.</dd>
+      </dl>
+    </aside>
+    <div class="screen"><iframe data-src="work/brix.html?plain" title="Plain"></iframe><span class="tag">?plain</span></div>
+  </div>
+
+  <div class="unit">
+    <aside class="note">
+      <h2>3 — Editorial</h2>
+      <p class="sub">16-column</p>
+      <dl>
+        <dt>URL</dt><dd><a href="work/brix.html?editorial" target="_blank">?editorial</a></dd>
+        <dt>Reference</dt><dd>gautiermld.com/projects/freshdirect</dd>
+        <dt>Structure</dt><dd>16 columns, 20px gutters. Number at col 2, headline at cols 4–7, body at cols 9–15.</dd>
+        <dt>Type</dt><dd>Headline 52/65 serif in a 335px column, so it wraps. Body 16/24 light in a 601px column.</dd>
+        <dt>Page height</dt><dd><span data-height>—</span></dd>
+        <dt>Watch</dt><dd class="watch">The rhythm is 200px above a text row and 120px below. That air is the layout; tightening it turns it into an ordinary page.</dd>
+      </dl>
+    </aside>
+    <div class="screen"><iframe data-src="work/brix.html?editorial" title="Editorial"></iframe><span class="tag">?editorial</span></div>
+  </div>
+
+  <div class="unit">
+    <aside class="note">
+      <h2>4 — Grid</h2>
+      <p class="sub">sticky label rail</p>
+      <dl>
+        <dt>URL</dt><dd><a href="work/brix.html?grid" target="_blank">?grid</a></dd>
+        <dt>Reference</dt><dd>joseph.cv/azuki</dd>
+        <dt>Structure</dt><dd>12 columns. The rail at cols 1–3 holds the label and, under it, the section title in EB Garamond at 20px — both sticky for the length of the section. Body at cols 5–12, figures full width.</dd>
+        <dt>Opening</dt><dd>The hero comes first and the project title follows it, in the rail at 15px.</dd>
+        <dt>Page height</dt><dd><span data-height>—</span></dd>
+        <dt>Watch</dt><dd class="watch">The rail assumes a one-line label. Every label here measures one line at this width; a longer one needs <code>--gz-rail-label-h</code> raised or it collides with the title.</dd>
+      </dl>
+    </aside>
+    <div class="screen"><iframe data-src="work/brix.html?grid" title="Grid"></iframe><span class="tag">?grid</span></div>
+  </div>
+
+  <div class="unit">
+    <aside class="note">
+      <h2>5 — Chapter</h2>
+      <p class="sub">numbered openers</p>
+      <dl>
+        <dt>URL</dt><dd><a href="work/brix.html?chapter" target="_blank">?chapter</a></dd>
+        <dt>Reference</dt><dd>The Motorola case study image</dd>
+        <dt>Structure</dt><dd>Full-width chapter opener — small label over a 30px serif title, with a rule. The numbers come from a CSS counter, so they renumber themselves when a section moves.</dd>
+        <dt>Left column</dt><dd>The section's opening paragraph, in the serif at 24px. Body and figures all sit in the right-hand 66%, so a diagram is as wide as the paragraph that introduces it.</dd>
+        <dt>Page height</dt><dd><span data-height>—</span></dd>
+        <dt>Watch</dt><dd class="watch">Impact and Exploration have empty left columns — Impact has no paragraph at all, and Exploration's first one sits after its figures. The reference also marks key phrases bold inside grey copy; that has to be written into the copy.</dd>
+      </dl>
+    </aside>
+    <div class="screen"><iframe data-src="work/brix.html?chapter" title="Chapter"></iframe><span class="tag">?chapter</span></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var root   = document.documentElement;
+  var frames = [].slice.call(document.querySelectorAll('iframe'));
+  var scale  = document.getElementById('scale');
+  var scaleV = document.getElementById('scaleVal');
+  var sync   = document.getElementById('sync');
+  var status = document.getElementById('status');
+
+  /* The shell height is set from the window rather than fixed, so each
+     column shows a real viewport's worth of page — the layouts have vh-based
+     rules (.detail-step is 55vh) that would be wrong at an invented height. */
+  function sizeShells() {
+    root.style.setProperty('--vh', Math.max(560, innerHeight - 150));
+  }
+  sizeShells();
+  addEventListener('resize', sizeShells);
+
+  scale.addEventListener('input', function () {
+    root.style.setProperty('--s', scale.value / 100);
+    scaleV.textContent = scale.value + '%';
+  });
+
+  /* Load one at a time. Five copies of a page that builds an animated demo
+     on load will stall the tab if they all start together. */
+  var i = 0;
+  (function next() {
+    if (i >= frames.length) { status.textContent = 'ready'; return; }
+    var f = frames[i++];
+    status.textContent = 'loading ' + i + '/' + frames.length;
+    f.addEventListener('load', function () { setTimeout(next, 250); }, { once: true });
+    f.src = f.getAttribute('data-src');
+  })();
+
+  /* Page heights, read once each frame is up. This is the one number that
+     makes the comparison concrete — same copy, same images, five lengths. */
+  function heights() {
+    var notes = [].slice.call(document.querySelectorAll('[data-height]'));
+    frames.forEach(function (f, n) {
+      try {
+        var h = f.contentDocument.documentElement.scrollHeight;
+        notes[n].textContent = h.toLocaleString() + ' px';
+      } catch (e) { notes[n].textContent = 'cross-origin'; }
+    });
+  }
+  setInterval(heights, 1500);
+
+  /* Proportional sync: the pages are different lengths, so matching pixels
+     would drift apart immediately. Matching the fraction scrolled keeps the
+     same part of the case study in view in all five. */
+  var lock = false;
+  frames.forEach(function (src) {
+    src.addEventListener('load', function () {
+      var w = src.contentWindow;
+      w.addEventListener('scroll', function () {
+        if (!sync.checked || lock) return;
+        lock = true;
+        var d = src.contentDocument.documentElement;
+        var span = d.scrollHeight - w.innerHeight;
+        var frac = span > 0 ? w.scrollY / span : 0;
+        frames.forEach(function (o) {
+          if (o === src || !o.contentWindow) return;
+          try {
+            var od = o.contentDocument.documentElement;
+            o.contentWindow.scrollTo(0, frac * (od.scrollHeight - o.contentWindow.innerHeight));
+          } catch (e) {}
+        });
+        requestAnimationFrame(function () { lock = false; });
+      }, { passive: true });
+    });
+  });
+})();
+</script>
+</body>
+</html>
