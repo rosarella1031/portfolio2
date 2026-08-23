@@ -515,6 +515,10 @@
   --fn-side: 0.36fr;
   --fn-main: 1.28fr;
   --fn-text: 0.8125rem;
+  /* The product's own purple — --focus in work/hero-demo.css, Text/Focused in
+     the Figma file. Naming it here rather than repeating the hex keeps the
+     pin and its wire the same colour by construction. */
+  --fn-accent: #581eeb;
 
   display: grid;
   grid-template-columns:
@@ -527,6 +531,7 @@
      page, so at the same window width they have far less room than the
      default layout. A media query would stack all five at once or none. */
   container-type: inline-size;
+  position: relative;
 }
 .figure-note > .img-block { margin: 0; }
 .figure-note-body ul {
@@ -556,8 +561,12 @@
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }
+/* The card answers even when the artwork cannot. A point has a place in each
+   pane and the wipe can be parked where neither is showing — pin 01 sits at
+   33% of the before screen and 15% of the after, so anywhere around 20% both
+   are clipped. Without this the hover would look like it had failed. */
 .figure-note-body li:hover,
-.figure-note-body li:focus-visible { border-color: var(--text-3); }
+.figure-note-body li:focus-visible { border-color: var(--fn-accent); }
 .figure-note-body li {
   /* One card per point rather than one card holding a list: each of these is
      a separate observation about the same pair of screens, and a shared box
@@ -1214,9 +1223,27 @@
 .compare .compare-anchor.is-on {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.12);
-  color: var(--bg);
-  background: var(--text);
-  border-color: var(--text);
+  color: #fff;
+  background: var(--fn-accent);
+  border-color: var(--fn-accent);
+}
+
+/* The wire from a card to its pin. Drawn on a layer over the whole block
+   because the two ends are in different boxes — the card is a grid item, the
+   pin lives inside the clipped pane. Never takes the pointer, for the same
+   reason nothing else on this frame does. */
+.fn-wires {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: visible;
+}
+.fn-wire {
+  stroke: var(--fn-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  stroke-linecap: round;
 }
 @media (prefers-reduced-motion: reduce) {
   .compare-anchor { transition: none; }

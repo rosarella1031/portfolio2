@@ -52,12 +52,15 @@
     frame.appendChild(handle);
 
     let pos = parseFloat(frame.dataset.start || '50');
+    let redrawWires = null;
 
     function set(n) {
       pos = clamp(n);
       frame.style.setProperty('--pos', pos + '%');
       handle.setAttribute('aria-valuenow', Math.round(pos));
       handle.setAttribute('aria-valuetext', Math.round(pos) + '% after');
+      // A wire ends on a pin, and the wipe decides which pins are showing.
+      if (redrawWires) redrawWires();
     }
     set(pos);
 
@@ -111,7 +114,7 @@
     // A drag that starts on the handle must not also fire its click.
     handle.addEventListener('click', e => e.preventDefault());
 
-    anchors(frame, before, after);
+    redrawWires = anchors(frame, before, after, () => pos);
   });
 
   /* ===== Anchors =====
@@ -130,11 +133,11 @@
      Pins never take the pointer. This frame is a drag surface first, and an
      element that could be hovered on it is an element that can swallow a
      drag — so the wiring runs one way, from the cards to the artwork. */
-  function anchors(frame, before, after) {
+  function anchors(frame, before, after, getPos) {
     const note = frame.closest('.figure-note');
-    if (!note) return;
+    if (!note) return null;
     const cards = [...note.querySelectorAll('.figure-note-body li[data-before]')];
-    if (!cards.length) return;
+    if (!cards.length) return null;
 
     // Each aside restarts the CSS counter, so tell every one after the first
     // where to carry on. Counting here rather than in the stylesheet means
@@ -145,30 +148,86 @@
       seen += side.querySelectorAll('li').length;
     });
 
+    // The wire has to cross from a card to a pin inside the frame, so it is
+    // drawn on a layer over the whole block rather than inside either.
+    const NS = 'http://www.w3.org/2000/svg';
+    const wires = document.createElementNS(NS, 'svg');
+    wires.setAttribute('class', 'fn-wires');
+    wires.setAttribute('aria-hidden', 'true');
+    note.appendChild(wires);
+
+    let active = null;
+
     const pins = cards.map((card, i) => {
       const n = String(i + 1).padStart(2, '0');
-      const pair = ['before', 'after'].map(side => {
-        const raw = (card.dataset[side] || '').split(',');
+      const spec = ['before', 'after'].map(side => {
+        const xy = (card.dataset[side] || '').split(',').map(parseFloat);
         const pin = document.createElement('span');
         pin.className = 'compare-anchor';
         pin.textContent = n;
-        pin.style.left = raw[0] + '%';
-        pin.style.top  = raw[1] + '%';
+        pin.style.left = xy[0] + '%';
+        pin.style.top  = xy[1] + '%';
         (side === 'before' ? before : after).appendChild(pin);
-        return pin;
+        return { pin, side, x: xy[0], y: xy[1] };
       });
 
       const on = state => {
+        active = state ? { card, spec } : null;
         frame.classList.toggle('has-focus', state);
-        pair.forEach(el => el.classList.toggle('is-on', state));
+        spec.forEach(s => s.pin.classList.toggle('is-on', state));
+        draw();
       };
       card.addEventListener('pointerenter', () => on(true));
       card.addEventListener('pointerleave', () => on(false));
       card.addEventListener('focus', () => on(true));
       card.addEventListener('blur',  () => on(false));
-      return pair;
+      return spec;
     });
 
-    return pins;
+    /* One line per pin that is actually showing. The wipe hides a pin by
+       clipping the pane it lives in, so a wire to it would point at nothing:
+       a before pin shows left of the split, an after pin right of it. Both
+       can show at once, and at the extremes neither does. */
+    function draw() {
+      while (wires.firstChild) wires.removeChild(wires.firstChild);
+      if (!active) return;
+
+      const nb = note.getBoundingClientRect();
+      const fb = frame.getBoundingClientRect();
+      const cb = active.card.getBoundingClientRect();
+      const pos = getPos();
+
+      wires.setAttribute('viewBox', `0 0 ${nb.width} ${nb.height}`);
+      wires.setAttribute('width', nb.width);
+      wires.setAttribute('height', nb.height);
+
+      // Leave from the edge that faces the picture, level with the number.
+      const fromRight = cb.left < fb.left;
+      const x1 = (fromRight ? cb.right : cb.left) - nb.left;
+      const y1 = cb.top - nb.top + 20;
+
+      active.spec.forEach(s => {
+        const showing = s.side === 'before' ? s.x < pos : s.x > pos;
+        if (!showing) return;
+        const x2 = fb.left - nb.left + (s.x / 100) * fb.width;
+        const y2 = fb.top  - nb.top  + (s.y / 100) * fb.height;
+
+        // Stop at the rim rather than under the pin.
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.hypot(dx, dy) || 1;
+        const trim = 15;
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2 - (dx / len) * trim);
+        line.setAttribute('y2', y2 - (dy / len) * trim);
+        line.setAttribute('class', 'fn-wire');
+        wires.appendChild(line);
+      });
+    }
+
+    addEventListener('resize', draw);
+    addEventListener('scroll', draw, { passive: true });
+    return draw;
   }
 })();
