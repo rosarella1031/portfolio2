@@ -519,6 +519,9 @@
      the Figma file. Naming it here rather than repeating the hex keeps the
      pin and its wire the same colour by construction. */
   --fn-accent: #581eeb;
+  /* Its pale companion — Surface/AI Icon in the same file, the ground the
+     product already uses behind that purple. */
+  --fn-accent-soft: #ede9ff;
 
   display: grid;
   grid-template-columns:
@@ -578,7 +581,13 @@
    33% of the before screen and 15% of the after, so anywhere around 20% both
    are clipped. Without this the hover would look like it had failed. */
 .figure-note-body li:hover,
-.figure-note-body li:focus-visible { border-color: var(--fn-accent); }
+.figure-note-body li:focus-visible {
+  border-color: var(--fn-accent);
+  background: var(--fn-accent-soft);
+  /* --text-2 is set against the page, not against a tint; on this ground it
+     goes muddy, so the copy comes up a step while the card is lit. */
+  color: var(--text);
+}
 .figure-note-body li {
   /* One card per point rather than one card holding a list: each of these is
      a separate observation about the same pair of screens, and a shared box
@@ -593,6 +602,9 @@
   font-size: var(--fn-text);
   line-height: 1.5;
   color: var(--text-2);
+  background: transparent;
+  transition: background 0.18s var(--ease, ease), border-color 0.18s var(--ease, ease),
+              color 0.18s var(--ease, ease);
 }
 .figure-note-body b { font-weight: 500; color: var(--text); }
 
