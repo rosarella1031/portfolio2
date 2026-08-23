@@ -521,6 +521,12 @@
 }
 .figure-note > .img-block { margin: 0; }
 .figure-note-body {
+  /* The card is .project-link's — 1px of --border at 10px radius. It is the
+     only bordered block on the page, so a second one drawn to different
+     numbers would read as a different kind of thing. */
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.4rem;
   /* Sticky so the reading stays level with the part of the image you are
      dragging — these sliders are tall and the note would otherwise scroll
      away from the thing it describes. */
@@ -535,14 +541,16 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
-  margin: 0 0 var(--sp-4);
+  margin: 0 0 var(--sp-3);
 }
 .figure-note-body ul { margin: 0; padding: 0; list-style: none; }
 .figure-note-body li {
-  font-size: var(--t-body);
-  line-height: var(--t-body-lh);
+  /* A step down from body: inside a bordered box this is an aside, and at
+     body size it competes with the section's own copy for the same voice. */
+  font-size: var(--t-caption);
+  line-height: var(--t-caption-lh);
   color: var(--text-2);
-  margin-bottom: var(--sp-4);
+  margin-bottom: var(--sp-3);
 }
 .figure-note-body li:last-child { margin-bottom: 0; }
 .figure-note-body b { font-weight: 500; color: var(--text); }
