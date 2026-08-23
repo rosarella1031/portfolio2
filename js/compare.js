@@ -110,5 +110,65 @@
 
     // A drag that starts on the handle must not also fire its click.
     handle.addEventListener('click', e => e.preventDefault());
+
+    anchors(frame, before, after);
   });
+
+  /* ===== Anchors =====
+
+     Each note card names a region of the artwork. The pin carrying its number
+     is drawn on the artwork from the start and stays drawn: hovering a card
+     raises its pin and lowers the others, so the pointer changes emphasis and
+     never reveals. Without a pointer — a phone, a keyboard, a printout — the
+     numbers are all still there and still matched.
+
+     The two screens are not the same layout, so a point has separate
+     coordinates per pane. The after pin goes inside the after pane, which is
+     already clipped by the wipe, so it appears and disappears with the half
+     it belongs to at no extra cost.
+
+     Pins never take the pointer. This frame is a drag surface first, and an
+     element that could be hovered on it is an element that can swallow a
+     drag — so the wiring runs one way, from the cards to the artwork. */
+  function anchors(frame, before, after) {
+    const note = frame.closest('.figure-note');
+    if (!note) return;
+    const cards = [...note.querySelectorAll('.figure-note-body li[data-before]')];
+    if (!cards.length) return;
+
+    // Each aside restarts the CSS counter, so tell every one after the first
+    // where to carry on. Counting here rather than in the stylesheet means
+    // the card number and the pin number come out of the same pass.
+    let seen = 0;
+    note.querySelectorAll('.figure-note-body').forEach(side => {
+      side.style.setProperty('--fn-start', seen);
+      seen += side.querySelectorAll('li').length;
+    });
+
+    const pins = cards.map((card, i) => {
+      const n = String(i + 1).padStart(2, '0');
+      const pair = ['before', 'after'].map(side => {
+        const raw = (card.dataset[side] || '').split(',');
+        const pin = document.createElement('span');
+        pin.className = 'compare-anchor';
+        pin.textContent = n;
+        pin.style.left = raw[0] + '%';
+        pin.style.top  = raw[1] + '%';
+        (side === 'before' ? before : after).appendChild(pin);
+        return pin;
+      });
+
+      const on = state => {
+        frame.classList.toggle('has-focus', state);
+        pair.forEach(el => el.classList.toggle('is-on', state));
+      };
+      card.addEventListener('pointerenter', () => on(true));
+      card.addEventListener('pointerleave', () => on(false));
+      card.addEventListener('focus', () => on(true));
+      card.addEventListener('blur',  () => on(false));
+      return pair;
+    });
+
+    return pins;
+  }
 })();

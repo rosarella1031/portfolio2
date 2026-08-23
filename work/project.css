@@ -536,6 +536,28 @@
   padding: 0;
   list-style: none;
 }
+/* The counter restarts inside each aside, so the right-hand one is told
+   where to carry on from. --fn-start is written by js/compare.js from the
+   card count, which is the same pass that numbers the pins — one count, so
+   a card and its pin cannot disagree. It is set on the aside, which is
+   outside any [data-e] block, so ?edit never saves it into the file. */
+.figure-note-body { counter-reset: fignote var(--fn-start, 0); }
+.figure-note-body li { counter-increment: fignote; }
+.figure-note-body li::before {
+  content: counter(fignote, decimal-leading-zero);
+  display: block;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-bottom: 0.3rem;
+}
+.figure-note-body li:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+.figure-note-body li:hover,
+.figure-note-body li:focus-visible { border-color: var(--text-3); }
 .figure-note-body li {
   /* One card per point rather than one card holding a list: each of these is
      a separate observation about the same pair of screens, and a shared box
@@ -1156,6 +1178,50 @@
 }
 .compare-label--before { left: 1rem; }
 .compare-label--after  { right: 1rem; }
+
+/* ===== Anchors =====
+   The pin that ties a note card to a place on the artwork. Drawn from the
+   start and never revealed by the pointer: hovering a card raises its pin and
+   lowers the rest, so a phone, a keyboard and a printout all keep the whole
+   mapping. Built by js/compare.js from the coordinates on each card.
+
+   Never takes the pointer. The frame is a drag surface first, and a hoverable
+   element sitting on it is an element that can swallow a drag. */
+.compare-anchor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: rgba(252, 252, 252, 0.92);
+  border: 1px solid var(--text-3);
+  box-shadow: 0 1px 3px rgba(26, 24, 23, 0.12);
+  pointer-events: none;
+  opacity: 0.72;
+  transition: opacity 0.2s var(--ease, ease), transform 0.2s var(--ease, ease),
+              background 0.2s, color 0.2s, border-color 0.2s;
+}
+/* Only while a card is being pointed at or focused: at rest every pin is
+   equal, which is the state that has to carry the meaning on its own. */
+.compare.has-focus .compare-anchor { opacity: 0.28; }
+.compare .compare-anchor.is-on {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.12);
+  color: var(--bg);
+  background: var(--text);
+  border-color: var(--text);
+}
+@media (prefers-reduced-motion: reduce) {
+  .compare-anchor { transition: none; }
+  .compare .compare-anchor.is-on { transform: translate(-50%, -50%); }
+}
 
 /* A hairline, not a rule. Solid --text at 2px read as a bar drawn across the
    figure rather than a seam between two of them. White alone would vanish on
