@@ -184,10 +184,78 @@
       return spec;
     });
 
+    /* Cards are lifted out of the flow and set at the height of the place
+       they describe, so every leader line runs level instead of fanning out
+       across the picture. The row is the before pin's y unless the card names
+       its own with data-row; a card can then be moved without touching the
+       coordinates the pin is drawn from.
+
+       Only while the notes are beside the picture. Stacked, there is no row
+       to line up with and the cards go back to reading as a list. */
+    const GAP = 10;      // the least air between two cards
+    const LEAD = 20;     // the number's line, down from the card's top
+
+    function place() {
+      const beside = getComputedStyle(note).gridTemplateColumns.split(' ').length > 1
+                     && cards[0].closest('.figure-note-body') !== null
+                     && frame.getBoundingClientRect().width < note.getBoundingClientRect().width - 40;
+      note.classList.toggle('is-aligned', beside);
+      if (!beside) {
+        cards.forEach(c => { c.style.top = ''; });
+        note.querySelectorAll('.figure-note-body').forEach(a => { a.style.height = ''; });
+        return;
+      }
+
+      const fb = frame.getBoundingClientRect();
+      note.querySelectorAll('.figure-note-body').forEach(aside => {
+        const ab = aside.getBoundingClientRect();
+        aside.style.height = fb.height + 'px';
+
+        const rows = [...aside.querySelectorAll('li[data-before]')].map(card => {
+          const spec = pins[cards.indexOf(card)];
+          const row = card.dataset.row !== undefined
+            ? parseFloat(card.dataset.row)
+            : spec[0].y;
+          return { card, want: fb.top - ab.top + (row / 100) * fb.height - LEAD };
+        }).sort((a, b) => a.want - b.want);
+
+        // Push down through the sorted list so a crowded pair separates
+        // instead of overlapping.
+        let y = 0;
+        rows.forEach(r => {
+          r.top = Math.max(r.want, y);
+          y = r.top + r.card.getBoundingClientRect().height + GAP;
+        });
+
+        // Pushing down only ever moves the later card, which left the first
+        // one exact and the second 83px out. Shifting the whole run by the
+        // average error splits it: both leaders tilt a little instead of one
+        // being level and the other crossing half the picture.
+        const drift = rows.reduce((a, r) => a + (r.top - r.want), 0) / rows.length;
+        const top = rows[0].top;
+        const bottom = y - GAP;
+        // Clamp the shift itself, not each card: moving them by different
+        // amounts would reopen the overlaps the push-down just closed. When
+        // the run is taller than the picture it simply starts at the top.
+        let shift = -drift;
+        if (bottom - top <= fb.height) {
+          shift = Math.min(Math.max(shift, -top), fb.height - bottom);
+        } else {
+          shift = -top;
+        }
+        rows.forEach(r => { r.top += shift; });
+        rows.forEach(r => { r.card.style.top = Math.round(r.top) + 'px'; });
+      });
+    }
+
     /* One line per pin that is actually showing. The wipe hides a pin by
        clipping the pane it lives in, so a wire to it would point at nothing:
        a before pin shows left of the split, an after pin right of it. Both
-       can show at once, and at the extremes neither does. */
+       can show at once, and at the extremes neither does.
+
+       The run is horizontal and the drop to the pin is vertical, so the lines
+       stay parallel rather than fanning. Aligned to the before pin, that drop
+       is zero and the wire is a single level line. */
     function draw() {
       while (wires.firstChild) wires.removeChild(wires.firstChild);
       if (!active) return;
@@ -201,31 +269,35 @@
       wires.setAttribute('width', nb.width);
       wires.setAttribute('height', nb.height);
 
-      // Leave from the edge that faces the picture, level with the number.
       const fromRight = cb.left < fb.left;
       const x1 = (fromRight ? cb.right : cb.left) - nb.left;
-      const y1 = cb.top - nb.top + 20;
+      const y1 = cb.top - nb.top + LEAD;
 
       active.spec.forEach(s => {
         const showing = s.side === 'before' ? s.x < pos : s.x > pos;
         if (!showing) return;
-        const x2 = fb.left - nb.left + (s.x / 100) * fb.width;
-        const y2 = fb.top  - nb.top  + (s.y / 100) * fb.height;
-
-        // Stop at the rim rather than under the pin.
-        const dx = x2 - x1, dy = y2 - y1;
-        const len = Math.hypot(dx, dy) || 1;
+        const px = fb.left - nb.left + (s.x / 100) * fb.width;
+        const py = fb.top  - nb.top  + (s.y / 100) * fb.height;
         const trim = 15;
-        const line = document.createElementNS(NS, 'line');
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2 - (dx / len) * trim);
-        line.setAttribute('y2', y2 - (dy / len) * trim);
+
+        const pts = [];
+        if (Math.abs(py - y1) < 3) {
+          pts.push([x1, y1], [px + (fromRight ? -trim : trim), y1]);
+        } else {
+          // level to the pin's column, then straight down or up to it
+          pts.push([x1, y1], [px, y1], [px, py + (py > y1 ? -trim : trim)]);
+        }
+        const line = document.createElementNS(NS, 'polyline');
+        line.setAttribute('points', pts.map(p => p.join(',')).join(' '));
         line.setAttribute('class', 'fn-wire');
         wires.appendChild(line);
       });
     }
 
+    place();
+    // Cards are sized by their text, and web fonts land after first layout.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    addEventListener('resize', place);
     addEventListener('resize', draw);
     addEventListener('scroll', draw, { passive: true });
     return draw;

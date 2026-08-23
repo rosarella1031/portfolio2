@@ -541,6 +541,18 @@
   padding: 0;
   list-style: none;
 }
+/* Aligned: each card is set at the height of the place it describes, so its
+   leader line runs level and every line on the block is parallel. The class
+   is added by js/compare.js only once it has measured that the notes are
+   beside the picture — stacked there is no row to line up with, and this
+   would drop the cards on top of each other. */
+.figure-note.is-aligned .figure-note-body { position: relative; }
+.figure-note.is-aligned .figure-note-body ul { display: block; }
+.figure-note.is-aligned .figure-note-body li {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
 /* The counter restarts inside each aside, so the right-hand one is told
    where to carry on from. --fn-start is written by js/compare.js from the
    card count, which is the same pass that numbers the pins — one count, so
@@ -1240,6 +1252,9 @@
   overflow: visible;
 }
 .fn-wire {
+  /* A polyline fills by default, and an elbow filled black is a solid wedge
+     across the artwork. */
+  fill: none;
   stroke: var(--fn-accent);
   stroke-width: 1.5;
   stroke-dasharray: 4 4;
