@@ -541,7 +541,10 @@
    second set of rules — only one card is ever lit, so this can sit here. */
 .figure-note.is-muted {
   --fn-accent: var(--text-2);
-  --fn-accent-soft: var(--bg-card);
+  /* --tag-bg, the same plain grey the contents rail lights a row with.
+     --bg-card is the warm card colour and reads as a different material
+     rather than as the same hover in another key. */
+  --fn-accent-soft: var(--tag-bg);
 }
 .figure-note > .img-block { margin: 0; }
 .figure-note-body ul {
