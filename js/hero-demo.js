@@ -64,7 +64,8 @@
     redo:   'm15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3',
     copy:   'M16.5 8.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v8.25A2.25 2.25 0 0 0 6 16.5h2.25m8.25-8.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-7.5A2.25 2.25 0 0 1 8.25 18v-7.5A2.25 2.25 0 0 1 10.5 8.25h6Z',
     close:  'M6 18 18 6M6 6l12 12',
-    search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3'
+    search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
+    filters:'M3 6h18M6 12h12M10 18h4'
   };
 
   /* The Sources row carries the actual site marks, which live in the file
@@ -119,7 +120,11 @@
     betweenReasons: 260,  // gap between reasoning lines
     progressStep:  150,   // each 4% of the progress bar at beat 6
     beforeProfiles: 700,  // beat 6 to beat 7
-    holdOnResult:  4200,  // beat 7 before the loop restarts
+    holdOnResult:  4200,  // beat 7 before the search agent takes over
+    attachHold:     900,  // the ICP file sitting in the composer before typing
+    typeAsk2:        22,  // per character of the line sent with the file
+    searching:     2600,  // "Just a moment" and the empty list
+    holdOnHits:    4600,  // beat 13 before the loop restarts
     handBackAfter: 9000   // idle before the tour resumes after a click
   };
   /* ICP #1 is transcribed from the Figma frame; #2 and #3 are written to the
@@ -254,6 +259,107 @@
     ['none',   'Looking for US-based candidates open to remote work within Pacific & Central time zones.']
   ];
 
+  /* ---- the search agent's two result sets ----------------------------
+     Page 4 of the Figma file: the same query answered before and after the
+     updated ICP goes in. Card three's tag row sits below the fold in both
+     frames, so those four are written to the shape of the two above them.
+
+     Faces and company marks are discs here rather than the photographs and
+     logos in the file: at this scale they would be four pixels of mush, and
+     inlining a dozen more rasters to get there is not worth the weight. */
+  var HITS_BEFORE = [
+    { n: 'Oluwayemisi Jung', role: 'Senior AI Engineer',
+      at: ['Robinhood', 'Meta'], edu: ['Bachelor | Cornell University'],
+      bio: 'Oluwayemisi Jung is Senior AI Engineer with experience in <b>model optimization, ' +
+           'quantization, and real-time inference</b> at Robinhood and Meta.',
+      tags: ['7 years total experience', 'Early + Growth', 'Big tech', 'Prompted twice'] },
+    { n: 'Daniel Kim', role: 'AI Systems Engineer',
+      at: ['Brex', 'HSBC Kinetic', 'Expensify'],
+      edu: ['Master | Harvard University', 'Bachelor | Cornell University'],
+      bio: 'Daniel Kim is an AI Systems Engineer focused on <b>model compression</b> and ' +
+           '<b>inference</b> at Brex and HSBC, deploying AI for <b>fintech platform</b>.',
+      tags: ['7 years total experience', 'Early + Growth', 'Start-up experience', 'International Exp.'] },
+    { n: 'Luis Ramirez', role: 'ML Performance Engineer',
+      at: ['Shopify'], edu: ['Master | Georgia Institute of Technology'],
+      bio: 'Luis Ramirez is an <b>ML Performance Engineer</b> with experience in <b>model ' +
+           'compression</b> and <b>latency reduction</b> at Shopify, optimizing <b>AI-powered ' +
+           'infrastructure</b> for large-scale e-commerce systems.',
+      tags: ['6 years total experience', 'Big tech', 'Prompted once', 'International Exp.'] }
+  ];
+
+  var HITS_AFTER = [
+    { n: 'Dylan Brooks', role: 'Applied AI Engineer',
+      at: ['Meta', 'Obviously.ai'], edu: ['Master | Cornell University'],
+      bio: 'Dylan Brooks is an Applied AI Engineer experienced in <b>chat-based inference</b> ' +
+           'at Obviously.ai and improving <b>model efficiency</b> at Meta.',
+      tags: ['8 years total experience', 'Early + Growth', 'Start-up experience', 'Multilingual'] },
+    { n: 'Kai Morgan', role: 'Senior AI Engineer',
+      at: ['Robinhood', 'Lookback'], edu: ['Master | Massachusetts Institute of Technology'],
+      bio: 'Kai Morgan is an AI Infrastructure Engineer with experience in <b>fintech model ' +
+           'deployment</b> at Robinhood and <b>inference system evaluation</b> at Lookback, ' +
+           'focusing on <b>low-latency AI performance</b>.',
+      tags: ['7 years total experience', 'Start-up experience', 'Prompted once', 'International Exp.'] },
+    { n: 'Aria Collins', role: 'Deep Learning Engineer',
+      at: ['Google', 'Loom'],
+      edu: ['Master | Harvard University', 'Bachelor | Cornell University'],
+      bio: 'Aria Collins is a Deep Learning Engineer specializing in <b>neural architecture ' +
+           'optimization</b> and <b>on-device deployment</b> at Google and Loom.',
+      tags: ['7 years total experience', 'Big tech', 'Early + Growth', 'Multilingual'] }
+  ];
+
+  var ICP_FILE = 'Updated ICP.pdf';
+  var ASK2 = 'This is the latest version of the ICP, please help me search candidates based on this.';
+
+  function hitCard(h) {
+    var m = '<div class="hd-hit">' +
+      '<div class="hd-hit-face"></div>' +
+      '<div class="hd-hit-main">' +
+        '<div class="hd-hit-name"><b>' + h.n + '</b><span>| ' + h.role + '</span>' +
+          '<i class="hd-hit-dot"></i><i class="hd-hit-dot"></i></div>' +
+        '<div class="hd-hit-row">';
+    for (var i = 0; i < h.at.length; i++)
+      m += '<span class="hd-hit-org"><i></i>' + h.at[i] + '</span>';
+    m += '</div><div class="hd-hit-row">';
+    for (var e = 0; e < h.edu.length; e++)
+      m += '<span class="hd-hit-org"><i></i>' + h.edu[e] + '</span>';
+    m += '</div>' +
+        '<div class="hd-hit-bio">' + h.bio + '</div>' +
+        '<div class="hd-hit-tags">';
+    for (var t = 0; t < h.tags.length; t++)
+      m += '<span class="hd-hit-tag">' + h.tags[t] + '</span>';
+    return m + '</div></div>' +
+      '<div class="hd-hit-side"><span class="hd-hit-add">Add to shortlist</span>' +
+      '<span class="hd-hit-x">' + icon(I.close) + '</span></div>' +
+    '</div>';
+  }
+
+  /* The same card in the composer and in the transcript — only the composer's
+     can be taken back off, so only that one carries the ×. */
+  function fileCard(removable) {
+    return '<div class="hd-file"><span class="hd-file-badge"></span>' +
+      '<span class="hd-file-text"><span class="hd-file-name">' + ICP_FILE + '</span>' +
+      '<span class="hd-file-kind">PDF</span></span>' +
+      (removable ? '<span class="hd-file-x">' + icon(I.close) + '</span>' : '') +
+    '</div>';
+  }
+
+  /* The waiting state is the same card with its text swapped for bars, so a
+     row cannot change height between loading and loaded. */
+  function skeletonCard() {
+    return '<div class="hd-hit is-skeleton">' +
+      '<div class="hd-hit-face"></div>' +
+      '<div class="hd-hit-main">' +
+        '<span class="hd-bar" style="width:38%"></span>' +
+        '<span class="hd-bar" style="width:32%"></span>' +
+        '<span class="hd-bar" style="width:46%"></span>' +
+        '<span class="hd-bar hd-bar--block"></span>' +
+        '<span class="hd-bar" style="width:100%"></span>' +
+      '</div>' +
+      '<div class="hd-hit-side"><span class="hd-hit-add">Add to shortlist</span>' +
+      '<span class="hd-hit-x">' + icon(I.close) + '</span></div>' +
+    '</div>';
+  }
+
   /* ---- shell -------------------------------------------------------- */
   root.innerHTML =
     '<div class="hd-stage">' +
@@ -296,6 +402,12 @@
           '<div class="hd-steps" data-steps></div>' +
         '</div></div>' +
 
+        '<div class="hd-screen" data-screen="results"><div class="hd-results">' +
+          '<div class="hd-results-head"><span data-hits>780 results</span>' +
+            '<span class="hd-filters">' + icon(I.filters) + 'Filters</span></div>' +
+          '<div class="hd-results-list" data-hitlist></div>' +
+        '</div></div>' +
+
         '<div class="hd-screen" data-screen="doc"><div class="hd-doc">' +
           '<div class="hd-doc-head"><span>Ideal candidate profiles</span>' +
             '<div class="hd-doc-tools">' +
@@ -333,6 +445,8 @@
     steps: $('[data-steps]'), reason: $('[data-reason]'),
     nav: $('[data-nav]'), doc: $('[data-doc]'),
     compose: $('[data-compose]'),
+    hits: $('[data-hits]'), hitList: $('[data-hitlist]'),
+    composer: $('.hd-composer'),
     hint: $('[data-hint]'),
     replay: $('[data-replay]')
   };
@@ -346,7 +460,7 @@
       all[i].classList.toggle('is-on', all[i].getAttribute('data-screen') === name);
   }
   function beat(n) {
-    root.className = root.className.replace(/\bbeat-\d\b/g, '').trim() + ' beat-' + n;
+    root.className = root.className.replace(/\bbeat-\d+\b/g, '').trim() + ' beat-' + n;
   }
 
   /* the one entry point — script and visitor both come through here */
@@ -474,6 +588,15 @@
     root.classList.remove('has-query', 'is-sending');
     el.query.className = 'hd-input-text is-placeholder';
     el.query.textContent = PROMPT;
+    /* The search agent's beats leave three things behind: a file card in the
+       composer, a filled result list and a typed composer. */
+    var left = el.composer && el.composer.querySelector('.hd-file');
+    if (left) left.remove();
+    if (el.hitList) el.hitList.innerHTML = '';
+    if (el.hits) el.hits.textContent = '780 results';
+    el.compose.className = 'hd-compose-text is-placeholder';
+    el.compose.textContent = 'Ask Brix AI';
+    root.classList.remove('has-compose', 'is-sending-chat', 'is-typing');
   }
 
   function finalState() {
@@ -692,6 +815,87 @@
     show(0);
     if (el.hint) el.hint.textContent = 'Click a profile';
     await sleep(T.holdOnResult); if (mine !== token) return;
+
+    /* ---- the search agent, page 4 of the file ------------------------
+       The second agent picks the timeline up where the first left it: the
+       profiles it just wrote are what the search is about to be re-run
+       against. The transcript carries on rather than starting again — the
+       earlier turns leave the top on their own, as they do throughout. */
+
+    /* beat 8 — the same query, answered */
+    beat(8); screen('results');
+    el.hits.textContent = '780 results';
+    el.hitList.innerHTML = HITS_BEFORE.map(hitCard).join('');
+    var found = await pushIn('<div class="hd-agent-line">' + avatar() +
+      '<span>Great! I\u2019ve found 780 candidate profiles that match ' +
+      '\u201C' + QUERY + '.\u201D</span></div>', mine);
+    if (mine !== token) return;
+    liveAvatar(found);
+    await sleep(T.afterQuestions); if (mine !== token) return;
+    liveAvatar(null);
+
+    /* beat 9 — the updated profile is attached */
+    beat(9);
+    el.composer.insertAdjacentHTML('afterbegin', fileCard(true));
+    await sleep(T.attachHold); if (mine !== token) return;
+
+    /* beat 10 — and a line typed under it */
+    beat(10);
+    el.compose.className = 'hd-compose-text';
+    el.compose.textContent = '';
+    var aCaret = document.createElement('span');
+    aCaret.className = 'hd-caret';
+    el.compose.appendChild(aCaret);
+    root.classList.add('is-typing');
+    for (var a2 = 0; a2 < ASK2.length; a2++) {
+      if (mine !== token) return;
+      aCaret.insertAdjacentText('beforebegin', ASK2[a2]);
+      if (a2 === 0) root.classList.add('has-compose');
+      await sleep(ASK2[a2] === ' ' ? T.typeAsk2 * 0.75 : T.typeAsk2);
+    }
+    root.classList.remove('is-typing');
+    aCaret.remove();
+    await sleep(T.beforeSend); if (mine !== token) return;
+
+    /* beat 11 — sent, as two turns: the file, then the line */
+    beat(11);
+    root.classList.add('is-sending-chat');
+    await sleep(T.sendPress); if (mine !== token) return;
+    root.classList.remove('is-sending-chat', 'has-compose');
+    var stuck = el.composer.querySelector('.hd-file');
+    if (stuck) stuck.remove();
+    el.compose.className = 'hd-compose-text is-placeholder';
+    el.compose.textContent = 'Ask Brix AI';
+
+    await pushIn(fileCard(false), mine); if (mine !== token) return;
+    await pushIn('<div class="hd-bubble"><span class="hd-at">@Advanced search</span> ' +
+                 ASK2 + '</div>', mine);
+    if (mine !== token) return;
+
+    /* beat 12 — the list empties while it works */
+    beat(12);
+    var moment = await pushIn('<div class="hd-agent-line">' + avatar() +
+      '<span>Just a moment\u2026</span></div>', mine);
+    if (mine !== token) return;
+    liveAvatar(moment);
+    el.hits.textContent = '0 results';
+    el.hitList.innerHTML = skeletonCard() + skeletonCard() + skeletonCard();
+    await sleep(T.searching); if (mine !== token) return;
+
+    /* beat 13 — the ranked answer */
+    beat(13);
+    el.hits.textContent = '620 results';
+    el.hitList.innerHTML = HITS_AFTER.map(hitCard).join('');
+    liveAvatar(null);
+    await pushIn('<div class="hd-result-card"><b>620 best matches</b>' +
+      '<p>The Talent Search Agent has analyzed 1,328 profiles and identified the top 620 ' +
+      'matches, ranked for your review.</p>' +
+      '<div class="hd-result-foot"><span>3m11s</span>' +
+      '<span>Restore to this version</span></div></div>', mine);
+    if (mine !== token) return;
+    if (el.hint) el.hint.textContent = 'Playing';
+    await sleep(T.holdOnHits); if (mine !== token) return;
+
     if (!userDriving && running) return play();
   }
 
@@ -754,6 +958,37 @@
       return;
     }
 
+    if (n >= 8) {
+      /* The search agent's beats all sit on the same two screens, so each is
+         painted from the state before it rather than replayed. */
+      beat(n);
+      chatArtifact();
+      screen('results');
+      el.hits.textContent = n >= 13 ? '620 results' : n === 12 ? '0 results' : '780 results';
+      el.hitList.innerHTML = n === 12
+        ? skeletonCard() + skeletonCard() + skeletonCard()
+        : (n >= 13 ? HITS_AFTER : HITS_BEFORE).map(hitCard).join('');
+      var h = '<div class="hd-agent-line">' + avatar() +
+        '<span>Great! I\u2019ve found 780 candidate profiles that match ' +
+        '\u201C' + QUERY + '.\u201D</span></div>';
+      if (n >= 11) h += fileCard(false) +
+        '<div class="hd-bubble"><span class="hd-at">@Advanced search</span> ' + ASK2 + '</div>';
+      if (n >= 12) h += '<div class="hd-agent-line">' + avatar() +
+        '<span>Just a moment\u2026</span></div>';
+      if (n >= 13) h += '<div class="hd-result-card"><b>620 best matches</b>' +
+        '<p>The Talent Search Agent has analyzed 1,328 profiles and identified the top 620 ' +
+        'matches, ranked for your review.</p>' +
+        '<div class="hd-result-foot"><span>3m11s</span>' +
+        '<span>Restore to this version</span></div></div>';
+      el.chat.insertAdjacentHTML('beforeend', h);
+      if (n === 9 || n === 10) el.composer.insertAdjacentHTML('afterbegin', fileCard(true));
+      if (n === 10) {
+        el.compose.className = 'hd-compose-text';
+        el.compose.textContent = ASK2;
+        root.classList.add('has-compose');
+      }
+      return;
+    }
     beat(7); screen('doc'); chatArtifact(); show(0);
   }
 
@@ -779,7 +1014,7 @@
   /* ?beat=N renders one beat and holds it, so a single moment can be looked
      at or screenshotted without waiting for the loop to come round. It is a
      working tool, not a published state — nothing links to it. */
-  var pinned = (location.search.match(/[?&]beat=(\d)/) || [])[1];
+  var pinned = (location.search.match(/[?&]beat=(\d+)/) || [])[1];
   if (pinned) {
     showBeat(+pinned);
   } else if (reduced) {
