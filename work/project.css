@@ -521,38 +521,37 @@
 }
 .figure-note > .img-block { margin: 0; }
 .figure-note-body {
-  /* The card is .project-link's — 1px of --border at 10px radius. It is the
-     only bordered block on the page, so a second one drawn to different
-     numbers would read as a different kind of thing. */
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1.25rem 1.4rem;
   /* Sticky so the reading stays level with the part of the image you are
      dragging — these sliders are tall and the note would otherwise scroll
      away from the thing it describes. */
   position: sticky;
   top: 5rem;
 }
-.figure-note-body h4 {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: var(--t-label);
-  font-weight: 500;
-  line-height: var(--t-label-lh);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin: 0 0 var(--sp-3);
+.figure-note-body ul {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.figure-note-body ul { margin: 0; padding: 0; list-style: none; }
 .figure-note-body li {
-  /* A step down from body: inside a bordered box this is an aside, and at
-     body size it competes with the section's own copy for the same voice. */
+  /* One card per point rather than one card holding a list: each of these is
+     a separate observation about the same pair of screens, and a shared box
+     asks you to read them as steps.
+
+     The card is .project-link's — 1px of --border at 10px radius. It is the
+     only bordered block on these pages, so a second one drawn to different
+     numbers would read as a different kind of thing.
+
+     Caption size, a step down from body: these are asides, and at body size
+     they speak in the same voice as the section's own paragraphs. */
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
   font-size: var(--t-caption);
   line-height: var(--t-caption-lh);
   color: var(--text-2);
-  margin-bottom: var(--sp-3);
 }
-.figure-note-body li:last-child { margin-bottom: 0; }
 .figure-note-body b { font-weight: 500; color: var(--text); }
 
 /* The floor, not a preference. .detail-scroll keeps its two columns even in
