@@ -522,14 +522,6 @@
   /* Its pale companion — Surface/AI Icon in the same file, the ground the
      product already uses behind that purple. */
   --fn-accent-soft: #ede9ff;
-}
-/* The before column answers in grey. Overriding the two accents on the block
-   rather than restyling the card means the pin and the wire follow without a
-   second set of rules — only one card is ever lit, so this can sit on the
-   root. */
-.figure-note.is-muted {
-  --fn-accent: var(--text-2);
-  --fn-accent-soft: var(--bg-card);
 
   display: grid;
   grid-template-columns:
@@ -543,6 +535,13 @@
      default layout. A media query would stack all five at once or none. */
   container-type: inline-size;
   position: relative;
+}
+/* The before column answers in grey. Overriding the two accents on the block
+   rather than restyling the card means the pin and the wire follow without a
+   second set of rules — only one card is ever lit, so this can sit here. */
+.figure-note.is-muted {
+  --fn-accent: var(--text-2);
+  --fn-accent-soft: var(--bg-card);
 }
 .figure-note > .img-block { margin: 0; }
 .figure-note-body ul {
