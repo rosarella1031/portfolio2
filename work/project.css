@@ -508,8 +508,16 @@
    the room. Reading first, picture second — in the markup as well, so the
    note is what you meet before you look. */
 .figure-note {
+  /* Two dials. --fn-side is the note's share of the pair; it started at
+     .detail-scroll's 0.72 and was pulled in from there, so this no longer
+     matches that section exactly — the note is an aside here, not the
+     argument. --fn-text is the copy size inside the cards. */
+  --fn-side: 0.55fr;   /* fr cannot be used in calc(), so the pair is set */
+  --fn-main: 1.45fr;   /* as two dials — keep them adding to 2 */
+  --fn-text: 0.875rem;
+
   display: grid;
-  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  grid-template-columns: minmax(0, var(--fn-side)) minmax(0, var(--fn-main));
   column-gap: clamp(2rem, 4vw, 4rem);
   align-items: start;
   margin: var(--sp-5) 0;
@@ -547,9 +555,9 @@
      they speak in the same voice as the section's own paragraphs. */
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 1rem 1.15rem;
-  font-size: var(--t-caption);
-  line-height: var(--t-caption-lh);
+  padding: 0.85rem 1rem;
+  font-size: var(--fn-text);
+  line-height: 1.55;
   color: var(--text-2);
 }
 .figure-note-body b { font-weight: 500; color: var(--text); }
