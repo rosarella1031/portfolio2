@@ -712,10 +712,14 @@
     .img-block:has(.mac-window) { overflow: visible; }
 
     .mac-window {
-      --mac-zoom: 0.94;
+      /* The dial. 0.94 was about 60px of growth on a 1116px frame, which is
+         under the threshold where a scroll reads as motion rather than as a
+         reflow. 0.86 is roughly 156px, and the range starts earlier and ends
+         later so more of that travel happens while the frame is on screen. */
+      --mac-zoom: 0.86;
       animation: mac-zoom linear both;
       animation-timeline: view();
-      animation-range: entry 15% cover 40%;
+      animation-range: entry 5% cover 55%;
       will-change: transform;
     }
     @keyframes mac-zoom {
