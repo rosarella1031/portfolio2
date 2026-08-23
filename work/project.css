@@ -528,13 +528,6 @@
   container-type: inline-size;
 }
 .figure-note > .img-block { margin: 0; }
-.figure-note-body {
-  /* Sticky so the reading stays level with the part of the image you are
-     dragging — these sliders are tall and the note would otherwise scroll
-     away from the thing it describes. */
-  position: sticky;
-  top: 5rem;
-}
 .figure-note-body ul {
   display: grid;
   gap: var(--sp-3);
@@ -574,15 +567,13 @@
 @container (max-width: 760px) {
   .figure-note > .img-block,
   .figure-note > .figure-note-body { grid-column: 1 / -1; }
-  .figure-note > .figure-note-body {
-    position: static;
-    margin-bottom: var(--sp-5);
-  }
+  /* only the note, which is now above the picture */
+  .figure-note > .figure-note-body { margin-bottom: var(--sp-5); }
 }
 
 @media (max-width: 900px) {
   .figure-note { grid-template-columns: 1fr; }
-  .figure-note-body { position: static; margin-bottom: var(--sp-4); }
+  .figure-note-body { margin-bottom: var(--sp-4); }
 }
 
 .content-section > *:not(.img-caption) + .img-caption { margin-top: var(--sp-5); }
