@@ -276,6 +276,12 @@
       active.spec.forEach(s => {
         const showing = s.side === 'before' ? s.x < pos : s.x > pos;
         if (!showing) return;
+        // A wire stays on its own side of the picture. A card on the left
+        // reaching a pin at 61% drags a line across most of the artwork and
+        // through everything the other cards point at; the pin still lights,
+        // which is what carries the mapping, and the line is only drawn when
+        // it has a short way to go.
+        if (fromRight ? s.x >= 50 : s.x < 50) return;
         const px = fb.left - nb.left + (s.x / 100) * fb.width;
         const py = fb.top  - nb.top  + (s.y / 100) * fb.height;
         const trim = 15;
