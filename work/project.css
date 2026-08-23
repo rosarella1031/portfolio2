@@ -686,11 +686,8 @@
   overflow: hidden;
   background: var(--mac-chrome);
   border: 1px solid var(--mac-edge);
-  /* Tinted to the frame and kept shallow: a heavy drop shadow on a page this
-     pale reads as a sticker rather than a window. The tight second one holds
-     the edge where the soft one has faded out. */
-  box-shadow: 0 10px 28px -16px rgba(88, 30, 235, 0.22),
-              0 1px 3px rgba(88, 30, 235, 0.06);
+  /* No shadow. The border is doing the work on its own — on a page this pale
+     a drop shadow only reads as a sticker laid on top. */
 }
 .mac-window::before {
   content: '';
