@@ -508,17 +508,18 @@
    the room. Reading first, picture second — in the markup as well, so the
    note is what you meet before you look. */
 .figure-note {
-  /* Two dials. --fn-side is the note's share of the pair; it started at
-     .detail-scroll's 0.72 and was pulled in from there, so this no longer
-     matches that section exactly — the note is an aside here, not the
-     argument. --fn-text is the copy size inside the cards. */
-  --fn-side: 0.55fr;   /* fr cannot be used in calc(), so the pair is set */
-  --fn-main: 1.45fr;   /* as two dials — keep them adding to 2 */
-  --fn-text: 0.875rem;
+  /* Three dials. The picture sits in the middle with half the reading on
+     each side, so --fn-side is used twice and the three have to add to 2.
+     fr cannot go through calc(), which is why they are separate values
+     rather than one subtracted from another. */
+  --fn-side: 0.36fr;
+  --fn-main: 1.28fr;
+  --fn-text: 0.8125rem;
 
   display: grid;
-  grid-template-columns: minmax(0, var(--fn-side)) minmax(0, var(--fn-main));
-  column-gap: clamp(2rem, 4vw, 4rem);
+  grid-template-columns:
+    minmax(0, var(--fn-side)) minmax(0, var(--fn-main)) minmax(0, var(--fn-side));
+  column-gap: clamp(1.25rem, 2.2vw, 2rem);
   align-items: start;
   margin: var(--sp-5) 0;
   /* Whether the note fits beside the figure depends on the column the figure
@@ -542,38 +543,34 @@
 
      The card is .project-link's — 1px of --border at 10px radius. It is the
      only bordered block on these pages, so a second one drawn to different
-     numbers would read as a different kind of thing.
-
-     Caption size, a step down from body: these are asides, and at body size
-     they speak in the same voice as the section's own paragraphs. */
+     numbers would read as a different kind of thing. */
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.9rem;
   font-size: var(--fn-text);
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--text-2);
 }
 .figure-note-body b { font-weight: 500; color: var(--text); }
 
-/* The floor, not a preference. .detail-scroll keeps its two columns even in
-   ?grid, where the artwork comes out at 483px, so matching it means holding
-   the split down to about the same width — 812px of container gives 489.
-   Below 760 the picture would be under 460 and a screenshot of a whole
-   interface stops being readable at all, so the note goes above it.
+/* The floor. Three columns need far more room than two did: at 760 the
+   picture came out at 460 with the note beside it, but with a note on each
+   side the same container leaves it under 400 — too small to read a
+   screenshot of a whole interface, which is all these sliders hold. Below
+   1040 the two notes go back to one block above the picture.
 
-   The children are made to span both tracks rather than the container being
-   given one track: an element is never matched by its own container query,
-   so a rule on .figure-note here would silently do nothing. */
-@container (max-width: 760px) {
+   The children are placed rather than the container being re-templated: an
+   element is never matched by its own container query, so a rule on
+   .figure-note here would silently do nothing. */
+@container (max-width: 1040px) {
   .figure-note > .img-block,
   .figure-note > .figure-note-body { grid-column: 1 / -1; }
-  /* only the note, which is now above the picture */
-  .figure-note > .figure-note-body { margin-bottom: var(--sp-5); }
+  .figure-note > .figure-note-body--left  { order: -1; margin-bottom: var(--sp-4); }
+  .figure-note > .figure-note-body--right { order: 1;  margin-top: var(--sp-4); }
 }
 
 @media (max-width: 900px) {
   .figure-note { grid-template-columns: 1fr; }
-  .figure-note-body { margin-bottom: var(--sp-4); }
 }
 
 .content-section > *:not(.img-caption) + .img-caption { margin-top: var(--sp-5); }
