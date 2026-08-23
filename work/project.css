@@ -670,25 +670,35 @@
    --mac-bar is the only measurement — the frame's padding-top has to match
    it or the recording sits under the bar. */
 .mac-window {
+  /* --mac-bar is the one measurement that matters: the frame's padding-top
+     has to match it or the recording sits under the bar.
+
+     The chrome is in the product's own purple family rather than grey —
+     #EDE9FF is Surface/AI Icon and #DCD3FF the pressed state of its buttons,
+     both already on this page in the hero demo. */
   --mac-bar: 34px;
+  --mac-chrome: #EDE9FF;
+  --mac-edge: #DCD3FF;
+
   position: relative;
   padding-top: var(--mac-bar);
   border-radius: 12px;
   overflow: hidden;
-  background: var(--tag-bg);
-  border: 1px solid var(--border);
-  /* Two shadows: a long soft one to lift the frame off the page, and a tight
-     one so the edge still reads where the long one has faded out. */
-  box-shadow: 0 18px 40px -14px rgba(26, 24, 23, 0.20),
-              0 2px 6px rgba(26, 24, 23, 0.05);
+  background: var(--mac-chrome);
+  border: 1px solid var(--mac-edge);
+  /* Tinted to the frame and kept shallow: a heavy drop shadow on a page this
+     pale reads as a sticker rather than a window. The tight second one holds
+     the edge where the soft one has faded out. */
+  box-shadow: 0 10px 28px -16px rgba(88, 30, 235, 0.22),
+              0 1px 3px rgba(88, 30, 235, 0.06);
 }
 .mac-window::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: var(--mac-bar);
-  background: var(--tag-bg);
-  border-bottom: 1px solid var(--border);
+  background: var(--mac-chrome);
+  border-bottom: 1px solid var(--mac-edge);
 }
 .mac-window::after {
   content: '';
