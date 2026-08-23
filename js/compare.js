@@ -171,9 +171,16 @@
         return { pin, side, x: xy[0], y: xy[1] };
       });
 
+      // The left column reads the before state, which is the half being
+      // replaced. It still answers to a pointer, in grey rather than the
+      // product's purple — the flag goes on the whole block so the card, its
+      // pin and its wire change together.
+      const muted = !!card.closest('.figure-note-body--left');
+
       const on = state => {
         active = state ? { card, spec } : null;
         frame.classList.toggle('has-focus', state);
+        note.classList.toggle('is-muted', state && muted);
         spec.forEach(s => s.pin.classList.toggle('is-on', state));
         draw();
       };

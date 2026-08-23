@@ -522,6 +522,14 @@
   /* Its pale companion — Surface/AI Icon in the same file, the ground the
      product already uses behind that purple. */
   --fn-accent-soft: #ede9ff;
+}
+/* The before column answers in grey. Overriding the two accents on the block
+   rather than restyling the card means the pin and the wire follow without a
+   second set of rules — only one card is ever lit, so this can sit on the
+   root. */
+.figure-note.is-muted {
+  --fn-accent: var(--text-2);
+  --fn-accent-soft: var(--bg-card);
 
   display: grid;
   grid-template-columns:
@@ -1272,6 +1280,10 @@
   stroke-dasharray: 4 4;
   stroke-linecap: round;
 }
+/* White on #581eeb carries; white on the grey does not, so the muted pin
+   keeps dark ink. */
+.figure-note.is-muted .compare-anchor.is-on { color: var(--text); }
+
 @media (prefers-reduced-motion: reduce) {
   .compare-anchor { transition: none; }
   .compare .compare-anchor.is-on { transform: translate(-50%, -50%); }
