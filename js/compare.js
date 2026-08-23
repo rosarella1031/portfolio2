@@ -196,9 +196,8 @@
     const LEAD = 20;     // the number's line, down from the card's top
 
     function place() {
-      const beside = getComputedStyle(note).gridTemplateColumns.split(' ').length > 1
-                     && cards[0].closest('.figure-note-body') !== null
-                     && frame.getBoundingClientRect().width < note.getBoundingClientRect().width - 40;
+      const beside = frame.getBoundingClientRect().width
+                     < note.getBoundingClientRect().width - 40;
       note.classList.toggle('is-aligned', beside);
       if (!beside) {
         cards.forEach(c => { c.style.top = ''; });

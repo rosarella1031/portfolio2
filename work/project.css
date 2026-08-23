@@ -536,6 +536,13 @@
   container-type: inline-size;
   position: relative;
 }
+/* One-sided. Where every place a figure talks about is on the same half of
+   the artwork, a note column on the other side has nothing it is allowed to
+   reach — the profile's before state lives entirely in a drawer at 82%. The
+   picture takes the room the empty column would have wasted. */
+.figure-note--notes-right {
+  grid-template-columns: minmax(0, var(--fn-main)) minmax(0, var(--fn-side));
+}
 .figure-note > .img-block { margin: 0; }
 .figure-note-body ul {
   display: grid;
