@@ -77,6 +77,32 @@
     .item:hover .item-media img,
     .item:hover .item-media video { transform: scale(1.03); }
 
+    /* "Try live" — a label that follows the pointer over just the
+       Interaction Playground preview, mirroring js/hero-label.js on the case
+       study pages. The card is a plain external link now, so without this
+       there is nothing on the still image to say clicking it goes anywhere
+       different from every other card's click-opens-panel behaviour. */
+    .ip-label {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 3;
+      pointer-events: none;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--bg);
+      background: var(--text);
+      padding: 0.35rem 0.55rem;
+      border-radius: 4px;
+      opacity: 0;
+      transform-origin: 0 0;
+      transition: opacity 0.18s ease, visibility 0.18s;
+      visibility: hidden;
+    }
+    .ip-label.is-on { opacity: 1; visibility: visible; }
+
     .item-name {
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
       font-size: 0.875rem;
@@ -499,7 +525,7 @@
       <a class="item" href="https://rosarella1031.github.io/interaction-playground/"
          target="_blank" rel="noopener" data-order="6"
          style="--w: 400px; --ar: 22/15; left: 850px; top: 340px;">
-        <div class="item-media">
+        <div class="item-media" data-ip-preview>
           <img src="assets/interaction-playground-thumb.png" alt="Interaction Playground" loading="lazy" />
         </div>
         <div class="item-name">Interaction Playground</div>
@@ -704,6 +730,35 @@
       openPanel(m[1]);
       history.pushState({ slug: m[1] }, '', '?p=' + m[1]);
     });
+
+    /* "Try live" — follows the pointer over just the Interaction Playground
+       preview (mirrors js/hero-label.js on the case study pages), so the
+       still image says what a click on it actually does: leave the canvas
+       for the tool itself, unlike every other card's click-opens-panel. */
+    (function () {
+      if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      const host = document.querySelector('[data-ip-preview]');
+      if (!host) return;
+
+      const label = document.createElement('div');
+      label.className = 'ip-label';
+      label.setAttribute('aria-hidden', 'true');
+      label.textContent = 'Try live';
+      host.appendChild(label);
+
+      const GAP = 14;
+      host.addEventListener('pointermove', e => {
+        if (e.pointerType !== 'mouse') return;
+        const r = host.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        const w = label.offsetWidth, h = label.offsetHeight;
+        const ox = (x + GAP + w > r.width)  ? -(w + GAP) : GAP;
+        const oy = (y + GAP + h > r.height) ? -(h + GAP) : GAP;
+        label.style.transform = `translate3d(${x + ox}px, ${y + oy}px, 0)`;
+        label.classList.add('is-on');
+      });
+      host.addEventListener('pointerleave', () => label.classList.remove('is-on'));
+    })();
 
     document.getElementById('pClose').addEventListener('click', () => closePanel());
     scrim.addEventListener('click', () => closePanel());
