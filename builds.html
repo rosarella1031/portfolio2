@@ -64,7 +64,6 @@
     .item--hero .item-name { font-size: 0.875rem; }
     .item-media {
       width: 100%;
-      position: relative;   /* the interaction-playground embed crops against this */
       overflow: hidden;
       background: #f3f3f3;
       aspect-ratio: var(--ar, 4/3);
@@ -77,30 +76,6 @@
     }
     .item:hover .item-media img,
     .item:hover .item-media video { transform: scale(1.03); }
-
-    /* One live item — interaction-playground — instead of a recorded clip.
-       The site's own segmented-control demo (.stage 808x757.5 at 1512x900)
-       has the actual component sitting in a lot of empty stage; showing that
-       whole box would mostly be grey. So the iframe is rendered at its
-       natural 1512x900 and only a 440x200 window centred on the control
-       (measured: track at x[551.7,824.3] y[469.5,509]) is left uncropped.
-
-       Both offsets are percentages of the *crop* box, not of the iframe, so
-       they hold at any --w: left/width read against the container's own
-       width, top against its height — and height here comes from
-       aspect-ratio 1512/900 on a percentage width, not a percentage of its
-       own, which is why top and left use different bases below. */
-    .item-embed {
-      position: absolute;
-      left: -106.36%;
-      top: -194.6%;
-      width: 343.64%;
-      aspect-ratio: 1512 / 900;
-    }
-    .item-embed iframe {
-      width: 100%; height: 100%; border: 0; display: block;
-      pointer-events: none;   /* a thumbnail, not a second copy of the tool */
-    }
 
     .item-name {
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -522,12 +497,9 @@
       </a>
 
       <a class="item" href="?p=interaction-playground" data-order="6"
-         style="--w: 400px; --ar: 2.2; left: 1970px; top: 210px;">
-        <div class="item-media item-media--embed">
-          <div class="item-embed">
-            <iframe src="https://rosarella1031.github.io/interaction-playground/"
-                    title="Interaction Playground" tabindex="-1" aria-hidden="true" loading="lazy"></iframe>
-          </div>
+         style="--w: 400px; --ar: 22/15; left: 930px; top: 300px;">
+        <div class="item-media">
+          <img src="assets/interaction-playground-thumb.png" alt="Interaction Playground" loading="lazy" />
         </div>
         <div class="item-name">Interaction Playground</div>
         <div class="item-desc">Tuning motion &mdash; stiffness, damping, spring response.</div>
