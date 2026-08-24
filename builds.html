@@ -450,7 +450,7 @@
     <div class="canvas" id="canvas">
 
       <!-- hero 1 — largest, top-left anchor -->
-      <a class="item item--hero" href="?p=negotiabbles"
+      <a class="item item--hero" href="?p=negotiabbles" data-order="1"
          style="--w: 460px; --ar: 16/10; left: 650px; top: 730px;">
         <div class="item-media">
           <video src="assets/negotiabbles-thumb.webm" autoplay loop muted playsinline></video>
@@ -459,7 +459,7 @@
         <div class="item-desc">iF Design Award winner. Master life's negotiations.</div>
       </a>
 
-      <a class="item" href="?p=pretext-book"
+      <a class="item" href="?p=pretext-book" data-order="3"
          style="--w: 340px; --ar: 4/3; left: 1610px; top: 370px;">
         <div class="item-media">
           <video src="assets/pretext-thumb.webm" autoplay loop muted playsinline></video>
@@ -469,7 +469,7 @@
       </a>
 
       <!-- hero 2 — largest on the right -->
-      <a class="item item--hero" href="?p=hive-ai"
+      <a class="item item--hero" href="?p=hive-ai" data-order="2"
          style="--w: 400px; --ar: 1/1; left: 1340px; top: 840px;">
         <div class="item-media">
           <video src="assets/hive-1.webm" autoplay loop muted playsinline></video>
@@ -478,7 +478,7 @@
         <div class="item-desc">Red Dot winner. Branding, guidelines and motion.</div>
       </a>
 
-      <a class="item" href="?p=heartie"
+      <a class="item" href="?p=heartie" data-order="4"
          style="--w: 340px; --ar: 16/9; left: 400px; top: 220px;">
         <div class="item-media">
           <img src="assets/heartie.gif" alt="Heartie" />
@@ -487,7 +487,7 @@
         <div class="item-desc">Red Dot winner. A companion for kids with heart conditions.</div>
       </a>
 
-      <a class="item" href="?p=chase-against-time"
+      <a class="item" href="?p=chase-against-time" data-order="5"
          style="--w: 330px; --ar: 1/1; left: 440px; top: 1250px;">
         <div class="item-media">
           <video src="assets/race-against-time.webm" autoplay loop muted playsinline></video>
@@ -788,12 +788,19 @@
       if (!miniMenu) return;
       miniMenu.innerHTML = '';
       const items = [...canvas.querySelectorAll('.item')];
-      /* Reading order, not source order: the cards are placed by coordinate
-         and the markup order is whatever the last rearrange left behind. */
+      /* The running order is data-order on the card, not the markup order and
+         not the position on the canvas. Which project to meet first is an
+         editorial call — the coordinates cannot express it, and the source
+         order is whatever the last ?edit rearrange left behind.
+
+         It sits on the card so there is one copy of it, next to the thing it
+         orders. Anything without a data-order sorts after, by position. */
       items
-        .map((it, i) => ({ it, i }))
-        .sort((a, b) => (a.it.offsetTop - b.it.offsetTop) ||
-                        (a.it.offsetLeft - b.it.offsetLeft))
+        .map((it, i) => ({ it, i, k: parseInt(it.dataset.order, 10) }))
+        .sort((a, b) =>
+          (isNaN(a.k) ? Infinity : a.k) - (isNaN(b.k) ? Infinity : b.k) ||
+          (a.it.offsetTop - b.it.offsetTop) ||
+          (a.it.offsetLeft - b.it.offsetLeft))
         .forEach(({ it, i }) => {
           /* Every project is a link into its panel; the intro block is a
              plain div that happens to carry a name. Testing the tag rather
