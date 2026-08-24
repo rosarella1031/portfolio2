@@ -19,22 +19,23 @@ body { background: var(--bg); }
   align-items: start;
 }
 
+/* Identical to .back-link in project.css — the same control the case
+   studies use, just pointed at builds.html instead of index.html. */
 .build-back {
   position: fixed;
-  top: 1.5rem; left: 1.5rem;
-  z-index: 10;
-  display: inline-flex; align-items: center; gap: 0.4rem;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase;
+  top: 2rem; left: 1.75rem;
+  z-index: 45;
+  background: var(--bg);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
   color: var(--text-3);
-  background: rgba(252, 252, 252, 0.85);
-  backdrop-filter: blur(6px);
-  padding: 0.5rem 0.8rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  transition: color 0.2s, border-color 0.2s;
+  border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
 }
-.build-back:hover { color: var(--text); border-color: var(--text-3); }
+.build-back:hover { color: var(--text); border-color: var(--text-3); background: var(--tag-bg); }
+.build-back svg { transition: transform 0.2s; }
+.build-back:hover svg { transform: translateX(-2px); }
 
 /* left = the reading column. Sticky so it holds still while a long gallery
    scrolls past on the right, same job .panel-side did with its own
@@ -45,7 +46,6 @@ body { background: var(--bg); }
   height: 100vh;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-right: 1px solid var(--border);
   padding: 5.5rem 3rem 3rem;
   display: flex;
   flex-direction: column;
@@ -81,11 +81,9 @@ body { background: var(--bg); }
   display: inline-flex; align-items: center; gap: 0.4rem;
   align-self: flex-start;
   font-size: 0.9375rem; color: var(--text);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s;
 }
-.build-link:hover { color: var(--text-2); border-color: var(--text-2); }
+.build-link:hover { color: var(--text-2); }
 
 /* right = the plain image stack. */
 .build-media {
@@ -101,7 +99,6 @@ body { background: var(--bg); }
 
 @media (max-width: 900px) {
   .build-page { display: block; }
-  .build-back { top: 1rem; left: 1rem; }
   .build-side {
     position: static; height: auto; overflow: visible;
     border-right: none; border-bottom: 1px solid var(--border);
