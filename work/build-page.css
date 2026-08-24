@@ -1,0 +1,113 @@
+/* ===== Builds full-page item =====
+
+   Not the case-study shell (project.css) — that stays exactly as it is for
+   Work. This is the builds.html side panel's own layout, at full-page size
+   rather than an 80vw drawer: a fixed reading column on the left, a plain
+   stack of images on the right. Same two-part shape, same type choices
+   (panel-label / panel-title / panel-desc in builds.html), just no longer
+   fighting a 340px sidebar for room.
+
+   Shared across whichever Builds items get a full page rather than staying
+   in the drawer — not written just for Negotiabbles. */
+
+body { background: var(--bg); }
+
+.build-page {
+  display: grid;
+  grid-template-columns: 480px 1fr;
+  min-height: 100vh;
+  align-items: start;
+}
+
+.build-back {
+  position: fixed;
+  top: 1.5rem; left: 1.5rem;
+  z-index: 10;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text-3);
+  background: rgba(252, 252, 252, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.build-back:hover { color: var(--text); border-color: var(--text-3); }
+
+/* left = the reading column. Sticky so it holds still while a long gallery
+   scrolls past on the right, same job .panel-side did with its own
+   independent scrollbar — here it just uses the page's. */
+.build-side {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--border);
+  padding: 5.5rem 3rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.build-label {
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+  font-size: 0.8125rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.build-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.5rem; font-weight: 400; line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+.build-desc {
+  font-size: 1.0625rem; line-height: 1.65; color: #5A5A5A;
+  max-width: 34ch;
+}
+.build-desc p { margin: 0 0 1.1em; }
+.build-desc p:last-child { margin-bottom: 0; }
+.build-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.build-tags span {
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
+  font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text-3); border: 1px solid var(--border);
+  padding: 0.22rem 0.55rem; white-space: nowrap;
+}
+.build-spacer { flex: 1; }
+.build-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  align-self: flex-start;
+  font-size: 0.9375rem; color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.build-link:hover { color: var(--text-2); border-color: var(--text-2); }
+
+/* right = the plain image stack. */
+.build-media {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 3rem;
+}
+.build-media img,
+.build-media video {
+  width: 100%; display: block; background: var(--tag-bg);
+}
+
+@media (max-width: 900px) {
+  .build-page { display: block; }
+  .build-back { top: 1rem; left: 1rem; }
+  .build-side {
+    position: static; height: auto; overflow: visible;
+    border-right: none; border-bottom: 1px solid var(--border);
+    padding: 4.5rem 1.25rem 2rem;
+  }
+  .build-title { font-size: 1.85rem; }
+  .build-desc { max-width: none; }
+  .build-media { padding: 1.25rem; gap: 1rem; }
+}
