@@ -122,47 +122,59 @@
     /* ===== minimap contents =====
        The map shows where things are but not what they are — the dots carry
        no names. Hovering opens the list; picking a row flies the canvas to
-       that card. Anchored to the map's bottom-right and growing upward, so
-       it opens into the page rather than off the corner it sits in. */
+       that card.
+
+       Drawn as the case studies' contents rail: the same mono at 0.75rem,
+       uppercase, 0.06em, --text-2 going to --text on hover over --tag-bg,
+       and the same 14px panel with its hairline and long shadow. The rail
+       animates a tick open into a label because it lives in a 76px margin;
+       here the panel is already the width of its names, so the rows are the
+       rail's open state and nothing has to grow. */
     .minimap-menu {
       position: absolute;
       right: -1px; bottom: 100%;
       margin-bottom: 8px;
-      min-width: 190px;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
       padding: 0.35rem;
-      background: rgba(252,252,252,0.96);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 14px;
+      background: var(--bg);
+      box-shadow: 0 0 0 1px rgba(0,0,0,.05), 0 12px 32px rgba(90,70,45,.10);
       opacity: 0;
       visibility: hidden;
       transform: translateY(4px);
-      transition: opacity .16s ease, transform .16s ease, visibility .16s;
+      transition: opacity .22s, transform .28s cubic-bezier(.33,1,.68,1), visibility .22s;
     }
     .minimap:hover .minimap-menu,
     .minimap:focus-within .minimap-menu {
       opacity: 1; visibility: visible; transform: none;
     }
     .minimap-row {
-      display: flex; align-items: baseline; gap: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0;
       width: 100%;
       appearance: none; border: 0; background: none;
-      padding: 0.35rem 0.5rem;
-      border-radius: 5px;
-      font-family: 'IBM Plex Sans', system-ui, sans-serif;
-      font-size: 0.8125rem;
-      color: var(--text);
+      padding: 0.3rem 0.5rem;
+      border-radius: 8px;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-2);
       text-align: left;
+      white-space: nowrap;
       cursor: pointer;
-      transition: background .15s;
+      transition: background .2s, color .2s;
     }
     .minimap-row:hover,
-    .minimap-row:focus-visible { background: var(--tag-bg); outline: none; }
-    .minimap-row span {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6875rem;
-      color: var(--text-3);
+    .minimap-row:focus-visible {
+      background: var(--tag-bg);
+      color: var(--text);
+      outline: none;
     }
     /* The dot for whichever row is under the pointer. */
     .minimap-dot.is-lit {
@@ -783,13 +795,17 @@
         .sort((a, b) => (a.it.offsetTop - b.it.offsetTop) ||
                         (a.it.offsetLeft - b.it.offsetLeft))
         .forEach(({ it, i }) => {
+          /* Every project is a link into its panel; the intro block is a
+             plain div that happens to carry a name. Testing the tag rather
+             than the .item--note class means a second note added later is
+             left out too, without anyone having to remember the class. */
+          if (it.tagName !== 'A') return;
           const name = it.querySelector('.item-name');
-          if (!name) return;                       // the intro block is not a project
+          if (!name) return;
           const row = document.createElement('button');
           row.type = 'button';
           row.className = 'minimap-row';
-          row.innerHTML = name.textContent.trim() +
-            '<span>' + (it.dataset.label || '') + '</span>';
+          row.textContent = name.textContent.trim();
           row.addEventListener('click', () => centerOn(it));
           /* Lighting the dot while a row is hovered is what ties the name to
              the place — without it the list is just a menu beside a map. */
