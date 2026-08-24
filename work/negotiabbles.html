@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Negotiabbles — Xuefei Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <!-- Safari ignores SVG icons; same glyph, rasterised. -->
+  <link rel="icon" href="../assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="project.css" />
+  <link rel="stylesheet" href="project-split.css" id="split-sheet" />
+</head>
+<body>
+
+  <div class="page-body">
+
+    <aside class="sidebar">
+      <a href="../builds.html" class="back-link" aria-label="Back to builds">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M12 8H4M4 8L8 4M4 8L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <div class="sidebar-meta">
+        <div class="sidebar-label">Awards</div>
+        <div class="sidebar-project-name">Negotiabbles</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#overview" class="nav-item active">
+          <span class="sidebar-dot"></span><span class="sidebar-text">OVERVIEW</span>
+        </a>
+        <a href="#gallery" class="nav-item">
+          <span class="sidebar-dot"></span><span class="sidebar-text">GALLERY</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="content">
+
+      <div class="content-header">
+        <div class="content-header-top">
+          <h1 class="project-title" data-e="1">Negotiabbles</h1>
+          <div class="content-header-tags">
+            <span class="pill">iF Design Award Gold</span>
+          </div>
+        </div>
+        <p class="project-summary" data-e="2">A playful negotiation learning experience for kids.</p>
+      </div>
+
+      <div class="hero-image"><img src="../assets/negotiabbles-cover.png" alt="Negotiabbles cover art" /></div>
+
+      <section id="overview" class="content-section">
+        <div class="section-label">Overview</div>
+        <h2 class="section-title" data-e="3">Turning everyday conflicts into a game kids want to play.</h2>
+        <p data-e="4">Negotiabbles makes negotiation education more approachable for kids by turning everyday conflicts into playful, story-driven role-play. Through expressive characters, interactive choices, and real-time feedback, students can practice perspective-taking, communication, and decision-making in a safe environment before applying those skills in real life.</p>
+        <p data-e="5">I led the team from problem framing to the final experience, shaping the core idea, interaction, visual direction, and how the whole world of Negotiabbles came together.</p>
+        <a class="project-link" href="https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529" target="_blank" rel="noopener">
+          View on iF Design <span>↗</span>
+        </a>
+      </section>
+
+      <section id="gallery" class="content-section">
+        <div class="section-label">Gallery</div>
+        <h2 class="section-title" data-e="6">The world, the characters, and the research behind them.</h2>
+        <div class="img-row">
+          <div class="img-block"><img src="../assets/negotiabbles-1.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+          <div class="img-block"><img src="../assets/negotiabbles-2.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+        </div>
+        <div class="img-row">
+          <div class="img-block"><img src="../assets/negotiabbles-3.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+          <div class="img-block"><img src="../assets/negotiabbles-4.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+        </div>
+        <div class="img-row">
+          <div class="img-block"><img src="../assets/negotiabbles-5.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+          <div class="img-block"><img src="../assets/negotiabbles-6.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+        </div>
+        <div class="img-row">
+          <div class="img-block"><img src="../assets/negotiabbles-7.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+          <div class="img-block"><img src="../assets/negotiabbles-8.png" alt="Negotiabbles — screen" loading="lazy" /></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <span class="footer-copy">© Xuefei Wang 2026. All rights reserved.</span>
+    <nav class="footer-nav">
+      <a href="../index.html">Work</a>
+      <a href="../builds.html">Builds</a>
+      <a href="../about.html">About</a>
+    </nav>
+  </footer>
+
+  <script src="project.js"></script>
+  <script src="../js/edit-prose.js" defer></script>
+  <script>
+  /* toc-open: hover opens the contents rail on a mouse, but a touch screen has
+     no hover — tapping the ticks has to work too. */
+  (function () {
+    const rail = document.querySelector('.sidebar');
+    if (!rail) return;
+    rail.addEventListener('click', e => {
+      if (e.target.closest('.nav-item')) { rail.classList.remove('is-open'); return; }
+      e.stopPropagation();
+      rail.classList.toggle('is-open');
+    });
+    addEventListener('click', () => rail.classList.remove('is-open'));
+    addEventListener('keydown', e => { if (e.key === 'Escape') rail.classList.remove('is-open'); });
+  })();
+  </script>
+  <script src="../js/reveal.js" defer></script>
+</body>
+</html>
