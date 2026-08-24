@@ -344,6 +344,12 @@
     .panel-desc {
       font-size: 1rem; line-height: 1.6; color: #767676;
     }
+    /* Most entries are one line; Negotiabbles' is two paragraphs — role and
+       result kept apart rather than run together. Margin instead of gap
+       because .panel-desc is one flex child among several in .panel-side,
+       not itself a flex container. */
+    .panel-desc p { margin: 0 0 1em; }
+    .panel-desc p:last-child { margin-bottom: 0; }
     .panel-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
     .panel-tags span {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
@@ -556,7 +562,7 @@
         <div class="panel-label" id="pLabel"></div>
         <h2 class="panel-title" id="pTitle"></h2>
       </div>
-      <p class="panel-desc" id="pDesc"></p>
+      <div class="panel-desc" id="pDesc"></div>
       <div class="panel-tags" id="pTags"></div>
       <div class="panel-spacer"></div>
       <div class="panel-links">
@@ -604,6 +610,10 @@
     const BUILDS = {
       'negotiabbles': {
         label: 'Awards', tags: [],
+        desc: [
+          'Negotiabbles makes negotiation education more approachable for kids by turning everyday conflicts into playful, story-driven role-play. Through expressive characters, interactive choices, and real-time feedback, students can practice perspective-taking, communication, and decision-making in a safe environment before applying those skills in real life.',
+          'I led the team from problem framing to the final experience, shaping the core idea, interaction, visual direction, and how the whole world of Negotiabbles came together.'
+        ],
         link: 'https://ifdesign.com/en/winner-ranking/project/negotiabbles-master-lifes-negotiations/741529',
         linkText: 'View on iF Design',
         media: ['negotiabbles-cover.png','negotiabbles-1.png','negotiabbles-2.png','negotiabbles-3.png',
@@ -669,7 +679,9 @@
       const card = document.querySelector('.item[href*="' + slug + '"]');
       document.getElementById('pLabel').textContent = d.label;
       document.getElementById('pTitle').textContent = card.querySelector('.item-name').textContent;
-      document.getElementById('pDesc').textContent = d.desc || card.querySelector('.item-desc').textContent;
+      const descParas = Array.isArray(d.desc) ? d.desc
+        : [d.desc || card.querySelector('.item-desc').textContent];
+      document.getElementById('pDesc').innerHTML = descParas.map(t => `<p>${t}</p>`).join('');
       document.getElementById('pTags').innerHTML =
         (d.tags || []).map(t => `<span>${t}</span>`).join('');
 
