@@ -104,7 +104,8 @@
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.7);
       z-index: 350;
-      pointer-events: none;
+      /* Was pointer-events: none. It has to take a hover now; the pointerdown
+         handler below stops the press reaching the viewport's drag. */
     }
     .minimap-dot {
       position: absolute;
@@ -116,6 +117,58 @@
       position: absolute;
       border: 1px solid var(--text);
       background: rgba(26,24,23,0.06);
+    }
+
+    /* ===== minimap contents =====
+       The map shows where things are but not what they are — the dots carry
+       no names. Hovering opens the list; picking a row flies the canvas to
+       that card. Anchored to the map's bottom-right and growing upward, so
+       it opens into the page rather than off the corner it sits in. */
+    .minimap-menu {
+      position: absolute;
+      right: -1px; bottom: 100%;
+      margin-bottom: 8px;
+      min-width: 190px;
+      padding: 0.35rem;
+      background: rgba(252,252,252,0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(4px);
+      transition: opacity .16s ease, transform .16s ease, visibility .16s;
+    }
+    .minimap:hover .minimap-menu,
+    .minimap:focus-within .minimap-menu {
+      opacity: 1; visibility: visible; transform: none;
+    }
+    .minimap-row {
+      display: flex; align-items: baseline; gap: 0.5rem;
+      width: 100%;
+      appearance: none; border: 0; background: none;
+      padding: 0.35rem 0.5rem;
+      border-radius: 5px;
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      font-size: 0.8125rem;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .minimap-row:hover,
+    .minimap-row:focus-visible { background: var(--tag-bg); outline: none; }
+    .minimap-row span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--text-3);
+    }
+    /* The dot for whichever row is under the pointer. */
+    .minimap-dot.is-lit {
+      width: 6px; height: 6px;
+      background: var(--text);
+      border-radius: 50%;
     }
 
     .canvas-hint {
@@ -461,7 +514,7 @@
     <div class="panel-body" id="pBody"></div>
   </aside>
 
-  <div class="minimap" id="minimap"><div class="minimap-view" id="minimapView"></div></div>
+  <div class="minimap" id="minimap"><div class="minimap-view" id="minimapView"></div><div class="minimap-menu" id="minimapMenu"></div></div>
 
   <div class="edit-panel" id="editPanel">
     <div class="edit-panel-head">
@@ -679,17 +732,81 @@
       }
     }
 
+    const miniMenu = document.getElementById('minimapMenu');
+    let miniDots = [];
+
     function buildMinimap() {
       mini.querySelectorAll('.minimap-dot').forEach(d => d.remove());
       const sx = mini.clientWidth / CW, sy = mini.clientHeight / CH;
+      miniDots = [];
       canvas.querySelectorAll('.item').forEach(it => {
         const d = document.createElement('div');
         d.className = 'minimap-dot';
         d.style.left = ((it.offsetLeft + it.offsetWidth / 2) * sx) + 'px';
         d.style.top  = ((it.offsetTop + it.offsetHeight / 2) * sy) + 'px';
         mini.appendChild(d);
+        miniDots.push(d);
       });
+      buildMinimapMenu();
     }
+
+    /* Put a card in the middle of the viewport. The world does not wrap, so a
+       card near an edge cannot actually reach the centre — clamp() stops the
+       canvas short and the card lands as close as the edge allows, which is
+       the same rule every other pan obeys. */
+    function centerOn(it) {
+      /* Shift by the gap between where the card is and where the middle is,
+         rather than computing an absolute pan from offsetLeft/offsetTop. The
+         canvas does not start at the viewport's origin — deriving the pan
+         from offsets left every card 28px high, and a delta cannot be wrong
+         about an offset it never reads. */
+      const vb = vp.getBoundingClientRect();
+      const r  = it.getBoundingClientRect();
+      x += (vb.left + vb.width  / 2) - (r.left + r.width  / 2);
+      y += (vb.top  + vb.height / 2) - (r.top  + r.height / 2);
+      clamp();
+      canvas.classList.add('glide');
+      apply();
+    }
+
+    /* Built from the cards themselves rather than from a list written out
+       here — the canvas has been rearranged by hand several times through
+       ?edit, and a second copy of the running order would go stale. */
+    function buildMinimapMenu() {
+      if (!miniMenu) return;
+      miniMenu.innerHTML = '';
+      const items = [...canvas.querySelectorAll('.item')];
+      /* Reading order, not source order: the cards are placed by coordinate
+         and the markup order is whatever the last rearrange left behind. */
+      items
+        .map((it, i) => ({ it, i }))
+        .sort((a, b) => (a.it.offsetTop - b.it.offsetTop) ||
+                        (a.it.offsetLeft - b.it.offsetLeft))
+        .forEach(({ it, i }) => {
+          const name = it.querySelector('.item-name');
+          if (!name) return;                       // the intro block is not a project
+          const row = document.createElement('button');
+          row.type = 'button';
+          row.className = 'minimap-row';
+          row.innerHTML = name.textContent.trim() +
+            '<span>' + (it.dataset.label || '') + '</span>';
+          row.addEventListener('click', () => centerOn(it));
+          /* Lighting the dot while a row is hovered is what ties the name to
+             the place — without it the list is just a menu beside a map. */
+          row.addEventListener('pointerenter', () => {
+            if (miniDots[i]) miniDots[i].classList.add('is-lit');
+          });
+          row.addEventListener('pointerleave', () => {
+            if (miniDots[i]) miniDots[i].classList.remove('is-lit');
+          });
+          miniMenu.appendChild(row);
+        });
+    }
+
+    /* The viewport starts a drag on pointerdown anywhere, and the map sits on
+       top of it. Without this, opening the menu grabs the canvas and the
+       whole world slides out from under the pointer. */
+    mini.addEventListener('pointerdown', e => e.stopPropagation());
 
     // ---- scroll pans both axes ----
     vp.addEventListener('wheel', e => {
