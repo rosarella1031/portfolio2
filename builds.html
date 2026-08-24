@@ -64,6 +64,7 @@
     .item--hero .item-name { font-size: 0.875rem; }
     .item-media {
       width: 100%;
+      position: relative;   /* the interaction-playground live swap positions against this */
       overflow: hidden;
       background: #f3f3f3;
       aspect-ratio: var(--ar, 4/3);
@@ -76,6 +77,26 @@
     }
     .item:hover .item-media img,
     .item:hover .item-media video { transform: scale(1.03); }
+
+    /* interaction-playground swaps its still thumbnail for the live tool on
+       click, rather than embedding it live from the start — the app has no
+       way to be told "render light", so it always follows the visitor's own
+       prefers-color-scheme, and a passive background thumbnail going dark on
+       a light page reads as broken. An active choice to click into it reads
+       differently, so the swap happens there instead of on load.
+
+       Same crop the thumbnail was captured at (see ip-thumb generation):
+       source 1512x900, a 440x300 window centred on the control. Left/width
+       read against .item-media's width, top against its height — different
+       bases, which is why the two percentages don't share a formula. */
+    .item-embed {
+      position: absolute;
+      left: -106.3636%;
+      top: -113.0833%;
+      width: 343.6364%;
+      aspect-ratio: 1512 / 900;
+    }
+    .item-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
 
     .item-name {
       font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
@@ -498,7 +519,7 @@
 
       <a class="item" href="?p=interaction-playground" data-order="6"
          style="--w: 400px; --ar: 22/15; left: 850px; top: 340px;">
-        <div class="item-media">
+        <div class="item-media" data-ip-preview>
           <img src="assets/interaction-playground-thumb.png" alt="Interaction Playground" loading="lazy" />
         </div>
         <div class="item-name">Interaction Playground</div>
@@ -703,6 +724,32 @@
       openPanel(m[1]);
       history.pushState({ slug: m[1] }, '', '?p=' + m[1]);
     });
+
+    /* interaction-playground: the preview itself is live, not just a link to
+       it. First click swaps the still image for the actual tool — same crop,
+       same position — so the segmented control responds for real (its own
+       spring, its own selection) instead of only opening the panel. The swap
+       eats that one click (stopPropagation keeps it from reaching the
+       delegate above and opening the panel instead); everything after lands
+       on the iframe directly, which is why there is no second branch here —
+       once it exists it simply receives events like any other live page.
+       Clicking the card outside the preview — name, description, margin —
+       still opens the panel, same as every other item. */
+    (function () {
+      const media = document.querySelector('[data-ip-preview]');
+      if (!media) return;
+      media.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const wrap = document.createElement('div');
+        wrap.className = 'item-embed';
+        const f = document.createElement('iframe');
+        f.src = 'https://rosarella1031.github.io/interaction-playground/';
+        f.title = 'Interaction Playground — live';
+        wrap.appendChild(f);
+        media.appendChild(wrap);
+      }, { once: true });
+    })();
 
     document.getElementById('pClose').addEventListener('click', () => closePanel());
     scrim.addEventListener('click', () => closePanel());
