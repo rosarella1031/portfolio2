@@ -23,7 +23,10 @@ body { background: var(--bg); }
    studies use, just pointed at builds.html instead of index.html. */
 .build-back {
   position: fixed;
-  top: 2rem; left: 1.75rem;
+  /* left matches .build-side's own padding-left, not .back-link's 1.75rem —
+     that value was tuned to a different page's edge and left this one
+     hanging further out than the text it sits above. */
+  top: 2rem; left: 3rem;
   z-index: 45;
   background: var(--bg);
   display: inline-flex; align-items: center; justify-content: center;
@@ -99,9 +102,9 @@ body { background: var(--bg); }
 
 @media (max-width: 900px) {
   .build-page { display: block; }
+  .build-back { left: 1.25rem; }
   .build-side {
     position: static; height: auto; overflow: visible;
-    border-right: none; border-bottom: 1px solid var(--border);
     padding: 4.5rem 1.25rem 2rem;
   }
   .build-title { font-size: 1.85rem; }
