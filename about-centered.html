@@ -44,6 +44,14 @@
       gap: 2.75rem;
     }
 
+    /* Wrapping these two for the reveal (they arrive as one unit) pulled
+       them out of .about-col's own 2.75rem gap, which was doing double duty
+       as both "between sections" and "label to headline" spacing. Give the
+       pair its own tight rhythm instead — label sits right under its
+       headline everywhere else on the site (build-page.css's
+       .build-label + .build-title is the same 0.5-0.6rem). */
+    .about-intro { display: flex; flex-direction: column; gap: 0.6rem; }
+
     .about-eyebrow {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
       font-size: 0.8125rem;
@@ -119,17 +127,60 @@
        "little delightful interaction" is a line straight out of the bio
        copy itself. Hidden below 1180px, where there is no longer margin to
        hold them without crowding the text. */
+    /* ===== Reveal on scroll =====
+       Same recipe as the case-study pages (work/project.css's .reveal /
+       .reveal.visible / @keyframes reveal-in) — copied rather than linked,
+       since this page doesn't otherwise load project.css and one keyframe
+       doesn't earn a shared stylesheet. Grouped blocks arrive as a unit;
+       running paragraphs are left alone, same reasoning as js/reveal.js:
+       text fading in while you're mid-sentence reading it is irritating,
+       a photo or a card arriving is not. */
+    .reveal { opacity: 0; }
+    .reveal.visible {
+      animation: reveal-in 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+    }
+    @keyframes reveal-in {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; }
+      .reveal.visible { animation: none; }
+      .about-artifact { transition: none !important; }
+    }
+
     .about-frame { position: relative; }
+    /* Split outer/inner, the same reason the hero demo's chat panel is: the
+       outer element carries --drift, written every animation frame while
+       scrolling, and it needs no transition of its own — that value is
+       already as smooth as the scroll it tracks. The inner element carries
+       the hover tilt/lift, a discrete state change that DOES want to ease.
+       One transform property serving both would put the per-frame drift
+       through a 0.35s easing curve meant for the hover instead, and the
+       artifact would lag and rubber-band behind the pointer's own scroll. */
     .about-artifact {
       position: absolute;
       width: var(--w, 148px);
+      transform: translate3d(0, var(--drift, 0px), 0);
+    }
+    /* A third layer, not two: .reveal's entrance animation ends by setting
+       transform: none (see @keyframes reveal-in below), which — at equal
+       specificity, animation beats the static rule — would permanently wipe
+       out whichever resting transform sat on the same element once the
+       animation finished. The drift layer and the hover-tilt layer both
+       need their own resting transform to survive that, so the entrance
+       animation gets a middle layer that owns nothing else. */
+    .about-artifact-reveal { display: block; }
+    .about-artifact-in {
       filter: drop-shadow(0 14px 26px rgba(26, 24, 23, 0.10));
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       transform: rotate(var(--r, 0deg));
       will-change: transform;
     }
-    .about-artifact img { width: 100%; display: block; }
-    .about-artifact:hover { transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04); }
+    .about-artifact-in img { width: 100%; display: block; }
+    .about-artifact:hover .about-artifact-in {
+      transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04);
+    }
 
     .about-artifact--1 { --w: 172px; --r: -7deg; top: 2rem;    left: calc(50% - 33rem); }
     .about-artifact--2 { --w: 140px; --r: 6deg;  top: 27rem;   right: calc(50% - 29.5rem); }
@@ -192,21 +243,23 @@
   <main>
     <div class="about-frame">
 
-      <div class="about-artifact about-artifact--1"><img src="assets/about1.png" alt="" /></div>
-      <div class="about-artifact about-artifact--2"><img src="assets/snail.png" alt="" /></div>
-      <div class="about-artifact about-artifact--3"><img src="assets/about2.png" alt="" /></div>
+      <div class="about-artifact about-artifact--1"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
+      <div class="about-artifact about-artifact--2"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
+      <div class="about-artifact about-artifact--3"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
 
       <div class="about-col">
-        <div class="about-eyebrow">About</div>
-        <p class="about-lede">Hi, I'm Faye &mdash; a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
+        <div class="about-intro reveal">
+          <div class="about-eyebrow">About</div>
+          <p class="about-lede">Hi, I'm Faye &mdash; a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
+        </div>
 
-        <div class="about-section">
+        <div class="about-section reveal">
           <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
           <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
           <p>Currently based in New York.</p>
         </div>
 
-        <div class="about-section">
+        <div class="about-section reveal">
           <p><strong>Outside of design, I'm usually:</strong></p>
           <ul class="about-bio-list">
             <li>listening to music and playing drums</li>
@@ -217,7 +270,7 @@
           <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
         </div>
 
-        <div class="about-links">
+        <div class="about-links reveal">
           <a href="mailto:xuefeiw1031@gmail.com" class="about-link">xuefeiw1031@gmail.com <span>&#8599;</span></a>
           <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" class="about-link">LinkedIn <span>&#8599;</span></a>
         </div>
@@ -226,5 +279,89 @@
     </div>
   </main>
 
+  <script>
+  /* ===== Reveal + parallax =====
+
+     Reveal: the same dual-trigger recipe as js/reveal.js (scroll event plus
+     a 200ms poll, IntersectionObserver skipped on purpose — it silently does
+     nothing in some embedded viewers, and a page of blocks stuck at
+     opacity:0 is the worst failure mode this page has). Siblings inside one
+     block stagger by 80ms, same as the case studies, so the three artifacts
+     and the intro/section blocks arrive as a loose cascade rather than one
+     flat pop.
+
+     Parallax: the artifacts drift at a slower rate than the page scrolls —
+     each keeps its own CSS custom property, --drift, read only by the outer
+     .about-artifact element's own transform (see the three-layer split in
+     the <style> above) — so a hover mid-scroll composes with the drift
+     rather than one clobbering the other. Off under reduced motion and
+     below 1181px, where the artifacts are not rendered at all. */
+  (function () {
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var blocks = [].slice.call(document.querySelectorAll('.reveal'));
+
+    function showAll() { blocks.forEach(function (el) { el.classList.add('visible'); }); }
+
+    if (reduced || !blocks.length) { showAll(); }
+    else {
+      var seen = new Map();
+      blocks.forEach(function (el) {
+        var n = seen.get(el.parentElement) || 0;
+        el.style.animationDelay = Math.min(n, 3) * 0.08 + 's';
+        seen.set(el.parentElement, n + 1);
+      });
+
+      var pending = blocks.slice();
+      function check() {
+        var limit = innerHeight * 0.92;
+        pending = pending.filter(function (el) {
+          if (el.getBoundingClientRect().top > limit) return true;
+          el.classList.add('visible');
+          return false;
+        });
+        return pending.length;
+      }
+
+      var ticks = 0;
+      var tick = setInterval(function () { ticks++; if (!check()) stop(); }, 200);
+      function onScroll() { if (!check()) stop(); }
+      function stop() {
+        clearInterval(tick);
+        removeEventListener('scroll', onScroll);
+        removeEventListener('resize', onScroll);
+      }
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll);
+      check();
+      setTimeout(function () { if (!ticks) showAll(); }, 3000);
+    }
+
+    // ---- parallax ----
+    if (reduced) return;
+    var artifacts = [].slice.call(document.querySelectorAll('.about-artifact'));
+    if (!artifacts.length) return;
+    var WIDE = matchMedia('(min-width: 1181px)');
+    var raf = null;
+
+    /* Each artifact drifts against how far its own centre has travelled from
+       the viewport's centre, not against raw scrollY — so the amount of
+       parallax is the same whether the artifact starts the page near the top
+       or three screens down, rather than growing with scroll distance. */
+    function paint() {
+      raf = null;
+      if (!WIDE.matches) return;
+      artifacts.forEach(function (el, i) {
+        var r = el.getBoundingClientRect();
+        var from = (r.top + r.height / 2) - innerHeight / 2;
+        var rate = 0.06 + (i % 2) * 0.03;         // alternating so they don't drift in lockstep
+        el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
+      });
+    }
+    function queue() { if (raf === null) raf = requestAnimationFrame(paint); }
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    queue();
+  })();
+  </script>
 </body>
 </html>
