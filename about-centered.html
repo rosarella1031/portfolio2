@@ -68,13 +68,43 @@
       max-width: 30rem;
     }
 
-    .about-section { display: flex; flex-direction: column; gap: 1.1rem; }
-    .about-section p {
+    /* ===== Beats =====
+       One paragraph, one scroll moment — fiveyears.portorocha.com's own
+       numbered-chapter rhythm (a number, a short headline, one paragraph,
+       room, the next). The old .about-section held two or three paragraphs
+       under one heading; that read as a card, not a chapter, and only two
+       of them was nowhere near enough of a scroll to feel like the
+       reference. .about-beats is a plain wrapper, not itself a .reveal — the
+       gap between beats is deliberately wider than .about-col's own 2.75rem,
+       so each one gets its own breathing room rather than reading as part of
+       the same run as the intro or the links row. */
+    .about-beats { display: flex; flex-direction: column; gap: 4.5rem; }
+    .about-beat { display: flex; flex-direction: column; gap: 0.9rem; }
+    .about-beat-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.375rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .about-beat-num {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-3);
+    }
+    .about-beat p {
       font-size: 1.0625rem;
       line-height: 1.7;
       color: var(--text-2);
+      margin: 0;
     }
-    .about-section p strong { color: var(--text); font-weight: 500; }
+    .about-beat p strong { color: var(--text); font-weight: 500; }
+    /* Structure ahead of copy — same convention as the Design Details panels
+       on the case studies: marked, not disguised as real. */
+    .about-beat--placeholder p { color: var(--text-3); font-style: italic; }
 
     .about-bio-list {
       margin: 0;
@@ -253,21 +283,46 @@
           <p class="about-lede">Hi, I'm Faye &mdash; a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
         </div>
 
-        <div class="about-section reveal">
-          <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
-          <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
-          <p>Currently based in New York.</p>
-        </div>
+        <div class="about-beats">
 
-        <div class="about-section reveal">
-          <p><strong>Outside of design, I'm usually:</strong></p>
-          <ul class="about-bio-list">
-            <li>listening to music and playing drums</li>
-            <li>playing games and overthinking their systems and interactions</li>
-            <li>making something delicious in the kitchen</li>
-            <li>playing with my cat</li>
-          </ul>
-          <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+          <div class="about-beat reveal">
+            <div class="about-beat-head"><span class="about-beat-num">01</span> Background</div>
+            <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-head"><span class="about-beat-num">02</span> What I care about</div>
+            <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-head"><span class="about-beat-num">03</span> Where I am</div>
+            <p>Currently based in New York.</p>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-head"><span class="about-beat-num">04</span> Outside of design</div>
+            <ul class="about-bio-list">
+              <li>listening to music and playing drums</li>
+              <li>playing games and overthinking their systems and interactions</li>
+              <li>making something delicious in the kitchen</li>
+              <li>playing with my cat</li>
+            </ul>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-head"><span class="about-beat-num">05</span> Let's talk</div>
+            <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+          </div>
+
+          <!-- Placeholder — a sixth beat so the page reads at something closer
+               to the reference's chapter count. Replace with real copy (or
+               delete the beat) once there's something to say here. -->
+          <div class="about-beat about-beat--placeholder reveal">
+            <div class="about-beat-head"><span class="about-beat-num">06</span> What's next</div>
+            <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
+          </div>
+
         </div>
 
         <div class="about-links reveal">
