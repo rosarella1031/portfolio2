@@ -78,8 +78,24 @@
        gap between beats is deliberately wider than .about-col's own 2.75rem,
        so each one gets its own breathing room rather than reading as part of
        the same run as the intro or the links row. */
-    .about-beats { display: flex; flex-direction: column; gap: 4.5rem; }
-    .about-beat { display: flex; flex-direction: column; gap: 0.9rem; }
+    /* Measured off the reference rather than guessed: every one of its five
+       numbered chapters is exactly one viewport tall (getBoundingClientRect
+       height === innerHeight, confirmed on all five), content centred inside
+       that height with flex. That sizing is the whole mechanism — there is
+       no scroll-snap, no pinning, no JS swapping one block for the next
+       (checked: scroll-snap-type is 'none' on html and body, and a chapter's
+       opacity, once set, never reverts as it scrolls past — it is a normal,
+       very tall, continuously-scrolling page). A block that fills the screen
+       is what makes scrolling feel like moving from one chapter to the next,
+       not a mechanism swapping them. */
+    .about-beats { display: flex; flex-direction: column; }
+    .about-beat {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.9rem;
+    }
     .about-beat-head {
       display: flex;
       align-items: baseline;
@@ -212,9 +228,16 @@
       transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04);
     }
 
-    .about-artifact--1 { --w: 172px; --r: -7deg; top: 2rem;    left: calc(50% - 33rem); }
-    .about-artifact--2 { --w: 140px; --r: 6deg;  top: 27rem;   right: calc(50% - 29.5rem); }
-    .about-artifact--3 { --w: 108px; --r: -4deg; top: 52rem;   left: calc(50% - 27.5rem); }
+    /* Redistributed once the beats went from a few hundred px each to a full
+       viewport apiece (measured: 6 x 900px, doc 6045px total) — the old
+       2/27/52rem values were tuned to a page an eighth this length and would
+       have stranded all three artifacts inside the first screen, silent for
+       the other five. Now roughly early (beat 01), middle (beat 04) and
+       late (beat 06), measured against each beat's own getBoundingClientRect
+       rather than guessed. */
+    .about-artifact--1 { --w: 172px; --r: -7deg; top: 8rem;    left: calc(50% - 33rem); }
+    .about-artifact--2 { --w: 140px; --r: 6deg;  top: 195rem;  right: calc(50% - 29.5rem); }
+    .about-artifact--3 { --w: 108px; --r: -4deg; top: 330rem;  left: calc(50% - 27.5rem); }
 
     @media (max-width: 1180px) {
       .about-artifact { display: none; }
