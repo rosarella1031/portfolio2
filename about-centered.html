@@ -243,41 +243,59 @@
       transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04);
     }
 
-    /* Anchored to the text column's own edge, not to a fixed distance from
-       centre: .about-col is 38rem wide, so its edges sit at 50% +/- 19rem,
-       and --gap is then literally the space between artwork and text. The
-       old form (left: calc(50% - 33rem)) hid that relationship — the gap it
-       produced was whatever fell out of the arithmetic, and differed per
-       artifact for no reason.
+    /* Each piece now lives inside the beat it belongs to, so it is
+       positioned against that beat's own 220vh track rather than against
+       the page. --t is where it sits down that track; because the track is
+       the thing the sticky text is measured against too, the two stay in
+       step by construction — no page-length arithmetic to redo whenever a
+       track height or the beat count changes, which is what went wrong the
+       last two times these moved.
 
-       Widths scale with the window rather than sitting fixed, so the gap
-       survives down to the 1181px where these stop being drawn at all: at
-       that width a fixed 215px plus a 4.5rem gap would put the first one
-       half a pixel off the left edge. */
-    .about-artifact { --gap: 4.5rem; }
-    .about-artifact--1 { --w: clamp(150px, 15vw, 215px);   --r: -7deg; }
-    .about-artifact--2 { --w: clamp(125px, 12.5vw, 180px); --r: 6deg;  }
-    .about-artifact--3 { --w: clamp(100px, 10vw, 145px);   --r: -4deg; }
+       A beat is exactly as wide as the text column (it is inside
+       .about-col's 38rem), so the column's edges are the beat's own edges.
+       That makes --gap literally the space between artwork and text: no
+       50%-minus-something arithmetic, and nothing to recompute if the
+       column width changes. */
+    .about-artifact {
+      --gap: 4.5rem;
+      --w: clamp(125px, 12.5vw, 180px);
+      top: var(--t, 50vh);
+    }
+    .about-artifact--l { right: calc(100% + var(--gap)); }
+    .about-artifact--r { left:  calc(100% + var(--gap)); }
 
-    /* Left-hand artwork hangs off the column's left edge, right-hand off its
-       right — hence `right` for the left-side ones, which is what lets the
-       gap stay put while the artwork itself changes width. */
-    .about-artifact--1,
-    .about-artifact--3 { right: calc(50% + 19rem + var(--gap)); }
-    .about-artifact--2 { left:  calc(50% + 19rem + var(--gap)); }
+    /* Three sizes, mixed down the page so a column of artwork does not read
+       as a uniform strip. Clamped against vw rather than fixed, so the gap
+       survives at 1181px — the width these stop being drawn at — where a
+       fixed 215px would put a left-hand piece off the edge. */
+    .about-artifact--lg { --w: clamp(150px, 15vw, 215px); }
+    .about-artifact--sm { --w: clamp(100px, 10vw, 145px); }
 
-    /* Vertical placement in vh, because everything it has to stay in step
-       with is now in vh too — each beat's track is 220vh, so a page-length
-       measured in rem (as this was) drifts out of alignment the moment the
-       window height changes. Roughly: beside the intro, beside beat 03,
-       beside beat 05 — the tracks growing to 220vh had left all three
-       stranded in the top 43% of the page with nothing beside the last
-       three beats at all. */
-    .about-artifact--1 { top: 15rem; }
-    .about-artifact--2 { top: 578vh; }
-    .about-artifact--3 { top: 1017vh; }
+    /* Placeholder — structure ahead of the real images, marked rather than
+       disguised, same convention as the empty Design Details panels on the
+       case studies and the placeholder beat below. */
+    .about-artifact-ph {
+      aspect-ratio: var(--ar, 4 / 3);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      display: grid;
+      place-items: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
 
-    @media (max-width: 1180px) {
+    /* 1259, not 1180. The rail takes a fixed slice off the left, so the
+       reading column does not sit on the window's centre and the right-hand
+       side has less room than the left. Measured across widths: the largest
+       piece clears the right edge by 7px at 1181, 20 at 1220 and 34 at 1260
+       — so the old breakpoint was drawing artwork that all but touched the
+       edge. Raising it here rather than shrinking the artwork, which is the
+       thing that was asked for. */
+    @media (max-width: 1259px) {
       .about-artifact { display: none; }
     }
     @media (max-width: 640px) {
@@ -334,9 +352,6 @@
   <main>
     <div class="about-frame">
 
-      <div class="about-artifact about-artifact--1"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
-      <div class="about-artifact about-artifact--2"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
-      <div class="about-artifact about-artifact--3"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
 
       <div class="about-col">
         <div class="about-intro reveal">
@@ -352,6 +367,9 @@
             <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
             </div>
           
+            <div class="about-artifact about-artifact--l about-artifact--lg" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 95vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l about-artifact--sm" style="--t: 168vh; --r: -3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -360,6 +378,9 @@
             <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
             </div>
           
+            <div class="about-artifact about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l about-artifact--lg" style="--t: 102vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r about-artifact--sm" style="--t: 172vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -368,6 +389,9 @@
             <p>Currently based in New York.</p>
             </div>
           
+            <div class="about-artifact about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r about-artifact--sm" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l about-artifact--lg" style="--t: 162vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -381,6 +405,9 @@
             </ul>
             </div>
           
+            <div class="about-artifact about-artifact--r about-artifact--lg" style="--t: 34vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l about-artifact--sm" style="--t: 106vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 176vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -389,6 +416,9 @@
             <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
             </div>
           
+            <div class="about-artifact about-artifact--l about-artifact--sm" style="--t: 28vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r about-artifact--lg" style="--t: 98vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 166vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <!-- Placeholder — a sixth beat so the page reads at something closer
@@ -400,6 +430,9 @@
             <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
             </div>
           
+            <div class="about-artifact about-artifact--r" style="--t: 24vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l about-artifact--lg" style="--t: 94vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r about-artifact--sm" style="--t: 164vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
         </div>
