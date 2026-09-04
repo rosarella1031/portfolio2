@@ -465,23 +465,30 @@
     var WIDE = matchMedia('(min-width: 1181px)');
 
     /* ---- crossfade =====
-       A screen recording of the reference (not just a script reading it)
-       showed the real mechanism: the "01" heading holds almost in place for
-       several seconds — drifting slowly, not stationary, but far slower
-       than a plain scroll — while project thumbnails cycle beside it, then
-       fades out, and only once it is gone does "02" fade in. That holding
-       is position: sticky (see .about-beat / .about-beat-inner above): each
-       beat is a track taller than one screen, and its content pins to the
-       top of the viewport for the extra height, releasing once the track
-       runs out.
+       Timed frame by frame off a screen recording of the reference, 7-15s,
+       where one full cycle plays out. Measured against the viewport:
 
-       The track's own rect (not the sticky inner element's — that one reads
-       as pinned at top:0 for its whole stuck duration and would report no
-       movement at all) is what tells us where in that hold-then-release
-       cycle a beat currently is. clamp(1 - trackTop/vh) rises from 0 to 1 as
-       the track arrives from below; clamp(releaseAt/vh) falls from 1 to 0 as
-       it runs out the other end. The smaller of the two is 1 only while
-       comfortably clear of both edges, and fades on whichever edge is near. */
+         7.00s   "01" at y=150, opaque   |
+         7.75s   "01" at y=150, opaque   |  held, not moving at all
+         8.50s   "01" at y=150, opaque   |
+         9.00s   "01" at y=102, opaque   <- released, moving, STILL opaque
+         9.25s   "01" at y=59,  fading   <- fades while it travels
+         10-11s  black
+        11.25s   "02" at y=218, faint    <- rises from below, fading in
+        11.75s   "02" at y=159, opaque   <- arrives, holds
+
+       So the fade-out belongs to the release, not to the hold: the block is
+       still fully opaque for the first stretch of its travel. An earlier
+       version measured the outer track and, with the fade distance set
+       against the track's excess height, finished fading before the release
+       even happened — the travel was there but invisible, which is exactly
+       why the whole thing read as though nothing had changed.
+
+       Measuring the sticky element itself gives all three phases for free,
+       because its own top tells you which phase you are in: positive while
+       it rises into place, exactly 0 for the entire hold (that is what
+       sticky means), negative once it releases and climbs away. One
+       triangle over that single number does the rest. */
     var beats = [].slice.call(document.querySelectorAll('.about-beat'));
     var raf = null;
 
@@ -497,19 +504,15 @@
           el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
         });
       }
-      /* Shorter than a full viewport on purpose — spending a whole screen's
-         worth of scroll on the fade itself was consuming nearly all of the
-         track's excess height, leaving almost no actual hold in between (see
-         the .about-beat comment). 0.4 reads as a clean, fairly quick
-         cross-fade rather than a slow dissolve, and leaves most of the extra
-         height for the part that is supposed to read as a pause. */
+      /* 0.4 viewports of travel to fade over, against 1.2 of hold (the
+         track's 220vh less the 100vh that sticks) — the same roughly 3:1
+         hold-to-fade the recording shows, 1.5s held against 0.5s fading. */
       var fade = innerHeight * 0.4;
       beats.forEach(function (el) {
         if (!el.classList.contains('visible') && el.classList.contains('reveal')) return; // entrance not run yet
-        var r = el.getBoundingClientRect();
-        var arriving = clamp01(1 - r.top / fade);
-        var leaving  = clamp01((r.top + r.height - innerHeight) / fade);
-        el.style.opacity = Math.min(arriving, leaving).toFixed(3);
+        var inner = el.firstElementChild;   // .about-beat-inner, the sticky one
+        if (!inner) return;
+        el.style.opacity = clamp01(1 - Math.abs(inner.getBoundingClientRect().top) / fade).toFixed(3);
       });
     }
     function queue() { if (raf === null) raf = requestAnimationFrame(paint); }
