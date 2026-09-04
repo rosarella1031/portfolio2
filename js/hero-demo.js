@@ -451,6 +451,40 @@
     replay: $('[data-replay]')
   };
 
+  /* ===== Stick-to-bottom scrolling =====
+     Now that .hd-chat-scroll can actually scroll (work/hero-demo.css lifted
+     the overflow:hidden that used to just clip whatever the transcript
+     pushed off the top), every place this file rebuilds or appends to
+     el.chat needs to keep the newest turn in view — but only for a visitor
+     who was already following along at the bottom. One who has scrolled up
+     to reread something earlier should not get yanked back down the moment
+     the tour or a click adds another turn.
+
+     A MutationObserver on childList covers every el.chat.innerHTML = ...
+     rebuild in this file (there are half a dozen) without a line at each
+     call site — miss one and that beat silently regresses to the old
+     stuck-at-the-top behaviour. pushIn() still needs its own correction on
+     top of this: the node it inserts starts at a large negative margin-top
+     that collapses its own height to ~0, so the observer's snap fires
+     against a scrollHeight that does not yet include the space the slide-in
+     animation is about to open up. */
+  var stuckToBottom = true;
+  el.chat.addEventListener('scroll', function () {
+    var slack = 24;
+    stuckToBottom = el.chat.scrollHeight - el.chat.scrollTop - el.chat.clientHeight <= slack;
+  }, { passive: true });
+  function snapChatIfStuck() {
+    if (stuckToBottom) el.chat.scrollTop = el.chat.scrollHeight;
+  }
+  new MutationObserver(snapChatIfStuck).observe(el.chat, { childList: true });
+  /* Web fonts land after first layout, same gap this codebase already
+     works around elsewhere (js/compare.js's card alignment). The observer's
+     snap fires against whatever scrollHeight exists at that instant; if the
+     font swap still has to happen, it can quietly grow the transcript by a
+     few dozen px right after, leaving the initial render just short of the
+     bottom. */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(snapChatIfStuck);
+
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var shown = 0;
 
@@ -653,6 +687,10 @@
     node.style.opacity = '1';
     await sleep(T.pushIn);
     if (mine === token) { node.style.transition = ''; node.style.marginTop = ''; }
+    /* The observer already snapped once, against the collapsed pre-animation
+       height; this node's real height has since opened up over the .45s
+       slide, so the stuck case needs a second, final correction here. */
+    snapChatIfStuck();
     return node;
   }
 
@@ -1017,6 +1055,12 @@
   var pinned = (location.search.match(/[?&]beat=(\d+)/) || [])[1];
   if (pinned) {
     showBeat(+pinned);
+    /* showBeat() has several return points, one per beat branch, so the
+       snap goes here instead of inside it — one line covering all of them
+       rather than one at each. A pinned beat always opens stuck to the
+       bottom; there is no earlier scroll position for it to have
+       preserved, unlike a live re-render mid-tour. */
+    el.chat.scrollTop = el.chat.scrollHeight;
   } else if (reduced) {
     finalState();
   } else {

@@ -150,14 +150,45 @@
 .hd-chat-scroll {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  /* Was overflow:hidden — turns that got pushed off the top by later ones
+     were gone for good, not just out of view. auto lets a visitor scroll up
+     into whatever has been pushed off; flex-end keeps it anchored to the
+     latest turn until they do. overflow-x stays hidden — this column has no
+     horizontal content, only the vertical scrollbar should ever appear. */
+  overflow-y: auto;
+  overflow-x: hidden;
   /* "chat" is inset 20 inside the 401 panel */
   padding: 0 calc(20 * var(--u)) calc(12 * var(--u));
   display: flex;
   flex-direction: column;
   gap: calc(14 * var(--u));
-  justify-content: flex-end;
+  /* Not justify-content: flex-end. On an overflow:auto flex container, Blink
+     computes scrollable overflow relative to flex-start — content pushed
+     past the start edge by flex-end is clipped as ink overflow, not added
+     to scrollHeight, so the transcript looked bottom-anchored right up until
+     it actually had enough turns to overflow, at which point the earliest
+     ones became permanently unreachable rather than merely scrolled-to.
+     margin-top: auto on the first turn produces the same bottom-anchored
+     rest state through ordinary flexible space instead, which scrolls
+     correctly once that space runs out. Confirmed against .hd-chat-scroll's
+     own scrollHeight before and after forcing real overflow. */
+  justify-content: flex-start;
+  /* Chained, not contained, same reasoning as .hd-doc-content below: this
+     widget sits inline in a normally-scrolling page, so once a visitor hits
+     the top of the transcript, their scroll should carry on up the page
+     rather than getting stuck inside a 401px column. */
+  overscroll-behavior-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d7d7e0 transparent;
 }
+.hd-chat-scroll::-webkit-scrollbar { width: calc(8 * var(--u)); }
+.hd-chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.hd-chat-scroll::-webkit-scrollbar-thumb {
+  background: #d7d7e0;
+  border-radius: calc(4 * var(--u));
+}
+.hd-chat-scroll::-webkit-scrollbar-thumb:hover { background: #c3c3d0; }
+.hd-chat-scroll > :first-child { margin-top: auto; }
 /* Turns must keep their own height. As flex children they shrink by default,
    so a new one arriving squashed every turn above it instead of pushing them
    up and out of the top — which is what the transcript is supposed to do,
