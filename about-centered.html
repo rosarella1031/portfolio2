@@ -78,18 +78,32 @@
        gap between beats is deliberately wider than .about-col's own 2.75rem,
        so each one gets its own breathing room rather than reading as part of
        the same run as the intro or the links row. */
-    /* Measured off the reference rather than guessed: every one of its five
-       numbered chapters is exactly one viewport tall (getBoundingClientRect
-       height === innerHeight, confirmed on all five), content centred inside
-       that height with flex. That sizing is the whole mechanism — there is
-       no scroll-snap, no pinning, no JS swapping one block for the next
-       (checked: scroll-snap-type is 'none' on html and body, and a chapter's
-       opacity, once set, never reverts as it scrolls past — it is a normal,
-       very tall, continuously-scrolling page). A block that fills the screen
-       is what makes scrolling feel like moving from one chapter to the next,
-       not a mechanism swapping them. */
+    /* A screen recording of the reference (not just a script reading it)
+       showed the "01" heading holding almost in place for several seconds
+       while project thumbnails cycled beside it, drifting only slowly
+       compared to a normal scroll — not the plain one-viewport-tall block in
+       ordinary flow this was built as before, which moves at full scroll
+       speed and only happens to read as centred for an instant in the
+       middle of its own height.
+
+       That holding is position: sticky, riding inside a track taller than
+       one screen: .about-beat is the track (2.4 viewports — long enough to
+       read as a real pause, short enough that six of them do not turn this
+       into a scroll marathon), .about-beat-inner is what actually sticks,
+       pinned to the top of the viewport for the whole of that extra height
+       and released only once the track runs out. */
     .about-beats { display: flex; flex-direction: column; }
-    .about-beat {
+    /* 220vh: enough excess over the 100vh sticky content for a real pause —
+       worked out from --fade-vh below (100 sticky + 2x40 fade = 180 would
+       leave none, so the gap above that is the hold: 220-100-80 = 40vh of
+       genuinely full-opacity dwell — plus the two 40vh fades themselves are
+       part of the 220, not additional). Six of these is already a fairly
+       long page for six short paragraphs; taller reads as a bigger pause per
+       beat but adds up fast across all six. */
+    .about-beat { min-height: 220vh; position: relative; }
+    .about-beat-inner {
+      position: sticky;
+      top: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -309,21 +323,31 @@
         <div class="about-beats">
 
           <div class="about-beat reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">01</span> Background</div>
             <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
+            </div>
+          
           </div>
 
           <div class="about-beat reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">02</span> What I care about</div>
             <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+            </div>
+          
           </div>
 
           <div class="about-beat reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">03</span> Where I am</div>
             <p>Currently based in New York.</p>
+            </div>
+          
           </div>
 
           <div class="about-beat reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">04</span> Outside of design</div>
             <ul class="about-bio-list">
               <li>listening to music and playing drums</li>
@@ -331,19 +355,27 @@
               <li>making something delicious in the kitchen</li>
               <li>playing with my cat</li>
             </ul>
+            </div>
+          
           </div>
 
           <div class="about-beat reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">05</span> Let's talk</div>
             <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+            </div>
+          
           </div>
 
           <!-- Placeholder — a sixth beat so the page reads at something closer
                to the reference's chapter count. Replace with real copy (or
                delete the beat) once there's something to say here. -->
           <div class="about-beat about-beat--placeholder reveal">
+            <div class="about-beat-inner">
             <div class="about-beat-head"><span class="about-beat-num">06</span> What's next</div>
             <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
+            </div>
+          
           </div>
 
         </div>
@@ -433,21 +465,27 @@
     var WIDE = matchMedia('(min-width: 1181px)');
 
     /* ---- crossfade =====
-       Went and actually watched fiveyears.portorocha.com scroll rather than
-       trust an earlier reading of it: each numbered chapter holds fully
-       opaque while you scroll through its own one-viewport span, then fades
-       out as the next one's span begins, which fades in in turn — never both
-       at once for long. Not a pin-and-swap; every chapter is plain, static
-       content one viewport tall (confirmed earlier this page already copies
-       that sizing), and the fade is the only part that is scroll-driven.
+       A screen recording of the reference (not just a script reading it)
+       showed the real mechanism: the "01" heading holds almost in place for
+       several seconds — drifting slowly, not stationary, but far slower
+       than a plain scroll — while project thumbnails cycle beside it, then
+       fades out, and only once it is gone does "02" fade in. That holding
+       is position: sticky (see .about-beat / .about-beat-inner above): each
+       beat is a track taller than one screen, and its content pins to the
+       top of the viewport for the extra height, releasing once the track
+       runs out.
 
-       Same centre-distance measure the parallax above already takes, so a
-       beat is fully opaque with its centre on the viewport's centre and
-       fades out over one viewport of scroll either side — which, since
-       beats sit back to back at exactly one viewport each, lands the 50%
-       crossfade point almost exactly at the seam between two of them. */
+       The track's own rect (not the sticky inner element's — that one reads
+       as pinned at top:0 for its whole stuck duration and would report no
+       movement at all) is what tells us where in that hold-then-release
+       cycle a beat currently is. clamp(1 - trackTop/vh) rises from 0 to 1 as
+       the track arrives from below; clamp(releaseAt/vh) falls from 1 to 0 as
+       it runs out the other end. The smaller of the two is 1 only while
+       comfortably clear of both edges, and fades on whichever edge is near. */
     var beats = [].slice.call(document.querySelectorAll('.about-beat'));
     var raf = null;
+
+    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
 
     function paint() {
       raf = null;
@@ -459,12 +497,19 @@
           el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
         });
       }
+      /* Shorter than a full viewport on purpose — spending a whole screen's
+         worth of scroll on the fade itself was consuming nearly all of the
+         track's excess height, leaving almost no actual hold in between (see
+         the .about-beat comment). 0.4 reads as a clean, fairly quick
+         cross-fade rather than a slow dissolve, and leaves most of the extra
+         height for the part that is supposed to read as a pause. */
+      var fade = innerHeight * 0.4;
       beats.forEach(function (el) {
         if (!el.classList.contains('visible') && el.classList.contains('reveal')) return; // entrance not run yet
         var r = el.getBoundingClientRect();
-        var from = Math.abs((r.top + r.height / 2) - innerHeight / 2);
-        var opacity = Math.max(0, 1 - from / innerHeight);
-        el.style.opacity = opacity.toFixed(3);
+        var arriving = clamp01(1 - r.top / fade);
+        var leaving  = clamp01((r.top + r.height - innerHeight) / fade);
+        el.style.opacity = Math.min(arriving, leaving).toFixed(3);
       });
     }
     function queue() { if (raf === null) raf = requestAnimationFrame(paint); }
