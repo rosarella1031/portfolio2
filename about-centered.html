@@ -395,6 +395,19 @@
         pending = pending.filter(function (el) {
           if (el.getBoundingClientRect().top > limit) return true;
           el.classList.add('visible');
+          /* A beat's entrance animation ends by setting opacity via a fill:
+             both keyframe, which — same conflict as the drift transform
+             below — would go on outranking any plain inline opacity this
+             file writes afterwards. Once it has actually finished, drop the
+             classes driving it so the crossfade below has sole ownership of
+             this element's opacity from here on. */
+          if (el.classList.contains('about-beat')) {
+            el.addEventListener('animationend', function once() {
+              el.removeEventListener('animationend', once);
+              el.classList.remove('reveal', 'visible');
+              el.style.opacity = '1';
+            });
+          }
           return false;
         });
         return pending.length;
@@ -417,22 +430,41 @@
     // ---- parallax ----
     if (reduced) return;
     var artifacts = [].slice.call(document.querySelectorAll('.about-artifact'));
-    if (!artifacts.length) return;
     var WIDE = matchMedia('(min-width: 1181px)');
+
+    /* ---- crossfade =====
+       Went and actually watched fiveyears.portorocha.com scroll rather than
+       trust an earlier reading of it: each numbered chapter holds fully
+       opaque while you scroll through its own one-viewport span, then fades
+       out as the next one's span begins, which fades in in turn — never both
+       at once for long. Not a pin-and-swap; every chapter is plain, static
+       content one viewport tall (confirmed earlier this page already copies
+       that sizing), and the fade is the only part that is scroll-driven.
+
+       Same centre-distance measure the parallax above already takes, so a
+       beat is fully opaque with its centre on the viewport's centre and
+       fades out over one viewport of scroll either side — which, since
+       beats sit back to back at exactly one viewport each, lands the 50%
+       crossfade point almost exactly at the seam between two of them. */
+    var beats = [].slice.call(document.querySelectorAll('.about-beat'));
     var raf = null;
 
-    /* Each artifact drifts against how far its own centre has travelled from
-       the viewport's centre, not against raw scrollY — so the amount of
-       parallax is the same whether the artifact starts the page near the top
-       or three screens down, rather than growing with scroll distance. */
     function paint() {
       raf = null;
-      if (!WIDE.matches) return;
-      artifacts.forEach(function (el, i) {
+      if (WIDE.matches) {
+        artifacts.forEach(function (el, i) {
+          var r = el.getBoundingClientRect();
+          var from = (r.top + r.height / 2) - innerHeight / 2;
+          var rate = 0.06 + (i % 2) * 0.03;       // alternating so they don't drift in lockstep
+          el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
+        });
+      }
+      beats.forEach(function (el) {
+        if (!el.classList.contains('visible') && el.classList.contains('reveal')) return; // entrance not run yet
         var r = el.getBoundingClientRect();
-        var from = (r.top + r.height / 2) - innerHeight / 2;
-        var rate = 0.06 + (i % 2) * 0.03;         // alternating so they don't drift in lockstep
-        el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
+        var from = Math.abs((r.top + r.height / 2) - innerHeight / 2);
+        var opacity = Math.max(0, 1 - from / innerHeight);
+        el.style.opacity = opacity.toFixed(3);
       });
     }
     function queue() { if (raf === null) raf = requestAnimationFrame(paint); }
