@@ -48,7 +48,11 @@
   const path = location.pathname;
   const current =
     /builds\.html/.test(path)      ? 'builds' :
-    /about\.html/.test(path)       ? 'about'  :
+    /* about-centered.html is a layout trial of the same page, so it should
+       light the same entry. Matching the stem rather than the exact filename
+       — an exact /about\.html/ left it falling through to the catch-all
+       below and lighting Work instead. */
+    /about[\w-]*\.html/.test(path) ? 'about'  :
     /\/work\//.test(path)          ? 'work'   :   // a case study opened on its own
     /(index\.html)?$/.test(path)    ? 'work'   : null;   // the deck is the homepage
 
