@@ -572,24 +572,62 @@
     }, 16);
   }
 
-  function chatArtifact() {
-    var h = '<div class="hd-bubble">' + JD + '</div>' +
-            '<div class="hd-agent-line">' + avatar() +
-              '<span>I have identified 3 ideal candidate profiles for you.</span></div>' +
-            '<div class="hd-card"><div class="hd-card-head">' +
+  /* The agent line and the card underneath it — everything chatArtifact()
+     used to build in one go except the JD bubble, which by the time this
+     matters has usually already been pushed in as its own turn (beat 5).
+     Kept separate from chatArtifact() so play()'s real beat 7 can append
+     just this, rather than replacing the transcript to get it. */
+  function profilesAgentLine() {
+    return '<div class="hd-agent-line">' + avatar() +
+           '<span>I have identified 3 ideal candidate profiles for you.</span></div>';
+  }
+  function profilesCard() {
+    var h = '<div class="hd-card"><div class="hd-card-head">' +
               '<span class="hd-card-title">Ideal candidate profiles</span>' +
               '<span class="hd-card-stamp">Created 1min ago</span></div>';
     for (var i = 0; i < ICPS.length; i++)
       h += '<button type="button" class="hd-icp-row" data-icp="' + i + '">' +
            '<b>' + ICPS[i].n + '</b><span>' + ICPS[i].title + '</span></button>';
-    h += '<div class="hd-card-foot"><span>5m11s &middot; 12 sources</span><span>Edit</span></div></div>';
-    el.chat.innerHTML = h;
+    return h + '<div class="hd-card-foot"><span>5m11s &middot; 12 sources</span><span>Edit</span></div></div>';
+  }
+  function wireIcpRows() {
     var rows = el.chat.querySelectorAll('[data-icp]');
     for (var r = 0; r < rows.length; r++) {
       (function (btn) {
         btn.addEventListener('click', function () { takeOver(); show(+btn.getAttribute('data-icp')); });
       })(rows[r]);
     }
+  }
+
+  /* The settled, no-longer-animating shape of everything beats 4-6 leave in
+     the transcript: the opening query, the agent's four questions, the JD
+     bubble, and the analyze card at its finished 100%. Used to reconstruct
+     that history in showBeat() (which, unlike the real tour, does not run
+     the beats that build it turn by turn) so a pinned beat >= 7 scrolls back
+     to a genuine beginning rather than chatArtifact()'s condensed stand-in.
+     Reasoning itself (REASON, ten lines) lives in el.reason on the work
+     screen, not the chat transcript, so it has nothing to reconstruct here. */
+  function earlyChatHistoryHTML() {
+    return '<div class="hd-bubble"><span class="hd-at">@ICP analysis</span> Help me identify ICPs: ' +
+           'Senior AI engineer in San Francisco, 5+ years experience</div>' +
+           '<div class="hd-agent-line">' + avatar() + '</div>' +
+           '<div class="hd-reply">' + QUESTIONS + '</div>' +
+           '<div class="hd-bubble">' + JD + '</div>' +
+           '<div class="hd-agent-line">' + avatar() + '</div>' +
+           '<div class="hd-card"><div class="hd-card-title">Analyze ideal candidate profiles</div>' +
+           '<div class="hd-progress"><i style="width:100%"></i></div>' +
+           '<div class="hd-card-foot"><span>ICP analysis . 20 resources</span>' +
+           art('stop', 'hd-stop') + '</div></div>';
+  }
+
+  /* Cold start only — finalState(), the reduced-motion end state, where the
+     chat is empty and there is no earlier turn for the JD to have arrived
+     as. Everywhere the tour is actually running, use profilesAgentLine() /
+     profilesCard() through pushIn() instead: this replaces el.chat outright,
+     which is correct exactly once, with nothing in it yet to lose. */
+  function chatArtifact() {
+    el.chat.innerHTML = '<div class="hd-bubble">' + JD + '</div>' + profilesAgentLine() + profilesCard();
+    wireIcpRows();
   }
 
   /* ---- the tour ------------------------------------------------------ */
@@ -846,10 +884,17 @@
     }
     await sleep(T.beforeProfiles); if (mine !== token) return;
 
-    /* beat 7 — the profiles land */
+    /* beat 7 — the profiles land. Appended, not chatArtifact()'s replace —
+       the query, the four questions, the JD and the analyze card are real
+       turns already sitting in el.chat by now, and the whole point of a
+       scrollable transcript is that they stay there. */
     beat(7); screen('doc');
     liveAvatar(null);
-    chatArtifact();
+    await pushIn(profilesAgentLine(), mine);
+    if (mine !== token) return;
+    await pushIn(profilesCard(), mine);
+    if (mine !== token) return;
+    wireIcpRows();
     show(0);
     if (el.hint) el.hint.textContent = 'Click a profile';
     await sleep(T.holdOnResult); if (mine !== token) return;
@@ -998,9 +1043,13 @@
 
     if (n >= 8) {
       /* The search agent's beats all sit on the same two screens, so each is
-         painted from the state before it rather than replayed. */
+         painted from the state before it rather than replayed. chatArtifact()
+         would only give the condensed JD + profiles stand-in — this rebuilds
+         the real early turns first (see earlyChatHistoryHTML()) so a pinned
+         beat >= 8 scrolls back to the actual opening query, not a shortcut. */
       beat(n);
-      chatArtifact();
+      el.chat.innerHTML = earlyChatHistoryHTML() + profilesAgentLine() + profilesCard();
+      wireIcpRows();
       screen('results');
       el.hits.textContent = n >= 13 ? '620 results' : n === 12 ? '0 results' : '780 results';
       el.hitList.innerHTML = n === 12
@@ -1027,7 +1076,13 @@
       }
       return;
     }
-    beat(7); screen('doc'); chatArtifact(); show(0);
+    /* Same reconstruction as n >= 8 above, for the one beat between the
+       branches (7) that also lands on the doc screen with a full transcript
+       behind it. */
+    beat(7); screen('doc');
+    el.chat.innerHTML = earlyChatHistoryHTML() + profilesAgentLine() + profilesCard();
+    wireIcpRows();
+    show(0);
   }
 
   /* ---- when to run --------------------------------------------------- */
