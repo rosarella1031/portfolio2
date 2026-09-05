@@ -79,12 +79,24 @@
       color: var(--text-3);
     }
 
+    /* Only the greeting is display type. The sentence under it was set the
+       same way and the pair read as a homepage hero rather than the top of
+       an about page — one line of large serif is a greeting, three are a
+       banner. The rest drops to the same body setting the beats use, so the
+       page has one voice from here down. */
     .about-lede {
       font-family: 'EB Garamond', serif;
       font-size: clamp(1.75rem, 3.2vw, 2.25rem);
       line-height: 1.35;
       color: var(--text);
       max-width: 30rem;
+    }
+    .about-lede-sub {
+      font-size: 1.0625rem;   /* matches .about-beat p */
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 30rem;
+      margin: 0.4rem 0 0;
     }
 
     /* ===== Beats =====
@@ -370,7 +382,8 @@
       <div class="about-col">
         <div class="about-intro reveal">
           <div class="about-eyebrow">About</div>
-          <p class="about-lede">Hi, I'm Faye &mdash; a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
+          <p class="about-lede">Hi, I'm Faye.</p>
+          <p class="about-lede-sub">A product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
         </div>
 
         <div class="about-beats">
@@ -381,7 +394,7 @@
             <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
             </div>
           
-            <div class="about-artifact about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 95vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 168vh; --r: -3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -392,7 +405,7 @@
             <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
             </div>
           
-            <div class="about-artifact about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 102vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 172vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -403,7 +416,7 @@
             <p>Currently based in New York.</p>
             </div>
           
-            <div class="about-artifact about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 162vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -419,7 +432,7 @@
             </ul>
             </div>
           
-            <div class="about-artifact about-artifact--r" style="--t: 34vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 34vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 106vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 176vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -430,7 +443,7 @@
             <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
             </div>
           
-            <div class="about-artifact about-artifact--l" style="--t: 28vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 28vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 98vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 166vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -444,7 +457,7 @@
             <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
             </div>
           
-            <div class="about-artifact about-artifact--r" style="--t: 24vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 24vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 94vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 164vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
@@ -490,7 +503,13 @@
       var seen = new Map();
       blocks.forEach(function (el) {
         var n = seen.get(el.parentElement) || 0;
-        el.style.animationDelay = Math.min(n, 3) * 0.08 + 's';
+        /* The first artwork in a beat trails its text rather than landing
+           with it. It sits inside the beat, so it is already carrying the
+           beat's own scroll crossfade — this delay multiplies on top of
+           that. Only the first piece needs it: the other two sit far enough
+           down the 220vh track that they arrive well after the text anyway. */
+        var lead = el.parentElement.classList.contains('about-artifact--lead') ? 0.35 : 0;
+        el.style.animationDelay = (Math.min(n, 3) * 0.08 + lead) + 's';
         seen.set(el.parentElement, n + 1);
       });
 
@@ -581,11 +600,19 @@
          track's 220vh less the 100vh that sticks) — the same roughly 3:1
          hold-to-fade the recording shows, 1.5s held against 0.5s fading. */
       var fade = innerHeight * 0.4;
-      beats.forEach(function (el) {
+      beats.forEach(function (el, i) {
         if (!el.classList.contains('visible') && el.classList.contains('reveal')) return; // entrance not run yet
         var inner = el.firstElementChild;   // .about-beat-inner, the sticky one
         if (!inner) return;
-        el.style.opacity = clamp01(1 - Math.abs(inner.getBoundingClientRect().top) / fade).toFixed(3);
+        var t = inner.getBoundingClientRect().top;
+        /* Positive on the way in, 0 for the whole hold, negative once it
+           releases. The last beat only reads the way-in half, so it arrives
+           like the others and then simply stays: the page ends before there
+           is room to scroll its fade-out through (measured: 0.401 opacity
+           at maximum scroll, 145px short of finished), and a section frozen
+           half-faded is not something any other beat ever does. */
+        var d = (i === beats.length - 1) ? Math.max(0, t) : Math.abs(t);
+        el.style.opacity = clamp01(1 - d / fade).toFixed(3);
       });
     }
     function queue() { if (raf === null) raf = requestAnimationFrame(paint); }
