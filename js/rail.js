@@ -41,7 +41,7 @@
     { key: 'github',   label: 'GitHub',   href: 'https://github.com/rosarella1031', ext: true },
     { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/xuefeiw/', ext: true },
     { key: 'email',    label: 'Email',    href: 'mailto:xuefeiw1031@gmail.com' },
-    { key: 'resume',   label: 'Resume',   href: 'https://drive.google.com/file/d/1_gRQMxNfWXKcrxdJLhcCyoSpz3rHYVUu/view?usp=sharing', ext: true }
+    { key: 'resume',   label: 'Resume',   href: 'https://drive.google.com/file/d/1W6wpAJSjdYntuGAmM8uvVDYXAV9LTvVB/view?usp=sharing', ext: true }
   ];
 
   // which nav entry is the page we're on
