@@ -95,10 +95,15 @@ var HASH = '72ef30249add96d9067479a1f650e8ae275951125128ce953522b8206e09bd35';  
         'border:1px solid #DDD8CF;border-radius:6px;background:#fff;color:inherit}' +
       '.xw-gate input::placeholder{color:#AAA49C}' +
       '.xw-gate input:focus{outline:none;border-color:#1A1817}' +
+      /* Every hover on this site is a small wash or a half-step in colour —
+         nothing inverts. A dark button that flips to an outline on hover was
+         louder than the whole page around it. This lifts the fill instead,
+         and moves the border with it so nothing shifts. */
       '.xw-gate button{font:inherit;font-size:.8125rem;padding:.5rem;cursor:pointer;' +
         'border:1px solid #1A1817;border-radius:6px;background:#1A1817;color:#fcfcfc;' +
-        'transition:background-color .2s,color .2s}' +
-      '.xw-gate button:hover{background:transparent;color:#1A1817}' +
+        'transition:background-color .2s,border-color .2s}' +
+      '.xw-gate button:hover{background:#35312F;border-color:#35312F}' +
+      '.xw-gate button:active{background:#0F0E0D;border-color:#0F0E0D}' +
       '.xw-gate .err{min-height:1.3em;font-size:.8125rem;color:#B4453A;text-align:center}' +
       '</style>'
 +
