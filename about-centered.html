@@ -45,13 +45,31 @@
       gap: 2.75rem;
     }
 
-    /* Wrapping these two for the reveal (they arrive as one unit) pulled
-       them out of .about-col's own 2.75rem gap, which was doing double duty
-       as both "between sections" and "label to headline" spacing. Give the
-       pair its own tight rhythm instead — label sits right under its
-       headline everywhere else on the site (build-page.css's
-       .build-label + .build-title is the same 0.5-0.6rem). */
-    .about-intro { display: flex; flex-direction: column; gap: 0.6rem; }
+    /* Its own screen, centred, the way each beat below is — the opening
+       line was sitting at the top of the page above the beats, so the first
+       thing you scrolled past sat in a different place from everything
+       after it. Not a .about-beat: it wants no sticky track and no scroll
+       crossfade, just one plain centred screen that scrolls away normally
+       and hands over to the beats.
+
+       Text centred too, unlike the beats: this is the one line that is
+       addressed to the reader rather than being a section of a document.
+
+       Wrapping the label and headline for the reveal (they arrive as one
+       unit) took them out of .about-col's 2.75rem gap, which had been doing
+       double duty as both "between sections" and "label to headline". Their
+       own tighter rhythm instead — the same 0.5-0.6rem a label sits under
+       its headline everywhere else on the site (build-page.css's
+       .build-label + .build-title). */
+    .about-intro {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 0.6rem;
+    }
 
     .about-eyebrow {
       font-family: 'IBM Plex Sans Condensed', sans-serif;
