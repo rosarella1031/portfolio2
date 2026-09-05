@@ -24,6 +24,24 @@ var HASH = '72ef30249add96d9067479a1f650e8ae275951125128ce953522b8206e09bd35';  
   var KEY = 'xw-gate';
   var root = document.documentElement;
 
+  /* Get onto https first, before anything else happens.
+     xuefei.io answers plain http with a 200 and no redirect of its own, and
+     crypto.subtle — which is the only thing here that can check a password —
+     simply does not exist outside a secure context. An http visitor would
+     therefore meet a gate that can never open, with the site hidden behind
+     it. Redirecting is the fix that lives in this repo; ticking "Enforce
+     HTTPS" under Settings > Pages is the tidier one, and makes this a
+     no-op rather than making it unnecessary. localhost is already a secure
+     context, so local work is untouched. */
+  if (location.protocol === 'http:' &&
+      location.hostname !== 'localhost' &&
+      location.hostname !== '127.0.0.1' &&
+      location.hostname !== '[::1]') {
+    location.replace('https://' + location.host + location.pathname +
+                     location.search + location.hash);
+    return;
+  }
+
   /* Hide immediately, from the <head>, before anything paints — a gate that
      appears after the page has already flashed on screen has shown the very
      thing it exists to hide. The style goes in from script rather than a
