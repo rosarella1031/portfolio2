@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work (browser tabs trial) — Xuefei Wang</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <!-- Safari ignores SVG icons; same glyph, rasterised. -->
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
+  <style>
+    :root {
+      --tab-h: 40px;
+      --tab-w: 15rem;
+      --gap:   clamp(2rem, 5vh, 3.5rem);   /* dot grid left showing above the deck */
+      --pad-x: clamp(1.5rem, 3vw, 3rem);
+      --left: calc(var(--rail-w) + var(--pad-x));
+    }
+    /* the dot ground the cards ride on */
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, rgba(26,24,23,.16) 1px, transparent 1px);
+      background-size: 22px 22px;
+      font-family: var(--ff-body);
+      margin: 0;
+    }
+
+    /* ── the window ────────────────────────────────────────────────────
+       One browser window standing in for the deck of stacked cards: four
+       projects as four tabs rather than four cards you scroll through.
+
+       Everything here is chrome drawn to look like a browser, so the
+       measurements are the ones a real one uses — 40px tab strip, 38px
+       address bar, 12px window radius — rather than numbers picked to look
+       nice. Getting those close is the whole reason the metaphor reads. */
+    /* Four screens of travel, one per tab — the same scroll budget the deck
+       spent on four cards, so the page is no shorter or longer than it was. */
+    .win-track {
+      position: relative;
+      height: 400vh;
+      z-index: 1;                /* rides over the outro, as the deck did */
+    }
+    .win {
+      --tab-strip: 40px;
+      --url-bar:   38px;
+      /* Set per project from the active tab; the starting pair matches the
+         first one so there is no flash before the script runs. */
+      --chrome: #EFEDF9;
+      --edge:   #DCD8EE;
+
+      position: sticky;
+      top: var(--gap);
+      max-width: 1180px;
+      margin-left: calc(var(--rail-w) + var(--pad-x));
+      margin-right: var(--pad-x);
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg);
+      /* The frame carrying the project's colour is the part that makes the
+         window feel like it changed pages rather than swapped a panel. */
+      transition: border-color 0.45s cubic-bezier(.33,1,.68,1);
+    }
+    /* Panes differ in height; without a floor the whole window resizes on
+       every tab change, which reads as a jump rather than a switch. */
+    .win-view { min-height: 60vh; }
+
+    /* ── tab strip ── */
+    .win-strip {
+      height: var(--tab-strip);
+      background: var(--chrome);
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      padding: 0 0.75rem;
+      border-bottom: 1px solid var(--edge);
+          transition: background 0.45s cubic-bezier(.33,1,.68,1),
+                  border-color 0.45s cubic-bezier(.33,1,.68,1);
+    }
+    /* Three discs, one element — the same trick the case-study window frame
+       uses, so there is no markup for decoration. */
+    .win-lights {
+      flex: none;
+      align-self: center;
+      width: 10px; height: 10px;
+      margin-right: 0.9rem;
+      border-radius: 50%;
+      background: #FF5F57;
+      box-shadow: 16px 0 0 #FEBC2E, 32px 0 0 #28C840;
+    }
+    /* The strip is flex, but the tablist inside it was not — so the four
+       buttons ignored their flex-basis, laid out as inline boxes, wrapped,
+       and a 40px strip showed only the last line. One tab visible out of
+       four, and it was the wrong one. */
+    .win-tabs {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .win-tab {
+      flex: 0 1 190px;
+      min-width: 0;
+      height: calc(var(--tab-strip) - 6px);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0 0.7rem;
+      border: 0;
+      border-radius: 8px 8px 0 0;
+      background: none;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      color: var(--text-2);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.18s, color 0.18s;
+    }
+    .win-tab:hover { background: rgba(255,255,255,0.45); color: var(--text); }
+    /* The open tab is the one joined to the page below it — same fill as the
+       content area, no bottom edge, which is what makes it read as in front
+       rather than merely highlighted. */
+    .win-tab[aria-selected="true"] {
+      background: var(--bg);
+      color: var(--text);
+    }
+    /* A tab's own favicon: the project's colour, so the strip carries the
+       same four tints the stacked cards did. */
+    .win-tab i {
+      flex: none;
+      width: 11px; height: 11px;
+      border-radius: 3px;
+      background: var(--tint, var(--border));
+    }
+
+    /* ── address bar ── */
+    .win-url {
+      height: var(--url-bar);
+      background: var(--chrome);
+      border-bottom: 1px solid var(--edge);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0 0.9rem;
+          transition: background 0.45s cubic-bezier(.33,1,.68,1),
+                  border-color 0.45s cubic-bezier(.33,1,.68,1);
+    }
+    .win-nav { display: flex; gap: 0.35rem; color: var(--text-3); flex: none; }
+    .win-nav svg { width: 14px; height: 14px; }
+    .win-field {
+      flex: 1;
+      min-width: 0;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.6rem;
+      border-radius: 999px;
+      background: var(--bg);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.6875rem;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .win-field b { font-weight: 400; color: var(--text); }
+
+    /* ── the page inside ── */
+    .win-view { background: var(--bg); }
+    .win-page { display: none; }
+    .win-page[data-open] { display: block; }
+    /* The tinted band the card used to carry now tints only the head row,
+       so the project still has its colour without flooding the whole page. */
+    .win-page .band-head { background: var(--tint); border-bottom-color: var(--edge); }
+
+
+    /* ── hero ─────────────────────────────────────────────────────────
+       Type at the top, a hand of cards fanned underneath. The cards overlap
+       and each is rotated a few degrees; hovering one straightens it, lifts
+       it and brings it to the front. */
+    .hero {
+      position: relative;
+      height: calc(100vh - var(--gap) - var(--tab-h));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Symmetric, not offset by the rail: the hero centres on the window.
+         The rail is a fixed overlay at the edge and the centred column never
+         reaches it, so there is nothing to clear. */
+      padding: clamp(3rem, 8vh, 5.5rem) var(--pad-x) 0;
+      overflow: hidden;
+    }
+    /* the rule is gone but its space is not — removing the element would pull
+       the whole hero up, and nothing else is meant to move */
+    .hero-rule {
+      width: 80px; height: 1px;
+      background: none;
+      margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+    }
+    .hero-intro {
+      max-width: 34rem;
+      text-align: center;
+      font-family: var(--ff-body);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+    .hero-intro p + p { margin-top: 0.75rem; }
+    .hero-intro p:first-child {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.125rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .hero-intro-highlight { font-weight: 500; color: var(--text); }
+
+    .fan {
+      position: relative;
+      width: min(46rem, 100%);
+      /* a block of its own height, not the leftover space — with flex:1 the
+         cards anchored to the bottom of the hero and sank far below the type */
+      flex: 1;
+      margin-top: clamp(1.5rem, 7vh, 5rem);
+      transform: scale(0.8) translateY(120px);
+      opacity: 0;
+      transition: transform .9s cubic-bezier(.16, 1, .3, 1),
+                  opacity .7s cubic-bezier(.16, 1, .3, 1);
+    }
+    .fan.is-in { transform: none; opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .fan { transform: none; opacity: 1; transition: none; }
+    }
+
+    /* One card is always open, centred and square-on above the others; the
+       rest stay fanned along the bottom, each showing just its name. */
+    .fan-card {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: var(--w);
+      aspect-ratio: 5 / 6;
+      border: 0;
+      padding: 0;
+      /* A button does not inherit the page font. Without this the card copy
+         came out in the browser's default Arial — the heading only looked
+         right because it names its own face. */
+      font-family: inherit;
+      background: none;
+      cursor: pointer;
+      transform: translateX(-50%) translateX(var(--dx)) translateY(var(--dy)) rotate(var(--rot));
+      transform-origin: 50% 100%;
+      transition: transform .5s cubic-bezier(.33, 1, .68, 1),
+                  opacity .3s cubic-bezier(.33, 1, .68, 1);
+      z-index: var(--z);
+    }
+    .fan-card .shot {
+      width: 100%; height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--tile);
+      box-shadow: 0 0 0 1px rgba(26,24,23,.06), 0 2px 6px rgba(90,70,45,.07);
+      display: flex;
+      flex-direction: column;
+      /* Timing lifted off interfacecraft.dev, which drives its cards with a
+         spring rather than a transition. Sampled at 60fps, hover in and out
+         both settle at ~385ms, and the curve fits cubic-bezier(.2, 0, .4, 1)
+         to within 1% — the slow start is the spring winding up. */
+      transition: transform .38s cubic-bezier(.2, 0, .4, 1),
+                  box-shadow .38s cubic-bezier(.2, 0, .4, 1);
+    }
+
+    /* Hovering lifts a card clear of the fan so it is obvious which one a
+       click would open. Same 8px and 1.03 the reference uses. The lift rides
+       on .shot rather than on the card's own transform: that transform is what
+       the open/close animation drives, and borrowing it here would force the
+       hover to share its timing. */
+    .fan-card:not(.is-open):hover { z-index: 20; }
+    .fan-card:not(.is-open):hover .shot,
+    .fan-card:not(.is-open):focus-visible .shot {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 0 0 1px rgba(26,24,23,.08), 0 12px 26px rgba(90,70,45,.15);
+    }
+    /* the open card is already forward; it just firms up under the cursor */
+    .fan-card.is-open:hover .shot {
+      box-shadow: 0 0 0 1px rgba(26,24,23,.09), 0 22px 52px rgba(90,70,45,.17);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fan-card .shot { transition: box-shadow .26s; }
+      .fan-card:not(.is-open):hover .shot,
+      .fan-card:not(.is-open):focus-visible .shot { transform: none; }
+    }
+    /* a finger has no hover — the lift would stick after a tap */
+    @media (hover: none) {
+      .fan-card:not(.is-open):hover .shot { transform: none; }
+    }
+    .fan-card .ph {
+      flex: 1;
+      display: grid; place-items: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    /* name on the closed cards, full copy only once open */
+    .fan-card .copy {
+      padding: 0 0.85rem 0.85rem;
+      text-align: left;
+    }
+    .fan-card .copy h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: 0.95rem;
+      line-height: 1.15;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0;
+    }
+    .fan-card .copy p {
+      margin: 0.4rem 0 0;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      color: #747474;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .4s cubic-bezier(.33,1,.68,1), opacity .3s;
+    }
+
+    /* the open one */
+    .fan-card.is-open {
+      top: 0;
+      transform-origin: 50% 0;
+      transform: translateX(-50%) rotate(0deg) scale(1.4);
+      z-index: 30;
+    }
+    .fan-card.is-open .shot {
+      box-shadow: 0 0 0 1px rgba(26,24,23,.07), 0 18px 44px rgba(90,70,45,.14);
+    }
+    .fan-card.is-open .copy h2 { font-size: 1.35rem; }
+    .fan-card.is-open .copy p { max-height: 8rem; opacity: 1; }
+
+    /* ── head row ─────────────────────────────────────────────────────── */
+    .band-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 2rem;
+      padding: clamp(1.75rem, 4vh, 3rem) var(--pad-x) clamp(1.25rem, 3vh, 2rem) var(--left);
+      border-bottom: 1px dashed rgba(26, 24, 23, 0.28);
+    }
+    .band-head h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.9rem, 4vw, 3.1rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0;
+    }
+    .band-meta {
+      text-align: right;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .band-meta .tags {
+      margin-top: 0.75rem;
+      display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .band-meta .tags span {
+      background: rgba(26, 24, 23, 0.07);
+      padding: 0.25rem 0.5rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── body row ─────────────────────────────────────────────────────── */
+    .band-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+      padding: clamp(1.25rem, 3vh, 2rem) var(--pad-x) clamp(1.5rem, 4vh, 2.5rem) var(--left);
+      align-items: start;
+    }
+    .band-copy {
+      font-family: var(--ff-body);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .band-copy a {
+      display: inline-block;
+      margin-top: 1.75rem;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 2px;
+      transition: opacity 0.15s cubic-bezier(.33,1,.68,1);
+    }
+    .band-copy a:hover { opacity: 0.55; }
+
+    /* No fixed ratio and no cover: the media keeps its own proportions and
+       the box takes their shape. Height is capped instead of cropped, so a
+       4:3 preview and a 1.6:1 video both fit the card without losing edges. */
+    .shot { display: flex; align-items: center; justify-content: center; }
+    .shot img, .shot video {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 56vh;
+    }
+
+    .band--wip .band-copy a { pointer-events: none; opacity: 0.4; }
+
+    /* The outro is pulled up under the end of the deck and runs a screen
+       longer than the panel inside it. That extra screen is the travel: the
+       ground is already pinned when the last card starts moving, so the card
+       slides off it instead of towing it along. */
+    .outro {
+      position: relative;
+      z-index: 0;
+      margin-top: -100vh;
+      height: 200vh;
+    }
+    .tail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
+      color: var(--text);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 4rem var(--pad-x) 4rem var(--left);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .tail h2 {
+      font-family: 'EB Garamond', serif; font-weight: 400; text-transform: none;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.008em; margin: 0 0 1rem;
+    }
+
+    @media (max-width: 900px) {
+      :root { --left: var(--pad-x); }
+
+      /* Four tabs will not sit in a row here. They keep their order and
+         scroll sideways instead of wrapping — a wrapped second row of tabs
+         is not a thing a browser does, and the metaphor is the only reason
+         any of this is shaped this way. */
+      .win {
+        margin-left: var(--pad-x);
+        margin-right: var(--pad-x);
+      }
+      .win-tabs {
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .win-tabs::-webkit-scrollbar { display: none; }
+      .win-tab { flex: 0 0 auto; max-width: 60vw; }
+      /* The address bar is the first thing worth losing — it is decoration,
+         and it costs a whole row of height. */
+      .win-url { display: none; }
+
+      .band-head {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+      }
+      .band-head h2 { font-size: 1.6rem; }
+      .band-meta { text-align: left; }
+      .band-meta .tags { justify-content: flex-start; }
+
+      .band-body {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding-top: 1.25rem;
+      }
+      .shot { justify-content: flex-start; }
+      .shot img, .shot video { max-height: 34vh; }
+
+    }
+
+    @media (max-width: 560px) {
+      .band-head h2 { font-size: 1.35rem; }
+      .band-copy { font-size: 0.875rem; line-height: 1.55; }
+      .shot img, .shot video { max-height: 30vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="hero-rule"></div>
+    <div class="hero-intro">
+      <p>Hi, I'm Faye!</p>
+      <p>I'm a product designer with 3 years of experience, focused on <span class="hero-intro-highlight">AI experiences</span> and <span class="hero-intro-highlight">complex systems</span>.</p>
+    </div>
+
+    <div class="fan" id="fan" style="--fan-lift: 5rem">
+      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-12.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>AI experiences</h2>
+            <p>Agentic tools where the interface has to make an uncertain model checkable.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-6.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Complex systems</h2>
+            <p>Untangling workflows that grew by accretion, and giving them a spine again.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.4rem; --dx:0rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>0 &rarr; 1</h2>
+            <p>Founding design: research, system, and the first shipped thing.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.2rem; --dx:6.1rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Design systems</h2>
+            <p>Patterns built to hold for the screens nobody has drawn yet.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:13.1rem; --dx:13.1rem;  --dy:188px; --rot:5deg;  --z:5; --tile:#EDEAE4">
+        <div class="shot">
+          <div class="ph">Placeholder</div>
+          <div class="copy">
+            <h2>Play</h2>
+            <p>Small things built for fun, which is where most of the ideas start.</p>
+          </div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- One window, four tabs — the trial alternative to the stacked deck.
+       The deck advanced by scrolling; so does this. The window pins inside a
+       track four screens tall and the tab changes as you pass through each
+       quarter, so the page still reads top to bottom and the tab strip is a
+       readout of where you are as much as a control. -->
+  <div class="win-track">
+  <div class="win">
+
+    <div class="win-strip">
+      <span class="win-lights" aria-hidden="true"></span>
+      <div class="win-tabs" role="tablist" aria-label="Featured work">
+        <button class="win-tab" role="tab" id="tab-brix" aria-controls="pane-brix"
+                aria-selected="true" tabindex="0"
+                style="--tint: #EFEDF9" data-edge="#DCD8EE" data-url="xuefei.io/work/brix">
+          <i></i>Brix — AI agentic talent search
+        </button>
+        <button class="win-tab" role="tab" id="tab-opusclip" aria-controls="pane-opusclip"
+                aria-selected="false" tabindex="-1"
+                style="--tint: #EDE6E5" data-edge="#DCD1CF" data-url="xuefei.io/work/opusclip">
+          <i></i>OpusClip — AI video clipping
+        </button>
+        <button class="win-tab" role="tab" id="tab-fitx" aria-controls="pane-fitx"
+                aria-selected="false" tabindex="-1"
+                style="--tint: #E9E1E5" data-edge="#D6CAD0" data-url="xuefei.io/work/fitx">
+          <i></i>FitX Lab — fit intelligence
+        </button>
+        <button class="win-tab" role="tab" id="tab-moka" aria-controls="pane-moka"
+                aria-selected="false" tabindex="-1"
+                style="--tint: #E3F1EE" data-edge="#CCE4DF" data-url="xuefei.io/work/moka">
+          <i></i>Moka HR — interview scheduling
+        </button>
+      </div>
+    </div>
+
+    <div class="win-url">
+      <span class="win-nav" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </span>
+      <span class="win-field" data-url-field><b>xuefei.io</b>/work/brix</span>
+    </div>
+
+    <div class="win-view">
+      <div class="win-page" role="tabpanel" id="pane-brix" aria-labelledby="tab-brix"
+           style="--tint: #EFEDF9" data-open>
+      <div class="band-head">
+        <h2>Brix AI Agentic Talent Search</h2>
+        <div class="band-meta">
+          2025<br />AI Agent
+          <div class="tags"><span>B2B SaaS</span><span>Design System</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Turning rule-based candidate search into two agents — one that helps recruiters define what they are looking for, one that searches against it and learns from their feedback.
+          <br /><a href="work/brix.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><video src="assets/brix-challenge1-video2.webm" poster="assets/brix-challenge1-poster.jpg" autoplay loop muted playsinline></video></div>
+      </div>
+    
+      </div>
+      <div class="win-page" role="tabpanel" id="pane-opusclip" aria-labelledby="tab-opusclip"
+           style="--tint: #EDE6E5">
+      <div class="band-head">
+        <h2>OpusClip AI Video Clipping</h2>
+        <div class="band-meta">
+          2025<br />Mobile MVP
+          <div class="tags"><span>Mobile</span><span>Creator Tool</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Bringing an AI clipping tool to mobile, where the editing model that worked on desktop no longer fits the screen.
+          <br /><a href="work/opusclip.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/opuspreview.png" alt="" /></div>
+      </div>
+    
+      </div>
+      <div class="win-page" role="tabpanel" id="pane-fitx" aria-labelledby="tab-fitx"
+           style="--tint: #E9E1E5">
+      <div class="band-head">
+        <h2>FitX Lab Fit Intelligence</h2>
+        <div class="band-meta">
+          2026<br />0 &rarr; 1
+          <div class="tags"><span>Consumer Hardware</span><span>AI</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          A body-scanning fit system built from scratch — from hardware capture through to the recommendation itself.
+          <br /><a href="work/fitx.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/fitxpreview.png" alt="" /></div>
+      </div>
+    
+      </div>
+      <div class="win-page" role="tabpanel" id="pane-moka" aria-labelledby="tab-moka"
+           style="--tint: #E3F1EE">
+      <div class="band-head">
+        <h2>Moka HR Interview Scheduling</h2>
+        <div class="band-meta">
+          2024<br />Enterprise
+          <div class="tags"><span>Enterprise SaaS</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Scheduling and coordination for interview loops that span several teams and time zones.
+          <br /><a href="work/moka.html">In progress &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/mokapreview.png" alt="" /></div>
+      </div>
+    
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  <div class="outro">
+  <div class="tail">
+    <h2>Things I build (not just) for fun</h2>
+    <a href="builds.html" style="border-bottom:1px solid currentColor; padding-bottom:2px; align-self:flex-start">Builds &rarr;</a>
+  </div>
+  </div>
+
+  <script>
+  (function () {
+    /* One card is always open. Clicking another hands it over; there is no
+       closed state, which is what keeps the hero from ever looking empty. */
+    const fan = document.getElementById('fan');
+    if (fan) {
+      requestAnimationFrame(() => requestAnimationFrame(() => fan.classList.add('is-in')));
+      setTimeout(() => fan.classList.add('is-in'), 400);   // rAF is paused in some viewers
+
+      const cards = [...fan.querySelectorAll('.fan-card')];
+      const clear = () => cards.forEach(o => o.classList.remove('is-open'));
+      cards.forEach(c => c.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = c.classList.contains('is-open');
+        clear();
+        if (!open) c.classList.add('is-open');
+      }));
+      addEventListener('click', clear);
+      addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
+    }
+  })();
+  </script>
+
+  <script>
+  (function () {
+    const strip = document.querySelector('.win-tabs');
+    if (!strip) return;
+    const tabs  = [...strip.querySelectorAll('.win-tab')];
+    const panes = tabs.map(t => document.getElementById(t.getAttribute('aria-controls')));
+    const field = document.querySelector('[data-url-field]');
+
+    const win   = document.querySelector('.win');
+    const track = document.querySelector('.win-track');
+    let shown = -1;
+
+    function open(i) {
+      if (i === shown) return;          // scroll fires constantly; only act on a change
+      shown = i;
+      tabs.forEach((t, n) => {
+        const on = n === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;          // one stop for the strip, arrows move within it
+        panes[n].toggleAttribute('data-open', on);
+      });
+      /* The frame takes the project's colour — that, more than the panel
+         swap, is what makes it read as having gone to another page. */
+      if (win) {
+        win.style.setProperty('--chrome', tabs[i].style.getPropertyValue('--tint'));
+        win.style.setProperty('--edge', tabs[i].dataset.edge || '');
+      }
+      /* The address bar is the cheapest part of the metaphor and the one
+         that sells it: a tab that does not change the URL is just a
+         segmented control wearing browser chrome. */
+      if (field) {
+        const url = tabs[i].dataset.url || '';
+        const cut = url.indexOf('/');
+        field.innerHTML = cut < 0 ? url
+          : '<b>' + url.slice(0, cut) + '</b>' + url.slice(cut);
+      }
+    }
+
+    /* ---- scroll drives the tab ----
+       The window is pinned for the length of its track, so the track's own
+       rect is what says how far through we are — the window's would read as
+       stationary the whole way (that is what sticky means) and could not
+       tell one quarter from the next. */
+    function pinTop() {
+      return parseFloat(getComputedStyle(win).top) || 0;
+    }
+    function progress() {
+      const r = track.getBoundingClientRect();
+      const travel = r.height - win.getBoundingClientRect().height - pinTop();
+      if (travel <= 0) return 0;
+      return Math.max(0, Math.min(1, (pinTop() - r.top) / travel));
+    }
+    /* Straight from the handler, not deferred to a frame — the same failure
+       js/hero-label.js documents: if the frame never comes (a background tab,
+       a throttled embed) the pending flag stays set and no later scroll ever
+       queues another paint. Cheap enough to do inline: two rect reads, and
+       open() returns immediately unless the index actually changed. */
+    function paint() {
+      open(Math.min(tabs.length - 1, Math.floor(progress() * tabs.length)));
+    }
+    addEventListener('scroll', paint, { passive: true });
+    addEventListener('resize', paint);
+    paint();
+
+    /* Clicking scrolls to that tab's own stretch of the track rather than
+       switching underneath the scroll position — otherwise the next wheel
+       notch would snap straight back to whatever quarter the page is in. */
+    function goTo(i) {
+      const r = track.getBoundingClientRect();
+      const travel = r.height - win.getBoundingClientRect().height - pinTop();
+      const at = (i + 0.5) / tabs.length;
+      scrollTo({ top: scrollY + r.top - pinTop() + travel * at, behavior: 'smooth' });
+    }
+
+    tabs.forEach((t, i) => t.addEventListener('click', () => { goTo(i); t.focus(); }));
+
+    /* Arrow keys move along a tablist — expected of the role, and the reason
+       for the roving tabIndex above. */
+    strip.addEventListener('keydown', e => {
+      const i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      const to = e.key === 'ArrowRight' ? i + 1
+               : e.key === 'ArrowLeft'  ? i - 1
+               : e.key === 'Home'       ? 0
+               : e.key === 'End'        ? tabs.length - 1 : null;
+      if (to === null) return;
+      e.preventDefault();
+      const n = (to + tabs.length) % tabs.length;
+      goTo(n);
+      tabs[n].focus();
+    });
+  })();
+  </script>
+
+  <script src="js/rail.js"></script>
+</body>
+</html>
