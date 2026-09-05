@@ -87,8 +87,10 @@ var HASH = '72ef30249add96d9067479a1f650e8ae275951125128ce953522b8206e09bd35';  
       '.xw-gate{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;' +
         'background:#fcfcfc;color:#1A1817;' +
         'font-family:\'General Sans\',ui-sans-serif,-apple-system,system-ui,sans-serif}' +
-      '.xw-gate form{display:flex;flex-direction:column;gap:.5rem;width:min(17rem,78vw)}' +
-      '.xw-gate p{margin:0 0 .5rem;font-size:.875rem;line-height:1.5;color:#919191;text-align:center}' +
+      '.xw-gate form{display:flex;flex-direction:column;gap:.5rem;width:min(19rem,80vw)}' +
+      '.xw-gate p{margin:0;text-align:center}' +
+      '.xw-gate .lead{font-size:.9375rem;line-height:1.55;color:#1A1817;margin-bottom:.4rem}' +
+      '.xw-gate .hint{font-size:.8125rem;line-height:1.5;color:#919191;margin-bottom:1.1rem}' +
       '.xw-gate input{font:inherit;font-size:.9375rem;padding:.55rem .7rem;text-align:center;' +
         'border:1px solid #DDD8CF;border-radius:6px;background:#fff;color:inherit}' +
       '.xw-gate input::placeholder{color:#AAA49C}' +
@@ -101,7 +103,8 @@ var HASH = '72ef30249add96d9067479a1f650e8ae275951125128ce953522b8206e09bd35';  
       '</style>'
 +
       '<form>' +
-        '<p>This site is still being built.</p>' +
+        '<p class="lead">This one\'s still a work in progress \u2014<br />please come back in a few days.</p>' +
+        '<p class="hint">Have the password? Come on in.</p>' +
         '<input type="password" aria-label="Password" placeholder="Password" autocomplete="current-password" autofocus />' +
         '<button type="submit">Enter</button>' +
         '<span class="err" role="status"></span>' +
