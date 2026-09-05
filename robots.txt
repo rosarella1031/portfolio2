@@ -1,0 +1,5 @@
+# The site is unfinished. Keep it out of search results until it is ready.
+# This asks crawlers not to index; it does not stop anyone from reading the
+# pages. Delete this file to let the site be found again.
+User-agent: *
+Disallow: /
