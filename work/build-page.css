@@ -97,7 +97,7 @@ body { background: var(--bg); }
 }
 .build-media img,
 .build-media video {
-  width: 100%; display: block; background: var(--tag-bg);
+  width: 100%; height: auto; display: block; background: var(--tag-bg);
 }
 
 @media (max-width: 900px) {

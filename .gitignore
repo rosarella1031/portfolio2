@@ -46,3 +46,4 @@ assets/pretext.mp4
 # Plaintext sources for password-locked pages — the encrypted shells in work/
 # are what gets published; these must never be.
 private/
+assets/Negotiabbles_Explainer.mp4
