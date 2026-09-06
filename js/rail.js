@@ -41,17 +41,17 @@
     { key: 'github',   label: 'GitHub',   href: 'https://github.com/rosarella1031', ext: true },
     { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/xuefeiw/', ext: true },
     { key: 'email',    label: 'Email',    href: 'mailto:xuefeiw1031@gmail.com' },
-    { key: 'resume',   label: 'Resume',   href: 'https://drive.google.com/file/d/1W6wpAJSjdYntuGAmM8uvVDYXAV9LTvVB/view?usp=sharing', ext: true }
+    { key: 'resume',   label: 'Resume',   href: 'https://drive.google.com/file/d/1W6wpAJSjdYntuGAmM8uvVDYXAV9LTvVB/view?usp=drive_link', ext: true }
   ];
 
   // which nav entry is the page we're on
   const path = location.pathname;
   const current =
     /builds\.html/.test(path)      ? 'builds' :
-    /* about-centered.html is a layout trial of the same page, so it should
-       light the same entry. Matching the stem rather than the exact filename
-       — an exact /about\.html/ left it falling through to the catch-all
-       below and lighting Work instead. */
+    /* about-original.html is the previous version of the same page, so it
+       should light the same entry. Matching the stem rather than the exact
+       filename — an exact /about\.html/ left it falling through to the
+       catch-all below and lighting Work instead. */
     /about[\w-]*\.html/.test(path) ? 'about'  :
     /\/work\//.test(path)          ? 'work'   :   // a case study opened on its own
     /(index\.html)?$/.test(path)    ? 'work'   : null;   // the deck is the homepage

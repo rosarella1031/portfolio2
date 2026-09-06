@@ -3,284 +3,332 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
   <!-- Runs before anything paints. See js/gate.js. -->
   <script src="js/gate.js"></script>
+  <meta name="robots" content="noindex, nofollow" />
   <title>About — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <!-- Safari ignores SVG icons; same glyph, rasterised. -->
   <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/rail.css" />
   <style>
-    /* Dot ground for the whole page, so the right-hand text sits on the same
-       surface the deck and builds canvas use. */
+    /* ===== About =====
+       Modelled on fiveyears.portorocha.com: a single reading column on the
+       page's own centre line, artifacts sitting in the margins on either
+       side rather than in a second column competing for width. The three
+       panels the file-cabinet version tabs between (bio / off hours /
+       contact) run continuously here instead — a centered column reads as
+       one sitting-down piece, not a set of switchable cards.
+
+       A trial, not a replacement: linked from nowhere, noindex, and the site
+       previous version is kept at about-original.html. */
+
     body {
       background-color: var(--bg);
-      background-image: radial-gradient(circle at 1px 1px,
-                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
-      background-size: 22px 22px;
-      background-position: -1px -1px;
+      background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+      background-size: 28px 28px;
     }
 
-    .about-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-      gap: clamp(2.5rem, 5vw, 5rem);
-      align-items: start;
-    }
-
-    /* ── the file ───────────────────────────────────────────────────────
-       A frame that never exceeds the screen. The sheet in front fills it; the
-       ones still to come wait at the bottom with just their tabs showing, and
-       climb into the frame as you scroll. Sticky alone cannot do that — a
-       sticky sheet has no resting place other than its own flow position — so
-       the vertical offsets are driven from script. */
-    .file-track { position: relative; }
-    .file {
-      --tab-h: 34px;
-      --tab-w: 8.5rem;
-      --pin: calc(var(--tab-h) + 3rem);
-      position: sticky;
-      top: var(--pin);
-      height: calc(100vh - var(--pin));
-      /* Clip at the bottom edge only. A waiting sheet is a full-height piece
-         of paper parked below the frame; without this its whole face hangs out
-         underneath and the tabs read as detached strips. The negative top
-         keeps the overhanging tabs — overflow: hidden would cut those off. */
-      clip-path: inset(-60px 0 0 0);
-      /* pan-y, not none. This is sticky and fills most of a phone screen,
-         and the whole page is scroll-driven — at none it swallowed the
-         gesture and nothing moved. The stickers keep none: a child can
-         restrict a gesture further, never widen it. */
-      touch-action: pan-y;
-    }
-    .sheet {
-      position: absolute;
-      left: 0; right: 0; top: 0;
-      height: 100%;
-      transform: translateY(var(--y, 0px));
-      transition: transform .45s cubic-bezier(.33, 1, .68, 1);
-    }
-    .sheet-face { height: 100%; background: var(--paper); }
-
-    .tab {
-      position: absolute;
-      top: calc(-1 * var(--tab-h));
-      left: calc(var(--i) * var(--tab-w));
-      width: var(--tab-w);
-      /* One pixel past its own height, so the tab overlaps the sheet it
-         belongs to. The clip-path that cuts the angled corner antialiases its
-         bottom edge into a half-transparent row, and the card behind shows
-         through it as a hairline seam. */
-      height: calc(var(--tab-h) + 1px);
-      background: var(--paper);
-      border: 0;
-      cursor: pointer;
-      display: block;
-      text-align: left;
-      padding-left: 0.9rem;
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
-      font-size: 0.75rem;
-      line-height: var(--tab-h);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text);
-      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
-    }
-
-    .sheet-no {
-      position: absolute;
-      right: 1.1rem; bottom: 0.9rem;
-      font-family: 'IBM Plex Mono', ui-monospace, monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      color: rgba(26, 24, 23, 0.32);
-    }
-
-    /* ── the stickers, still draggable ─────────────────────────────────── */
-    .sticker {
-      position: absolute;
-      z-index: 6;
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-    }
-    .sticker img { width: 100%; height: 100%; display: block; pointer-events: none; }
-    .sticker.dragging { cursor: grabbing; z-index: 9; }
-
-    .sticker--1 {
-      width: 44%; aspect-ratio: 1 / 1;
-      top: 8%; left: 6%;
-      transform: rotate(-4deg);
-      border-radius: 50%;
-      overflow: hidden;
-      background: var(--bg-card);
-      border: 5px solid var(--bg);
-      box-shadow: 0 14px 28px rgba(26,24,23,0.16);
-    }
-    .sticker--2 {
-      width: 46%; aspect-ratio: 3 / 4;
-      right: 4%; bottom: 16%;
-      transform: rotate(5deg);
-      overflow: hidden;
-      background: var(--bg-card);
-      border: 6px solid var(--bg);
-      box-shadow: 0 14px 28px rgba(26,24,23,0.16);
-    }
-    .sticker--3 {
-      width: 26%;
-      left: 8%; bottom: 4%;
-      transform: rotate(-8deg);
-      filter: drop-shadow(0 5px 0 var(--bg)) drop-shadow(0 -5px 0 var(--bg))
-              drop-shadow(0 10px 18px rgba(26,24,23,0.18));
-    }
-
-    /* ── right column: text straight on the dots ───────────────────────── */
-    /* Nothing between the last sheet landing and the end of the page — the
-       bottom padding was showing as a band of bare dots after the card had
-       already settled. */
-    main { padding-bottom: 0; }
-
-    .about-content {
-      position: sticky;
-      top: calc(34px + 3rem);
-    }
-    .about-panel {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s cubic-bezier(.33,1,.68,1);
-    }
-    .about-panel:not(:first-child) { position: absolute; inset: 0; }
-    .about-panel.is-open { opacity: 1; pointer-events: auto; position: relative; inset: auto; }
-
-    .about-content {
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-      padding-top: 0.5rem;
-    }
-
-    .about-intro {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .about-bio {
-      font-family: var(--ff-body);
-      max-width: 680px;
-    }
-    .about-bio p {
-      font-size: 1rem;
-      font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: 0;
-      color: #767676;
-      margin-bottom: 1.75rem;
-    }
-
-    .about-bio p:first-child {
-      font-family: 'EB Garamond', serif;
-      font-size: 1.75rem;
-      color: var(--text);
-    }
-
-    .about-bio-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      margin: 0.8rem 0 0.75rem;
-      padding-left: 1.25rem;
-    }
-    .about-bio-list li {
+    main {
       position: relative;
-      font-size: 1rem;
-      color: #767676;
-      line-height: 1.5;
-    }
-    .about-bio-list li::before {
-      content: '';
-      position: absolute;
-      left: -1.25rem;
-      top: 0.65em;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--text-3);
+      max-width: 1296px;
+      margin: 0 auto;
+      padding: 7rem 2rem 8rem;
     }
 
-    .about-section {
+    .about-col {
+      max-width: 38rem;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 0.8rem;
+      gap: 2.75rem;
     }
 
-    .about-section-label {
-      font-family: var(--ff-label);
-      font-size: 0.75rem;
-      font-weight: 400;
+    /* Its own screen, centred, the way each beat below is — the opening
+       line was sitting at the top of the page above the beats, so the first
+       thing you scrolled past sat in a different place from everything
+       after it. Not a .about-beat: it wants no sticky track and no scroll
+       crossfade, just one plain centred screen that scrolls away normally
+       and hands over to the beats.
+
+       Text centred too, unlike the beats: this is the one line that is
+       addressed to the reader rather than being a section of a document.
+
+       Wrapping the label and headline for the reveal (they arrive as one
+       unit) took them out of .about-col's 2.75rem gap, which had been doing
+       double duty as both "between sections" and "label to headline". Their
+       own tighter rhythm instead — the same 0.5-0.6rem a label sits under
+       its headline everywhere else on the site (build-page.css's
+       .build-label + .build-title). */
+    .about-intro {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 0.6rem;
+    }
+
+    .about-eyebrow {
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.8125rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-3);
     }
 
-    .about-links {
+    /* Only the greeting is display type. The sentence under it was set the
+       same way and the pair read as a homepage hero rather than the top of
+       an about page — one line of large serif is a greeting, three are a
+       banner. The rest drops to the same body setting the beats use, so the
+       page has one voice from here down. */
+    .about-lede {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+      line-height: 1.35;
+      color: var(--text);
+      max-width: 30rem;
+    }
+    .about-lede-sub {
+      font-size: 1.0625rem;   /* matches .about-beat p */
+      line-height: 1.7;
+      color: var(--text-2);
+      max-width: 30rem;
+      margin: 0.4rem 0 0;
+    }
+
+    /* ===== Beats =====
+       One paragraph, one scroll moment — fiveyears.portorocha.com's own
+       numbered-chapter rhythm (a number, a short headline, one paragraph,
+       room, the next). The old .about-section held two or three paragraphs
+       under one heading; that read as a card, not a chapter, and only two
+       of them was nowhere near enough of a scroll to feel like the
+       reference. .about-beats is a plain wrapper, not itself a .reveal — the
+       gap between beats is deliberately wider than .about-col's own 2.75rem,
+       so each one gets its own breathing room rather than reading as part of
+       the same run as the intro or the links row. */
+    /* A screen recording of the reference (not just a script reading it)
+       showed the "01" heading holding almost in place for several seconds
+       while project thumbnails cycled beside it, drifting only slowly
+       compared to a normal scroll — not the plain one-viewport-tall block in
+       ordinary flow this was built as before, which moves at full scroll
+       speed and only happens to read as centred for an instant in the
+       middle of its own height.
+
+       That holding is position: sticky, riding inside a track taller than
+       one screen: .about-beat is the track (2.4 viewports — long enough to
+       read as a real pause, short enough that six of them do not turn this
+       into a scroll marathon), .about-beat-inner is what actually sticks,
+       pinned to the top of the viewport for the whole of that extra height
+       and released only once the track runs out. */
+    .about-beats { display: flex; flex-direction: column; }
+    /* 220vh: enough excess over the 100vh sticky content for a real pause —
+       worked out from --fade-vh below (100 sticky + 2x40 fade = 180 would
+       leave none, so the gap above that is the hold: 220-100-80 = 40vh of
+       genuinely full-opacity dwell — plus the two 40vh fades themselves are
+       part of the 220, not additional). Six of these is already a fairly
+       long page for six short paragraphs; taller reads as a bigger pause per
+       beat but adds up fast across all six. */
+    .about-beat { min-height: 220vh; position: relative; }
+    .about-beat-inner {
+      position: sticky;
+      top: 0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      justify-content: center;
+      gap: 0.9rem;
     }
-
-    .about-link {
+    .about-beat-head {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
+      align-items: baseline;
+      gap: 0.65rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.375rem;
+      font-weight: 500;
       color: var(--text);
-      font-weight: 400;
-      transition: color 0.2s;
     }
-    .about-link:hover { color: var(--text-2); }
-    .about-link span { color: var(--text-3); font-size: 0.85rem; }
+    .about-beat-num {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-3);
+    }
+    .about-beat p {
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin: 0;
+    }
+    .about-beat p strong { color: var(--text); font-weight: 500; }
+    /* Structure ahead of copy — same convention as the Design Details panels
+       on the case studies: marked, not disguised as real. */
+    .about-beat--placeholder p { color: var(--text-3); font-style: italic; }
 
-    .skills-list {
+    .about-bio-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .about-bio-list li {
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--text-2);
+      padding-left: 1.1rem;
+      position: relative;
+    }
+    .about-bio-list li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.65em;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--text-3);
+    }
+
+    .about-links {
       display: flex;
       flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .about-link {
+      display: inline-flex;
+      align-items: center;
       gap: 0.4rem;
-    }
-    .skill-tag {
-      font-size: 0.8rem;
-      color: var(--text-2);
-      background: var(--tag-bg);
+      font-size: 0.9375rem;
+      color: var(--text);
       border: 1px solid var(--border);
-      padding: 0.25rem 0.75rem;
-      border-radius: 99px;
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .about-link:hover { border-color: var(--text-3); background: var(--tag-bg); }
+    .about-link span { color: var(--text-3); }
+
+    /* ===== Side artifacts =====
+       Absolutely placed against .about-frame, not the column — so their
+       position is read off the page, not off the text they sit beside. Each
+       carries a small hover response (tilt + lift) so they read as objects
+       resting near the page rather than as a second illustration column;
+       "little delightful interaction" is a line straight out of the bio
+       copy itself. Hidden below 1180px, where there is no longer margin to
+       hold them without crowding the text. */
+    /* ===== Reveal on scroll =====
+       Same recipe as the case-study pages (work/project.css's .reveal /
+       .reveal.visible / @keyframes reveal-in) — copied rather than linked,
+       since this page doesn't otherwise load project.css and one keyframe
+       doesn't earn a shared stylesheet. Grouped blocks arrive as a unit;
+       running paragraphs are left alone, same reasoning as js/reveal.js:
+       text fading in while you're mid-sentence reading it is irritating,
+       a photo or a card arriving is not. */
+    .reveal { opacity: 0; }
+    .reveal.visible {
+      animation: reveal-in 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+    }
+    @keyframes reveal-in {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; }
+      .reveal.visible { animation: none; }
+      .about-artifact { transition: none !important; }
     }
 
-    /* Tablet */
-    @media (max-width: 900px) {
-      .about-grid {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
-      }
-      .about-photo {
-        aspect-ratio: 3 / 4;
-        max-width: 380px;
-      }
+    .about-frame { position: relative; }
+    /* Split outer/inner, the same reason the hero demo's chat panel is: the
+       outer element carries --drift, written every animation frame while
+       scrolling, and it needs no transition of its own — that value is
+       already as smooth as the scroll it tracks. The inner element carries
+       the hover tilt/lift, a discrete state change that DOES want to ease.
+       One transform property serving both would put the per-frame drift
+       through a 0.35s easing curve meant for the hover instead, and the
+       artifact would lag and rubber-band behind the pointer's own scroll. */
+    .about-artifact {
+      position: absolute;
+      width: var(--w, 148px);
+      transform: translate3d(0, var(--drift, 0px), 0);
+    }
+    /* A third layer, not two: .reveal's entrance animation ends by setting
+       transform: none (see @keyframes reveal-in below), which — at equal
+       specificity, animation beats the static rule — would permanently wipe
+       out whichever resting transform sat on the same element once the
+       animation finished. The drift layer and the hover-tilt layer both
+       need their own resting transform to survive that, so the entrance
+       animation gets a middle layer that owns nothing else. */
+    .about-artifact-reveal { display: block; }
+    .about-artifact-in {
+      filter: drop-shadow(0 14px 26px rgba(26, 24, 23, 0.10));
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: rotate(var(--r, 0deg));
+      will-change: transform;
+    }
+    .about-artifact-in img { width: 100%; display: block; }
+    .about-artifact:hover .about-artifact-in {
+      transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04);
     }
 
-    /* Mobile */
+    /* Each piece now lives inside the beat it belongs to, so it is
+       positioned against that beat's own 220vh track rather than against
+       the page. --t is where it sits down that track; because the track is
+       the thing the sticky text is measured against too, the two stay in
+       step by construction — no page-length arithmetic to redo whenever a
+       track height or the beat count changes, which is what went wrong the
+       last two times these moved.
+
+       A beat is exactly as wide as the text column (it is inside
+       .about-col's 38rem), so the column's edges are the beat's own edges.
+       That makes --gap literally the space between artwork and text: no
+       50%-minus-something arithmetic, and nothing to recompute if the
+       column width changes. */
+    .about-artifact {
+      --gap: 4.5rem;
+      /* One size for all eighteen. Clamped against vw rather than fixed so
+         the gap survives at the narrow end; 17vw reaches the 250 ceiling at
+         about 1470 and eases down from there. */
+      --w: clamp(150px, 17vw, 250px);
+      top: var(--t, 50vh);
+    }
+    .about-artifact--l { right: calc(100% + var(--gap)); }
+    .about-artifact--r { left:  calc(100% + var(--gap)); }
+
+    /* Placeholder — structure ahead of the real images, marked rather than
+       disguised, same convention as the empty Design Details panels on the
+       case studies and the placeholder beat below. */
+    .about-artifact-ph {
+      aspect-ratio: var(--ar, 4 / 3);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      display: grid;
+      place-items: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    /* 1319. The rail takes a fixed slice off the left, so the reading column
+       does not sit on the window's centre and the right-hand side has less
+       room — that side is what sets this number. Measured at one size for
+       all eighteen: the right-hand clearance is 9px at 1260, 22 at 1300, 28
+       at 1320. Went up from 1259 when the artwork was unified and enlarged;
+       the cost is that a 1280-wide laptop now shows none, which is the price
+       of the bigger uniform size. Lower it and the artwork has to shrink. */
+    @media (max-width: 1319px) {
+      .about-artifact { display: none; }
+    }
     @media (max-width: 640px) {
-      .about-photo {
-        aspect-ratio: 3 / 4;
-        max-width: 320px;
-        margin: 0 auto;
-      }
-      .about-content { gap: 2rem; }
+      main { padding: 6rem 1.25rem 5rem; }
+      .about-col { gap: 2.25rem; }
     }
   </style>
 </head>
@@ -330,163 +378,253 @@
   </header>
 
   <main>
-    <div class="about-grid">
+    <div class="about-frame">
 
-      <!-- Left: the file. Tabs pick a sheet; the sheet picks the text on the
-           right. The stickers sit on top of whatever is in front. -->
-      <div class="file-track" id="track">
-      <div class="file" id="file">
-        <div class="sheet" data-i="0" style="--i:0; --paper:#EFEDF9">
-          <button class="tab" style="--i:0">Profile 01</button>
-          <div class="sheet-face"></div>
-          <span class="sheet-no">AB&ndash;01</span>
-          <div class="sticker sticker--1"><img src="assets/about1.png" alt="Xuefei Wang" /></div>
-          <div class="sticker sticker--2"><img src="assets/about2.png" alt="Xuefei Wang" /></div>
-          <div class="sticker sticker--3"><img src="assets/snail.png" alt="Snail" /></div>
-        </div>
-        <div class="sheet" data-i="1" style="--i:1; --paper:#EDE6E5">
-          <button class="tab" style="--i:1">Off hours 02</button>
-          <div class="sheet-face"></div>
-          <span class="sheet-no">AB&ndash;02</span>
-        </div>
-        <div class="sheet" data-i="2" style="--i:2; --paper:#E3F1EE">
-          <button class="tab" style="--i:2">Contact 03</button>
-          <div class="sheet-face"></div>
-          <span class="sheet-no">AB&ndash;03</span>
+
+      <div class="about-col">
+        <div class="about-intro reveal">
+          <div class="about-eyebrow">About</div>
+          <p class="about-lede">Hi, I'm Faye.</p>
+          <p class="about-lede-sub">A product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
         </div>
 
-      </div>
-      </div>
+        <div class="about-beats">
 
-      <div class="about-content">
-
-        <div class="about-panel is-open" data-panel="0">
-          <div class="about-bio">
-            <p>Hi, I'm Faye!</p>
-            <p>My name is Xuefei Wang, and I usually go by Faye. I'm a product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
-            <p>Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
-            <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
-            <p>Currently based in New York.</p>
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">01</span> Background</div>
+            <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 95vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 168vh; --r: -3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
-        </div>
 
-        <div class="about-panel" data-panel="1">
-          <div class="about-bio">
-            <p>Outside of design, I'm usually:</p>
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">02</span> What I care about</div>
+            <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 102vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 172vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">03</span> Where I am</div>
+            <p>Currently based in New York.</p>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 162vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">04</span> Outside of design</div>
             <ul class="about-bio-list">
               <li>listening to music and playing drums</li>
               <li>playing games and overthinking their systems and interactions</li>
               <li>making something delicious in the kitchen</li>
               <li>playing with my cat</li>
             </ul>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 34vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 106vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 176vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">05</span> Let's talk</div>
             <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 28vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 98vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 166vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
+
+          <!-- Placeholder — a sixth beat so the page reads at something closer
+               to the reference's chapter count. Replace with real copy (or
+               delete the beat) once there's something to say here. -->
+          <div class="about-beat about-beat--placeholder reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">06</span> What's next</div>
+            <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
+            </div>
+          
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 24vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 94vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 164vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+          </div>
+
         </div>
 
-        <div class="about-panel" data-panel="2">
-          <div class="about-links">
-            <a href="mailto:xuefeiw1031@gmail.com" class="about-link">
-              xuefeiw1031@gmail.com <span>&#8599;</span>
-            </a>
-            <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" class="about-link">
-              LinkedIn <span>&#8599;</span>
-            </a>
-          </div>
+        <!-- Closing email / LinkedIn row, held back for now. The rail carries
+             both on every page already, so nothing is lost by leaving it out.
+        <div class="about-links reveal">
+          <a href="mailto:xuefeiw1031@gmail.com" class="about-link">xuefeiw1031@gmail.com <span>&#8599;</span></a>
+          <a href="https://www.linkedin.com/in/xuefeiw/" target="_blank" class="about-link">LinkedIn <span>&#8599;</span></a>
         </div>
-
+        -->
       </div>
+
     </div>
   </main>
 
+  <script src="js/rail.js" defer></script>
 
-  <script src="js/main.js"></script>
   <script>
+  /* ===== Reveal + parallax =====
+
+     Reveal: the same dual-trigger recipe as js/reveal.js (scroll event plus
+     a 200ms poll, IntersectionObserver skipped on purpose — it silently does
+     nothing in some embedded viewers, and a page of blocks stuck at
+     opacity:0 is the worst failure mode this page has). Siblings inside one
+     block stagger by 80ms, same as the case studies, so the three artifacts
+     and the intro/section blocks arrive as a loose cascade rather than one
+     flat pop.
+
+     Parallax: the artifacts drift at a slower rate than the page scrolls —
+     each keeps its own CSS custom property, --drift, read only by the outer
+     .about-artifact element's own transform (see the three-layer split in
+     the <style> above) — so a hover mid-scroll composes with the drift
+     rather than one clobbering the other. Off under reduced motion and
+     below 1181px, where the artifacts are not rendered at all. */
   (function () {
-    const track  = document.getElementById('track');
-    const file   = document.getElementById('file');
-    if (!track || !file) return;
-    const sheets = [...file.querySelectorAll('.sheet')];
-    const panels = [...document.querySelectorAll('.about-panel')];
-    const n = sheets.length;
-    const STEP = 0.7;                       // screens of scroll per sheet
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var blocks = [].slice.call(document.querySelectorAll('.reveal'));
 
-    // the track has to be tall enough to hold one screen plus a step per sheet
-    function sizeTrack() {
-      track.style.height = (innerHeight + (n - 1) * STEP * innerHeight) + 'px';
-    }
+    function showAll() { blocks.forEach(function (el) { el.classList.add('visible'); }); }
 
-    /* Where a sheet waits before its turn: parked at the bottom of the frame
-       with only its tab above the edge, and one tab-height per sheet still to
-       come, so the waiting tabs stack up rather than land on each other. */
-    function restY(i) {
-      const tab = parseFloat(getComputedStyle(file).getPropertyValue('--tab-h')) || 34;
-      return file.clientHeight - (n - 1 - i) * tab;
-    }
-
-    let last = -1;
-    function sync() {
-      const top = track.getBoundingClientRect().top;
-      const span = (n - 1) * STEP * innerHeight;
-      const p = span > 0 ? Math.max(0, Math.min(n - 1, -top / (span / (n - 1)))) : 0;
-
-      sheets.forEach((s, i) => {
-        const t = Math.max(0, Math.min(1, i - p));   // 1 = still parked, 0 = arrived
-        s.style.setProperty('--y', (t * restY(i)) + 'px');
-        s.style.zIndex = i + 1;
+    if (reduced || !blocks.length) { showAll(); }
+    else {
+      var seen = new Map();
+      blocks.forEach(function (el) {
+        var n = seen.get(el.parentElement) || 0;
+        /* The first artwork in a beat trails its text rather than landing
+           with it. It sits inside the beat, so it is already carrying the
+           beat's own scroll crossfade — this delay multiplies on top of
+           that. Only the first piece needs it: the other two sit far enough
+           down the 220vh track that they arrive well after the text anyway. */
+        var lead = el.parentElement.classList.contains('about-artifact--lead') ? 0.35 : 0;
+        el.style.animationDelay = (Math.min(n, 3) * 0.08 + lead) + 's';
+        seen.set(el.parentElement, n + 1);
       });
 
-      const front = Math.round(p);
-      if (front !== last) {
-        last = front;
-        panels.forEach((pl, i) => pl.classList.toggle('is-open', i === front));
+      var pending = blocks.slice();
+      function check() {
+        var limit = innerHeight * 0.92;
+        pending = pending.filter(function (el) {
+          if (el.getBoundingClientRect().top > limit) return true;
+          el.classList.add('visible');
+          /* A beat's entrance animation ends by setting opacity via a fill:
+             both keyframe, which — same conflict as the drift transform
+             below — would go on outranking any plain inline opacity this
+             file writes afterwards. Once it has actually finished, drop the
+             classes driving it so the crossfade below has sole ownership of
+             this element's opacity from here on. */
+          if (el.classList.contains('about-beat')) {
+            el.addEventListener('animationend', function once() {
+              el.removeEventListener('animationend', once);
+              el.classList.remove('reveal', 'visible');
+              el.style.opacity = '1';
+            });
+          }
+          return false;
+        });
+        return pending.length;
       }
+
+      var ticks = 0;
+      var tick = setInterval(function () { ticks++; if (!check()) stop(); }, 200);
+      function onScroll() { if (!check()) stop(); }
+      function stop() {
+        clearInterval(tick);
+        removeEventListener('scroll', onScroll);
+        removeEventListener('resize', onScroll);
+      }
+      addEventListener('scroll', onScroll, { passive: true });
+      addEventListener('resize', onScroll);
+      check();
+      setTimeout(function () { if (!ticks) showAll(); }, 3000);
     }
 
-    // scroll events are not delivered in every embedded viewer, so poll as well
-    addEventListener('scroll', sync, { passive: true });
-    addEventListener('resize', () => { sizeTrack(); sync(); });
-    setInterval(sync, 100);
-    sizeTrack(); sync();
+    // ---- parallax ----
+    if (reduced) return;
+    var artifacts = [].slice.call(document.querySelectorAll('.about-artifact'));
+    var WIDE = matchMedia('(min-width: 1181px)');
 
-    /* A tab scrolls to its own sheet. */
-    sheets.forEach((sheet, i) => {
-      sheet.querySelector('.tab').addEventListener('click', () => {
-        const y = track.getBoundingClientRect().top + scrollY + i * STEP * innerHeight;
-        scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-      });
-    });
+    /* ---- crossfade =====
+       Timed frame by frame off a screen recording of the reference, 7-15s,
+       where one full cycle plays out. Measured against the viewport:
 
-    /* Drag the stickers; capture waits 3px so a tab click still lands. */
-    file.querySelectorAll('.sticker').forEach(item => {
-      const home = item.closest('.sheet');
-      let down = false, moved = false, sx = 0, sy = 0, left = 0, top = 0;
-      item.addEventListener('pointerdown', e => {
-        if (e.button !== 0) return;
-        down = true; moved = false; sx = e.clientX; sy = e.clientY;
+         7.00s   "01" at y=150, opaque   |
+         7.75s   "01" at y=150, opaque   |  held, not moving at all
+         8.50s   "01" at y=150, opaque   |
+         9.00s   "01" at y=102, opaque   <- released, moving, STILL opaque
+         9.25s   "01" at y=59,  fading   <- fades while it travels
+         10-11s  black
+        11.25s   "02" at y=218, faint    <- rises from below, fading in
+        11.75s   "02" at y=159, opaque   <- arrives, holds
+
+       So the fade-out belongs to the release, not to the hold: the block is
+       still fully opaque for the first stretch of its travel. An earlier
+       version measured the outer track and, with the fade distance set
+       against the track's excess height, finished fading before the release
+       even happened — the travel was there but invisible, which is exactly
+       why the whole thing read as though nothing had changed.
+
+       Measuring the sticky element itself gives all three phases for free,
+       because its own top tells you which phase you are in: positive while
+       it rises into place, exactly 0 for the entire hold (that is what
+       sticky means), negative once it releases and climbs away. One
+       triangle over that single number does the rest. */
+    var beats = [].slice.call(document.querySelectorAll('.about-beat'));
+
+    function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+
+    function paint() {
+      if (WIDE.matches) {
+        artifacts.forEach(function (el, i) {
+          var r = el.getBoundingClientRect();
+          var from = (r.top + r.height / 2) - innerHeight / 2;
+          var rate = 0.06 + (i % 2) * 0.03;       // alternating so they don't drift in lockstep
+          el.style.setProperty('--drift', Math.round(-from * rate) + 'px');
+        });
+      }
+      /* 0.4 viewports of travel to fade over, against 1.2 of hold (the
+         track's 220vh less the 100vh that sticks) — the same roughly 3:1
+         hold-to-fade the recording shows, 1.5s held against 0.5s fading. */
+      var fade = innerHeight * 0.4;
+      beats.forEach(function (el, i) {
+        if (!el.classList.contains('visible') && el.classList.contains('reveal')) return; // entrance not run yet
+        var inner = el.firstElementChild;   // .about-beat-inner, the sticky one
+        if (!inner) return;
+        var t = inner.getBoundingClientRect().top;
+        /* Positive on the way in, 0 for the whole hold, negative once it
+           releases. The last beat only reads the way-in half, so it arrives
+           like the others and then simply stays: the page ends before there
+           is room to scroll its fade-out through (measured: 0.401 opacity
+           at maximum scroll, 145px short of finished), and a section frozen
+           half-faded is not something any other beat ever does. */
+        var d = (i === beats.length - 1) ? Math.max(0, t) : Math.abs(t);
+        el.style.opacity = clamp01(1 - d / fade).toFixed(3);
       });
-      item.addEventListener('pointermove', e => {
-        if (!down) return;
-        const dx = e.clientX - sx, dy = e.clientY - sy;
-        if (!moved) {
-          if (Math.abs(dx) < 3 && Math.abs(dy) < 3) return;
-          const box = home.getBoundingClientRect(), me = item.getBoundingClientRect();
-          left = me.left - box.left; top = me.top - box.top;
-          Object.assign(item.style, { left: left+'px', top: top+'px', right: 'auto', bottom: 'auto' });
-          item.classList.add('dragging');
-          try { item.setPointerCapture(e.pointerId); } catch (_) {}
-          moved = true;
-        }
-        const box = home.getBoundingClientRect(), me = item.getBoundingClientRect();
-        item.style.left = Math.max(0, Math.min(left + dx, box.width  - me.width))  + 'px';
-        item.style.top  = Math.max(0, Math.min(top  + dy, box.height - me.height)) + 'px';
-      });
-      const end = () => { down = false; item.classList.remove('dragging'); };
-      item.addEventListener('pointerup', end);
-      item.addEventListener('pointercancel', end);
-    });
+    }
+    /* Straight from the handler rather than deferred to a frame — see the
+       note in js/hero-label.js: a frame that never arrives leaves the
+       pending flag set and nothing repaints again. */
+    addEventListener('scroll', paint, { passive: true });
+    addEventListener('resize', paint);
+    paint();
   })();
   </script>
-
-  <script src="js/rail.js" defer></script>
 </body>
 </html>
