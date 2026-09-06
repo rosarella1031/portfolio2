@@ -47,3 +47,4 @@ assets/pretext.mp4
 # are what gets published; these must never be.
 private/
 assets/Negotiabbles_Explainer.mp4
+work/__export_tmp*.html
