@@ -165,33 +165,42 @@
       margin: 0;
     }
     .about-beat p strong { color: var(--text); font-weight: 500; }
+    /* The beats now run to three paragraphs each; .about-beat-inner's 0.9rem
+       flex gap was set when every beat was a single paragraph and reads tight
+       between them at this measure. */
+    .about-beat-inner p + p { margin-top: 0.35rem; }
     /* Structure ahead of copy — same convention as the Design Details panels
        on the case studies: marked, not disguised as real. */
     .about-beat--placeholder p { color: var(--text-3); font-style: italic; }
 
-    .about-bio-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    /* Named holes rather than invented content: the copy calls for three
+       lists and a card that do not exist yet, and a dashed slot says which
+       is which without pretending to be the real thing. Same convention the
+       case studies use for unfinished panels — marked, not disguised. */
+    .about-slots { display: flex; flex-direction: column; gap: 0.6rem; }
+    .about-slot {
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      padding: 0.95rem 1.1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.15rem;
     }
-    .about-bio-list li {
-      font-size: 1.0625rem;
+    .about-slot-label {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .about-beat .about-slot-note {
+      font-size: 0.875rem;
       line-height: 1.6;
-      color: var(--text-2);
-      padding-left: 1.1rem;
-      position: relative;
+      font-style: italic;
+      color: var(--text-3);
+      margin: 0;
     }
-    .about-bio-list li::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0.65em;
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--text-3);
-    }
+    .about-slot--card { min-height: 9rem; justify-content: center; }
 
     .about-links {
       display: flex;
@@ -382,20 +391,28 @@
 
 
       <div class="about-col">
+        <!-- The opening screen is commented out rather than deleted. The new
+             copy introduces Faye inside beat 01 ("I’m Faye, a product
+             designer…"), so running the hero above it said the same thing
+             twice, one screen apart. Uncomment to put it back — its CSS
+             (.about-intro / .about-eyebrow / .about-lede) is still here.
         <div class="about-intro reveal">
           <div class="about-eyebrow">About</div>
-          <p class="about-lede">Hi, I'm Faye.</p>
+          <p class="about-lede">Hi, I’m Faye.</p>
           <p class="about-lede-sub">A product designer interested in how AI and emerging technologies can augment how people and teams think, create, and work.</p>
         </div>
+        -->
 
         <div class="about-beats">
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">01</span> Background</div>
-            <p>My name is Xuefei Wang, and I usually go by Faye. Over the past three years, I've designed AI-powered tools, complex workflows, and products across web, mobile, and immersive experiences. I especially enjoy untangling ambiguous systems, finding the right role for intelligence within a workflow, and turning technical possibilities into experiences that feel clear, useful, and a little delightful.</p>
+            <div class="about-beat-head"><span class="about-beat-num">01</span> Design is my thing.</div>
+            <p>I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
+            <p>What I like most about design is how many different modes it lets me move between. I can spend one minute talking to people and trying to understand what’s actually going on, then jump into flows, interfaces, prototypes, and all the tiny details that make something finally feel right.</p>
+            <p>I especially like the part when a problem is still a little fuzzy, and you get to slowly turn it into something clear, useful, and real.</p>
             </div>
-          
+
             <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 95vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 168vh; --r: -3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
@@ -403,10 +420,12 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">02</span> What I care about</div>
-            <p>I care about both the big picture and the tiny details: how a system fits together, how a team can scale it, and how one interaction, animation, or line of copy can change the way a product feels.</p>
+            <div class="about-beat-head"><span class="about-beat-num">02</span> I’m a maker at heart.</div>
+            <p>I like getting ideas out of my head and into something I can actually play with.</p>
+            <p>Sometimes that means making a prototype in Figma. Sometimes I code it, try something in 3D, or make a small interaction experiment just because I want to know what it would feel like.</p>
+            <p>I also make electronic music from time to time. Different medium, same satisfaction: starting with almost nothing, trying things, adjusting, and eventually ending up with something that feels like it has a life of its own.</p>
             </div>
-          
+
             <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 102vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 172vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
@@ -414,10 +433,29 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">03</span> Where I am</div>
-            <p>Currently based in New York.</p>
+            <div class="about-beat-head"><span class="about-beat-num">03</span> Along the way.</div>
+            <p>I’ve had the chance to work on AI recruiting, creator tools, education, XR, and early-stage products with small teams.</p>
+            <p>Some of that work has also found its way into places I never really expected — design awards, exhibitions, hackathons, and juries.</p>
+            <div class="about-slots">
+              <div class="about-slot"><div class="about-slot-label">Selected experience</div><p class="about-slot-note">Roles, companies and dates go here.</p></div>
+              <div class="about-slot"><div class="about-slot-label">Recognition</div><p class="about-slot-note">Awards and honours go here.</p></div>
+              <div class="about-slot"><div class="about-slot-label">Exhibitions &amp; other appearances</div><p class="about-slot-note">Shows, talks, hackathons and jury work go here.</p></div>
             </div>
-          
+            </div>
+
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 104vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 174vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+          </div>
+
+          <div class="about-beat reveal">
+            <div class="about-beat-inner">
+            <div class="about-beat-head"><span class="about-beat-num">04</span> Bits and pieces.</div>
+            <p>A lot of my free time somehow ends up around games, music, visual references, and small details I probably didn’t need to notice.</p>
+            <p>I save screenshots constantly, get attached to very specific game interactions, and can spend way too long looking at a typeface, a makeup look, a piece of packaging, or some beautifully made object.</p>
+            <p>I also live with a cat, who contributes very little to rent but appears in a suspicious amount of my camera roll.</p>
+            </div>
+
             <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
             <div class="about-artifact about-artifact--r" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
             <div class="about-artifact about-artifact--l" style="--t: 162vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
@@ -425,43 +463,16 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">04</span> Outside of design</div>
-            <ul class="about-bio-list">
-              <li>listening to music and playing drums</li>
-              <li>playing games and overthinking their systems and interactions</li>
-              <li>making something delicious in the kitchen</li>
-              <li>playing with my cat</li>
-            </ul>
+            <div class="about-beat-head"><span class="about-beat-num">05</span> Take me with you.</div>
+            <p>Made it this far? Here’s my card.</p>
+            <div class="about-slot about-slot--card">
+              <div class="about-slot-label">Interactive card</div>
+              <p class="about-slot-note">The card itself goes here.</p>
             </div>
-          
-            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 34vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 106vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 176vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-          </div>
+            </div>
 
-          <div class="about-beat reveal">
-            <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">05</span> Let's talk</div>
-            <p>Always happy to talk about AI, creative tools, interaction ideas, or the game I'm currently trying to get better at.</p>
-            </div>
-          
-            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 28vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about2.png" alt="" /></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 98vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 166vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-          </div>
-
-          <!-- Placeholder — a sixth beat so the page reads at something closer
-               to the reference's chapter count. Replace with real copy (or
-               delete the beat) once there's something to say here. -->
-          <div class="about-beat about-beat--placeholder reveal">
-            <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">06</span> What's next</div>
-            <p>Placeholder &mdash; a closing note about what you're working toward, learning, or looking for next. Swap this paragraph for the real thing.</p>
-            </div>
-          
-            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 24vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 94vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 164vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 28vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--l" style="--t: 100vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
         </div>
