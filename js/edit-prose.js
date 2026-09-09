@@ -16,6 +16,13 @@
   // re-normalise every tag and bury the actual edit in noise.
   const SELECTOR = '[data-e]';
 
+  // Announce the mode on the root so a page can say what editing means for
+  // its own layout. About needs this: it shows one beat per 220vh and
+  // crossfades between them, so without flattening, every block but the
+  // current one is invisible and unclickable. Pages that need nothing extra
+  // simply never style the attribute.
+  document.documentElement.setAttribute('data-editing', '');
+
   const style = document.createElement('style');
   style.id = '__editStyle';
   style.textContent = `

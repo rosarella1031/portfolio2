@@ -202,6 +202,31 @@
     }
     .about-slot--card { min-height: 9rem; justify-content: center; }
 
+    /* ===== Edit mode =====
+       js/edit-prose.js marks the document while ?edit is on. The published
+       page shows one beat per 220vh and crossfades between them, which makes
+       every block but the current one unclickable and invisible. Editing
+       wants the opposite: the whole column at once, nothing pinned, nothing
+       faded. Line breaks here are therefore not the ones readers get — the
+       same trade the tool already makes on the case studies' measure. */
+    [data-editing] .about-beat {
+      min-height: 0;
+      opacity: 1 !important;
+      padding: 2.25rem 0;
+    }
+    [data-editing] .about-beat-inner {
+      position: static;
+      min-height: 0;
+    }
+    [data-editing] .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    /* The margin artifacts hold no text to edit, and their --t offsets are
+       measured against a 220vh track — flattened, they would stack on top of
+       the column they are supposed to sit beside. */
+    [data-editing] .about-artifact { display: none; }
+
     .about-links {
       display: flex;
       flex-wrap: wrap;
@@ -407,10 +432,10 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">01</span> Design is my thing.</div>
-            <p>I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
-            <p>What I like most about design is how many different modes it lets me move between. I can spend one minute talking to people and trying to understand what’s actually going on, then jump into flows, interfaces, prototypes, and all the tiny details that make something finally feel right.</p>
-            <p>I especially like the part when a problem is still a little fuzzy, and you get to slowly turn it into something clear, useful, and real.</p>
+            <div class="about-beat-head"><span class="about-beat-num">01</span> <span class="about-beat-title" data-e="1">Design is my thing.</span></div>
+            <p data-e="2">I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
+            <p data-e="3">What I like most about design is how many different modes it lets me move between. I can spend one minute talking to people and trying to understand what’s actually going on, then jump into flows, interfaces, prototypes, and all the tiny details that make something finally feel right.</p>
+            <p data-e="4">I especially like the part when a problem is still a little fuzzy, and you get to slowly turn it into something clear, useful, and real.</p>
             </div>
 
             <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
@@ -420,10 +445,10 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">02</span> I’m a maker at heart.</div>
-            <p>I like getting ideas out of my head and into something I can actually play with.</p>
-            <p>Sometimes that means making a prototype in Figma. Sometimes I code it, try something in 3D, or make a small interaction experiment just because I want to know what it would feel like.</p>
-            <p>I also make electronic music from time to time. Different medium, same satisfaction: starting with almost nothing, trying things, adjusting, and eventually ending up with something that feels like it has a life of its own.</p>
+            <div class="about-beat-head"><span class="about-beat-num">02</span> <span class="about-beat-title" data-e="5">I’m a maker at heart.</span></div>
+            <p data-e="6">I like getting ideas out of my head and into something I can actually play with.</p>
+            <p data-e="7">Sometimes that means making a prototype in Figma. Sometimes I code it, try something in 3D, or make a small interaction experiment just because I want to know what it would feel like.</p>
+            <p data-e="8">I also make electronic music from time to time. Different medium, same satisfaction: starting with almost nothing, trying things, adjusting, and eventually ending up with something that feels like it has a life of its own.</p>
             </div>
 
             <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
@@ -433,13 +458,13 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">03</span> Along the way.</div>
-            <p>I’ve had the chance to work on AI recruiting, creator tools, education, XR, and early-stage products with small teams.</p>
-            <p>Some of that work has also found its way into places I never really expected — design awards, exhibitions, hackathons, and juries.</p>
+            <div class="about-beat-head"><span class="about-beat-num">03</span> <span class="about-beat-title" data-e="9">Along the way.</span></div>
+            <p data-e="10">I’ve had the chance to work on AI recruiting, creator tools, education, XR, and early-stage products with small teams.</p>
+            <p data-e="11">Some of that work has also found its way into places I never really expected — design awards, exhibitions, hackathons, and juries.</p>
             <div class="about-slots">
-              <div class="about-slot"><div class="about-slot-label">Selected experience</div><p class="about-slot-note">Roles, companies and dates go here.</p></div>
-              <div class="about-slot"><div class="about-slot-label">Recognition</div><p class="about-slot-note">Awards and honours go here.</p></div>
-              <div class="about-slot"><div class="about-slot-label">Exhibitions &amp; other appearances</div><p class="about-slot-note">Shows, talks, hackathons and jury work go here.</p></div>
+              <div class="about-slot"><div class="about-slot-label" data-e="12">Selected experience</div><p class="about-slot-note" data-e="13">Roles, companies and dates go here.</p></div>
+              <div class="about-slot"><div class="about-slot-label" data-e="14">Recognition</div><p class="about-slot-note" data-e="15">Awards and honours go here.</p></div>
+              <div class="about-slot"><div class="about-slot-label" data-e="16">Exhibitions &amp; other appearances</div><p class="about-slot-note" data-e="17">Shows, talks, hackathons and jury work go here.</p></div>
             </div>
             </div>
 
@@ -450,10 +475,10 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">04</span> Bits and pieces.</div>
-            <p>A lot of my free time somehow ends up around games, music, visual references, and small details I probably didn’t need to notice.</p>
-            <p>I save screenshots constantly, get attached to very specific game interactions, and can spend way too long looking at a typeface, a makeup look, a piece of packaging, or some beautifully made object.</p>
-            <p>I also live with a cat, who contributes very little to rent but appears in a suspicious amount of my camera roll.</p>
+            <div class="about-beat-head"><span class="about-beat-num">04</span> <span class="about-beat-title" data-e="18">Bits and pieces.</span></div>
+            <p data-e="19">A lot of my free time somehow ends up around games, music, visual references, and small details I probably didn’t need to notice.</p>
+            <p data-e="20">I save screenshots constantly, get attached to very specific game interactions, and can spend way too long looking at a typeface, a makeup look, a piece of packaging, or some beautifully made object.</p>
+            <p data-e="21">I also live with a cat, who contributes very little to rent but appears in a suspicious amount of my camera roll.</p>
             </div>
 
             <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
@@ -463,11 +488,11 @@
 
           <div class="about-beat reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">05</span> Take me with you.</div>
-            <p>Made it this far? Here’s my card.</p>
+            <div class="about-beat-head"><span class="about-beat-num">05</span> <span class="about-beat-title" data-e="22">Take me with you.</span></div>
+            <p data-e="23">Made it this far? Here’s my card.</p>
             <div class="about-slot about-slot--card">
-              <div class="about-slot-label">Interactive card</div>
-              <p class="about-slot-note">The card itself goes here.</p>
+              <div class="about-slot-label" data-e="24">Interactive card</div>
+              <p class="about-slot-note" data-e="25">The card itself goes here.</p>
             </div>
             </div>
 
@@ -490,6 +515,8 @@
   </main>
 
   <script src="js/rail.js" defer></script>
+  <!-- Copy editing, on ?edit only. See js/edit-prose.js. -->
+  <script src="js/edit-prose.js" defer></script>
 
   <script>
   /* ===== Reveal + parallax =====
