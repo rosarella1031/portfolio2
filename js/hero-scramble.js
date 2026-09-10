@@ -58,6 +58,12 @@
      so it cannot affect the slot's x or anything beside it. */
   var NOISE_RISE = 0.17;   /* em, each way */
 
+  /* The site's lightest text token, the one the beat numbers and placeholder
+     labels already use — so the sparkles sit back from the greeting instead
+     of competing with it at full ink. Falls back to the literal value on any
+     page that does not define the variable. */
+  var NOISE_INK = 'var(--text-3, #AAA49C)';
+
   var REVEAL_MS = 85;   /* per character; thirteen of them lands near 1.2s */
   var HOLD_MS   = 70;   /* how long a symbol sits before rerolling */
   var START_MS  = 140;  /* a beat before it begins, so the page settles first */
@@ -128,6 +134,7 @@
                         (lh ? 'line-height:' + lh + ';' : '') +
                         'left:' + c.x.toFixed(2) + 'px;width:' + c.w.toFixed(2) + 'px';
       s.style.fontSize = NOISE_EM + 'em';
+      s.style.color = NOISE_INK;
       s.style.transform = 'translateY(' +
         ((Math.random() * 2 - 1) * NOISE_RISE).toFixed(3) + 'em)';
       s.textContent = pick();
@@ -158,8 +165,9 @@
         if (!spans[i]) continue;
         if (i < shown) {
           if (spans[i].style.fontSize) {
-            spans[i].style.fontSize = '';     /* resolved: full size, on the line */
-            spans[i].style.transform = '';
+            spans[i].style.fontSize = '';     /* resolved: full size, on the */
+            spans[i].style.transform = '';    /* line, and back to full ink   */
+            spans[i].style.color = '';
             spans[i].textContent = cells[i].ch;
           }
         } else if (roll) {
