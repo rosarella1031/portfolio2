@@ -25,10 +25,15 @@
   if (!el) return;
 
   var FINAL = el.textContent;
-  /* The reference scrambles with a handful of light punctuation rather than
-     the usual full ASCII soup. At 50px that matters: letters and brackets
-     read as words half-forming, where these read as texture. */
-  var CHARS = '-=*:+';
+  /* Digits, and the reason is measured rather than aesthetic. In EB Garamond
+     at 50px every digit advances exactly 23.61px, and the average letter in
+     this line advances 23.64 — so a digit standing in for a letter changes
+     the line's length by three hundredths of a pixel. The punctuation set
+     this started with spanned 12.00 (":") to 29.11 ("+"), a 17px swing per
+     character, which is where the shudder came from. They also read as
+     debris at display size; oldstyle figures in the same serif read as
+     something deliberately withheld. */
+  var CHARS = '0123456789';
 
   var REVEAL_MS = 85;   // per character; 13 characters lands near 1.2s
   var HOLD_MS   = 70;   // how long a noise glyph sits before rerolling
@@ -42,9 +47,27 @@
   // and this script ever disagree about the media query.
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { unhold(); return; }
 
+  function finalWidth() {
+    var cs = getComputedStyle(el);
+    var m = document.createElement('span');
+    m.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    m.style.font = cs.font;
+    m.style.fontFamily = cs.fontFamily;
+    m.style.fontSize = cs.fontSize;
+    m.style.fontWeight = cs.fontWeight;
+    m.style.letterSpacing = cs.letterSpacing;
+    m.textContent = FINAL;
+    document.body.appendChild(m);
+    var w = m.getBoundingClientRect().width;
+    m.remove();
+    return w;
+  }
+
   function run() {
     var live = document.createElement('span');
     live.setAttribute('aria-hidden', 'true');
+    live.style.cssText = 'display:inline-block;text-align:left;white-space:pre;width:' +
+                         finalWidth().toFixed(2) + 'px';
 
     var sr = document.createElement('span');
     sr.textContent = FINAL;
