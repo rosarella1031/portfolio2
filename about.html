@@ -354,7 +354,10 @@
       transform: rotate(var(--r, 0deg));
       will-change: transform;
     }
-    .about-artifact-in img { width: 100%; display: block; }
+    /* 3px, the same corner the placeholder cards already carry, so the real
+       photographs and the slots still waiting for one match. The parent's
+       drop-shadow reads the rendered alpha, so it follows the rounding. */
+    .about-artifact-in img { width: 100%; display: block; border-radius: 3px; }
     .about-artifact:hover .about-artifact-in {
       transform: rotate(var(--r, 0deg)) translateY(-6px) scale(1.04);
     }
