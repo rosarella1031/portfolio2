@@ -47,4 +47,7 @@ assets/pretext.mp4
 # are what gets published; these must never be.
 private/
 assets/Negotiabbles_Explainer.mp4
+# 12MB camera original, shown at ~250px. assets/alongtheway2.jpg is
+# what the page uses; this stays local (and in history before this).
+assets/alongtheway2.png
 work/__export_tmp*.html

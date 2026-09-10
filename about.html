@@ -227,6 +227,56 @@
        the column they are supposed to sit beside. */
     [data-editing] .about-artifact { display: none; }
 
+    /* ===== The opening section =====
+       Half portrait, half copy, and the only section shaped this way. The
+       reading column is 38rem; this one widens to 60rem and pulls back by
+       half the difference so it still sits on the same centre line as
+       everything below. Two 38/2 columns would leave the copy at about 30
+       characters a line, which is why it widens rather than just splitting. */
+    .about-beat--split .about-beat-inner {
+      width: 60rem;
+      margin-left: calc((38rem - 60rem) / 2);
+    }
+    .about-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .about-split-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .about-split-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    /* Below this the two halves have no room left, and the section folds
+       back into the same single column as the rest of the page. */
+    @media (max-width: 1180px) {
+      .about-beat--split .about-beat-inner { width: auto; margin-left: 0; }
+      .about-split { grid-template-columns: 1fr; gap: 2rem; }
+      .about-split-media { max-width: 22rem; }
+    }
+
+    /* ===== Stacked pair =====
+       The small picture rests on the big one's top-left corner, hanging off
+       both edges so it reads as something laid on top rather than inset into
+       it. Percentages, so the pair holds its arrangement while --w clamps. */
+    .about-stack { position: relative; }
+    .about-stack > img { display: block; width: 100%; height: auto; }
+    .about-stack-inset {
+      position: absolute;
+      top: -13%;
+      left: -17%;
+      width: 46% !important;
+      transform: rotate(-9deg);
+      filter: drop-shadow(0 6px 16px rgba(26, 24, 23, 0.13));
+    }
+
     .about-links {
       display: flex;
       flex-wrap: wrap;
@@ -430,17 +480,22 @@
 
         <div class="about-beats">
 
-          <div class="about-beat reveal">
+          <!-- The one section that is not a single centred column: the
+               portrait takes half and the copy the other half. Its side
+               artifacts are gone with it — the picture is in the column
+               now, so margin cards beside it would be a third thing. -->
+          <div class="about-beat about-beat--split reveal">
             <div class="about-beat-inner">
-            <div class="about-beat-head"><span class="about-beat-num">01</span> <span class="about-beat-title" data-e="1">Design is my thing.</span></div>
-            <p data-e="2">I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
-            <p data-e="3">What I like most about design is how many different modes it lets me move between. I can spend one minute talking to people and trying to understand what’s actually going on, then jump into flows, interfaces, prototypes, and all the tiny details that make something finally feel right.</p>
-            <p data-e="4">I especially like the part when a problem is still a little fuzzy, and you get to slowly turn it into something clear, useful, and real.</p>
+              <div class="about-split">
+                <div class="about-split-media"><img src="assets/profile.png" alt="Xuefei Wang" /></div>
+                <div class="about-split-copy">
+                  <div class="about-beat-head"><span class="about-beat-num">01</span> <span class="about-beat-title" data-e="1">Design is my thing.</span></div>
+                  <p data-e="2">I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
+                  <p data-e="3">What I like most about design is how many different modes it lets me move between. I can spend one minute talking to people and trying to understand what’s actually going on, then jump into flows, interfaces, prototypes, and all the tiny details that make something finally feel right.</p>
+                  <p data-e="4">I especially like the part when a problem is still a little fuzzy, and you get to slowly turn it into something clear, useful, and real.</p>
+                </div>
+              </div>
             </div>
-
-            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 25vh; --r: -7deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/about1.png" alt="" /></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 95vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 168vh; --r: -3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -468,9 +523,7 @@
             </div>
             </div>
 
-            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 30vh; --r: 5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/alongtheway2.png" alt="" /></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 104vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 174vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--r" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-stack"><img src="assets/alongtheway2.jpg" alt="" /><img class="about-stack-inset" src="assets/alongtheway1.png" alt="" /></div></div></div></div>
           </div>
 
           <div class="about-beat reveal">
@@ -481,9 +534,8 @@
             <p data-e="21">I also live with a cat, who contributes very little to rent but appears in a suspicious amount of my camera roll.</p>
             </div>
 
-            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 22vh; --r: -6deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/snail.png" alt="" /></div></div></div>
-            <div class="about-artifact about-artifact--r" style="--t: 92vh; --r: 3deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
-            <div class="about-artifact about-artifact--l" style="--t: 162vh; --r: -4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><div class="about-artifact-ph">Placeholder</div></div></div></div>
+            <div class="about-artifact about-artifact--lead about-artifact--l" style="--t: 74vh; --r: -5deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/more1.png" alt="" /></div></div></div>
+            <div class="about-artifact about-artifact--r" style="--t: 118vh; --r: 4deg;"><div class="about-artifact-reveal reveal"><div class="about-artifact-in"><img src="assets/more2.png" alt="" /></div></div></div>
           </div>
 
           <div class="about-beat reveal">
