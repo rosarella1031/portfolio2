@@ -43,6 +43,13 @@
   var CHARS = '✧✦⋆･ﾟ:*·';   /* sparkle, four-point star, star operator, katakana middot,
                                    semi-voiced mark, colon, asterisk, middot */
 
+  /* The sparkles come from a fallback face and are drawn at the full 50px,
+     which makes them optically far larger than the letters they stand in
+     for — a four-pointed star at 50px dwarfs an "a". They are set smaller
+     while scrambling and returned to full size the moment a slot resolves,
+     so the finished line is untouched. */
+  var NOISE_EM  = 0.4;
+
   var REVEAL_MS = 85;   /* per character; thirteen of them lands near 1.2s */
   var HOLD_MS   = 70;   /* how long a symbol sits before rerolling */
   var START_MS  = 140;  /* a beat before it begins, so the page settles first */
@@ -85,6 +92,8 @@
 
   function run() {
     var cells = slots();
+    var lh = getComputedStyle(el).lineHeight;
+    if (lh === 'normal') lh = '';
 
     var sr = document.createElement('span');
     sr.textContent = FINAL;
@@ -108,7 +117,9 @@
       if (c.ch === ' ') { spans.push(null); return; }   /* gaps need no slot */
       var s = document.createElement('span');
       s.style.cssText = 'position:absolute;top:0;text-align:center;' +
+                        (lh ? 'line-height:' + lh + ';' : '') +
                         'left:' + c.x.toFixed(2) + 'px;width:' + c.w.toFixed(2) + 'px';
+      s.style.fontSize = NOISE_EM + 'em';
       s.textContent = pick();
       box.appendChild(s);
       spans.push(s);
@@ -136,7 +147,10 @@
       for (var i = 0; i < spans.length; i++) {
         if (!spans[i]) continue;
         if (i < shown) {
-          if (spans[i].textContent !== cells[i].ch) spans[i].textContent = cells[i].ch;
+          if (spans[i].style.fontSize) {
+            spans[i].style.fontSize = '';     /* resolved: back to full size */
+            spans[i].textContent = cells[i].ch;
+          }
         } else if (roll) {
           spans[i].textContent = pick();
         }
