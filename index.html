@@ -6,6 +6,16 @@
   <meta name="robots" content="noindex, nofollow" />
   <!-- Runs before anything paints. See js/gate.js. -->
   <script src="js/gate.js"></script>
+  <script>
+    /* Paired with js/hero-scramble.js — see .hero-hold above. Self-clearing,
+       so if that script never arrives the greeting still shows. */
+    (function () {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var d = document.documentElement;
+      d.classList.add('hero-hold');
+      setTimeout(function () { d.classList.remove('hero-hold'); }, 1500);
+    })();
+  </script>
   <title>Work — Xuefei Wang</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -149,6 +159,11 @@
       margin-bottom: 0.5rem;
     }
     .hero-intro-highlight { font-weight: 500; color: var(--text); }
+
+    /* Held for the few frames between first paint and js/hero-scramble.js
+       running, so the greeting is never seen before it decodes itself.
+       visibility keeps its space, so nothing below shifts. */
+    .hero-hold .hero-intro p:first-child { visibility: hidden; }
 
     .fan {
       position: relative;
@@ -644,5 +659,7 @@
   </script>
 
   <script src="js/rail.js"></script>
+  <!-- The greeting decodes itself in. See js/hero-scramble.js. -->
+  <script src="js/hero-scramble.js" defer></script>
 </body>
 </html>
