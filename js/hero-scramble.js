@@ -1,103 +1,122 @@
 /* The greeting decodes itself on arrival.
 
-   Left to right, one character at a time: everything behind the cursor is the
-   real line, everything ahead of it is noise that keeps reshuffling until the
-   cursor reaches it. Modelled on the reference recording — the same narrow
-   punctuation set, the same unhurried pace.
+   Every character owns a fixed slot from the first frame. The slots are the
+   positions the finished line actually occupies — measured off a real Range
+   over the real text, so kerning is included — and each is absolutely placed
+   inside a box the size of that line. Nothing is ever re-centred: a slot
+   holding a symbol and the same slot holding its finished letter sit at
+   exactly the same x, so a character that has resolved cannot move again,
+   and the ones still scrambling cannot push it.
 
-   Three things this has to be careful about, none of them obvious:
+   That is also why the symbol set is now free to be chosen on looks alone.
+   While the line was one string being re-centred, every glyph's width
+   mattered and the set had to be picked by measurement; with fixed slots a
+   wide symbol and a narrow one occupy the same space.
 
-   The password gate hides the whole body until someone types the word. A
-   reveal that fires on load would play out behind that curtain and be long
-   finished by the time the page is actually looked at, so this waits for the
-   gate to lift before it starts.
+   Three things it waits for or works around:
 
-   EB Garamond arrives after first paint. Scrambling in the fallback face and
-   then swapping fonts mid-animation makes the line jump, so it waits for the
-   font too.
+   The password gate hides the whole body. A reveal on load would play out
+   behind that curtain and be over before the page was looked at, so the
+   animation waits for the gate to lift.
 
-   The line is gibberish while it runs, which is no good to a screen reader.
-   The real sentence sits in an off-screen span for the duration and the
-   animating copy is hidden from the accessibility tree; when it finishes,
-   both go away and the paragraph is exactly the text it started as. */
+   Slot positions depend on EB Garamond, which arrives after first paint, so
+   nothing is painted until the font is ready and the slots are real. The
+   greeting is held with visibility until then — never showing the plain
+   sentence, which would give the reveal's answer away before it starts.
+
+   While it runs the line is nonsense, so the real sentence sits in an
+   off-screen span and the animating copy is out of the accessibility tree.
+   When it finishes both are gone and the paragraph is the plain text node it
+   started as. */
 (function () {
   var el = document.querySelector('.hero-intro p:first-child');
   if (!el) return;
 
   var FINAL = el.textContent;
-  /* Lowercase, but only the eight letters that are nearly the same width.
-     In EB Garamond at 50px these advance 23.06-26.00px, a 2.94px spread,
-     against 23.64 for the average letter in this line — so the unresolved
-     tail barely changes length as it reshuffles. The punctuation this began
-     with spanned 12.00 to 29.11, and the full lowercase alphabet spans
-     10.91 ("j") to 38.50 ("m"), which is the wobble. Letters rather than
-     symbols because the line should look like a name that has not landed
-     yet, not like a counter or a row of daggers. */
-  var CHARS = 'kodbhqun';
 
-  var REVEAL_MS = 85;   // per character; 13 characters lands near 1.2s
-  var HOLD_MS   = 70;   // how long a noise glyph sits before rerolling
-  var START_MS  = 140;  // a beat before it begins, so the page settles first
+  /* Symbols only — no letters, no digits. Every one of these is verified to
+     exist in EB Garamond rather than being quietly substituted by a fallback
+     face: "†", "‡" and "◊" all look fine in a browser and are
+     NOT in this family, which is why they are absent here. To change the
+     texture, change this string; the other glyphs the family does have are
+     * + - = : ; . , ~ ^ | / \ < > ( ) [ ] { } ! ? # $ % & @ ¤ § ¶ • · ※ ⁂ */
+  var CHARS = '✧✦⋆･ﾟ:*·';   /* sparkle, four-point star, star operator, katakana middot,
+                                   semi-voiced mark, colon, asterisk, middot */
+
+  var REVEAL_MS = 85;   /* per character; thirteen of them lands near 1.2s */
+  var HOLD_MS   = 70;   /* how long a symbol sits before rerolling */
+  var START_MS  = 140;  /* a beat before it begins, so the page settles first */
 
   var HOLD_CLASS = 'hero-hold';
   function unhold() { document.documentElement.classList.remove(HOLD_CLASS); }
 
-  // Reduced motion never hides the line in the first place, so there is
-  // nothing to undo — but clear the class anyway in case the inline guard
-  // and this script ever disagree about the media query.
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { unhold(); return; }
 
-  function finalWidth() {
+  function pick() { return CHARS.charAt((Math.random() * CHARS.length) | 0); }
+
+  /* Where each character sits in the finished line. A Range over the live
+     text node is the only way to get this with kerning applied — laying the
+     characters out separately and adding their advances gives a different
+     line, because the pairs no longer kern against each other. */
+  function slots() {
     var cs = getComputedStyle(el);
-    var m = document.createElement('span');
-    m.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
-    m.style.font = cs.font;
-    m.style.fontFamily = cs.fontFamily;
-    m.style.fontSize = cs.fontSize;
-    m.style.fontWeight = cs.fontWeight;
-    m.style.letterSpacing = cs.letterSpacing;
-    m.textContent = FINAL;
-    document.body.appendChild(m);
-    var w = m.getBoundingClientRect().width;
-    m.remove();
-    return w;
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    probe.style.fontFamily = cs.fontFamily;
+    probe.style.fontSize = cs.fontSize;
+    probe.style.fontWeight = cs.fontWeight;
+    probe.style.letterSpacing = cs.letterSpacing;
+    probe.textContent = FINAL;
+    document.body.appendChild(probe);
+
+    var node = probe.firstChild;
+    var base = probe.getBoundingClientRect().left;
+    var out = [];
+    for (var i = 0; i < FINAL.length; i++) {
+      var r = document.createRange();
+      r.setStart(node, i);
+      r.setEnd(node, i + 1);
+      var b = r.getBoundingClientRect();
+      out.push({ ch: FINAL.charAt(i), x: b.left - base, w: b.width });
+    }
+    probe.remove();
+    return out;
   }
 
   function run() {
-    var live = document.createElement('span');
-    live.setAttribute('aria-hidden', 'true');
-    live.style.cssText = 'display:inline-block;text-align:left;white-space:pre;width:' +
-                         finalWidth().toFixed(2) + 'px';
+    var cells = slots();
 
     var sr = document.createElement('span');
     sr.textContent = FINAL;
     sr.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;' +
                        'clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap';
 
-    /* Noise is held in one buffer the length of the line and rerolled in
-       place, so a glyph ahead of the cursor keeps its slot instead of sliding
-       left as the reveal advances. Spaces are left alone — a space that
-       wanders through a 50px serif headline reads as a mistake, not as
-       texture. */
-    var buf = new Array(FINAL.length);
-    function reroll(from) {
-      for (var i = from; i < FINAL.length; i++) {
-        buf[i] = FINAL.charAt(i) === ' '
-          ? ' '
-          : CHARS.charAt((Math.random() * CHARS.length) | 0);
-      }
-    }
-    reroll(0);
+    var box = document.createElement('span');
+    box.setAttribute('aria-hidden', 'true');
+    box.style.cssText = 'position:relative;display:inline-block;white-space:pre';
 
-    function compose(shown) {
-      return FINAL.slice(0, shown) + buf.slice(shown).join('');
-    }
+    /* A hidden copy of the finished line gives the box its exact size and
+       baseline. Absolutely positioned children contribute neither, so
+       without this the box would collapse and the line would sit wrong. */
+    var spacer = document.createElement('span');
+    spacer.style.visibility = 'hidden';
+    spacer.textContent = FINAL;
+    box.appendChild(spacer);
 
-    live.textContent = compose(0);
+    var spans = [];
+    cells.forEach(function (c) {
+      if (c.ch === ' ') { spans.push(null); return; }   /* gaps need no slot */
+      var s = document.createElement('span');
+      s.style.cssText = 'position:absolute;top:0;text-align:center;' +
+                        'left:' + c.x.toFixed(2) + 'px;width:' + c.w.toFixed(2) + 'px';
+      s.textContent = pick();
+      box.appendChild(s);
+      spans.push(s);
+    });
+
     el.textContent = '';
     el.appendChild(sr);
-    el.appendChild(live);
-    // the noise is in place, so it is safe to show the line again
+    el.appendChild(box);
     unhold();
 
     var start = performance.now();
@@ -107,15 +126,21 @@
       var shown = Math.floor((now - start - START_MS) / REVEAL_MS);
       if (shown < 0) shown = 0;
 
-      if (shown >= FINAL.length) {
-        el.textContent = FINAL;      // back to exactly the markup we found
+      if (shown >= cells.length) {
+        el.textContent = FINAL;         /* back to exactly the markup we found */
         return;
       }
-      if (now - lastRoll >= HOLD_MS) {
-        lastRoll = now;
-        reroll(shown);
+      var roll = now - lastRoll >= HOLD_MS;
+      if (roll) lastRoll = now;
+
+      for (var i = 0; i < spans.length; i++) {
+        if (!spans[i]) continue;
+        if (i < shown) {
+          if (spans[i].textContent !== cells[i].ch) spans[i].textContent = cells[i].ch;
+        } else if (roll) {
+          spans[i].textContent = pick();
+        }
       }
-      live.textContent = compose(shown);
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
@@ -135,29 +160,10 @@
     mo.observe(root, { attributes: true, attributeFilter: ['class'] });
   }
 
-  /* Blank to noise immediately, then wait for the font and the gate before
-     animating. Doing the wait first left the real greeting on screen until
-     it was ready — the reveal announcing its own answer. */
-  var parked = null;
-  (function park() {
-    var buf = [];
-    for (var i = 0; i < FINAL.length; i++) {
-      buf.push(FINAL.charAt(i) === ' ' ? ' '
-               : CHARS.charAt((Math.random() * CHARS.length) | 0));
-    }
-    parked = document.createElement('span');
-    parked.setAttribute('aria-hidden', 'true');
-    // Same locked box as the reveal itself. The font may not have arrived
-    // yet, in which case this measures the fallback and run() corrects it
-    // once EB Garamond is ready; without it this first state rendered 57px
-    // wider than every frame that follows.
-    parked.style.cssText = 'display:inline-block;text-align:left;white-space:pre;width:' +
-                           finalWidth().toFixed(2) + 'px';
-    parked.textContent = buf.join('');
-    el.textContent = '';
-    el.appendChild(parked);
-    unhold();
-  })();
-
+  /* Nothing is painted before the slots are real, so the greeting stays held
+     until then rather than being parked in approximate positions and jumping
+     when the font lands. The inline guard in <head> clears itself after
+     1500ms, so a font that never arrives shows the plain greeting rather
+     than nothing at all. */
   afterGate(function () { afterFonts(run); });
 })();
