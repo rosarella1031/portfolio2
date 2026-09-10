@@ -50,6 +50,14 @@
      so the finished line is untouched. */
   var NOISE_EM  = 0.4;
 
+  /* Each sparkle sits at its own height rather than all of them on one line,
+     so the unresolved part reads as scattered rather than as a rule. The
+     offset is drawn once per slot and kept, not rerolled with the glyph —
+     a mark that changes shape and height every 70ms reads as jitter, which
+     is the thing this animation is trying not to do. Carried on a transform,
+     so it cannot affect the slot's x or anything beside it. */
+  var NOISE_RISE = 0.17;   /* em, each way */
+
   var REVEAL_MS = 85;   /* per character; thirteen of them lands near 1.2s */
   var HOLD_MS   = 70;   /* how long a symbol sits before rerolling */
   var START_MS  = 140;  /* a beat before it begins, so the page settles first */
@@ -120,6 +128,8 @@
                         (lh ? 'line-height:' + lh + ';' : '') +
                         'left:' + c.x.toFixed(2) + 'px;width:' + c.w.toFixed(2) + 'px';
       s.style.fontSize = NOISE_EM + 'em';
+      s.style.transform = 'translateY(' +
+        ((Math.random() * 2 - 1) * NOISE_RISE).toFixed(3) + 'em)';
       s.textContent = pick();
       box.appendChild(s);
       spans.push(s);
@@ -148,7 +158,8 @@
         if (!spans[i]) continue;
         if (i < shown) {
           if (spans[i].style.fontSize) {
-            spans[i].style.fontSize = '';     /* resolved: back to full size */
+            spans[i].style.fontSize = '';     /* resolved: full size, on the line */
+            spans[i].style.transform = '';
             spans[i].textContent = cells[i].ch;
           }
         } else if (roll) {
