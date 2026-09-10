@@ -25,15 +25,15 @@
   if (!el) return;
 
   var FINAL = el.textContent;
-  /* Digits, and the reason is measured rather than aesthetic. In EB Garamond
-     at 50px every digit advances exactly 23.61px, and the average letter in
-     this line advances 23.64 — so a digit standing in for a letter changes
-     the line's length by three hundredths of a pixel. The punctuation set
-     this started with spanned 12.00 (":") to 29.11 ("+"), a 17px swing per
-     character, which is where the shudder came from. They also read as
-     debris at display size; oldstyle figures in the same serif read as
-     something deliberately withheld. */
-  var CHARS = '0123456789';
+  /* Lowercase, but only the eight letters that are nearly the same width.
+     In EB Garamond at 50px these advance 23.06-26.00px, a 2.94px spread,
+     against 23.64 for the average letter in this line — so the unresolved
+     tail barely changes length as it reshuffles. The punctuation this began
+     with spanned 12.00 to 29.11, and the full lowercase alphabet spans
+     10.91 ("j") to 38.50 ("m"), which is the wobble. Letters rather than
+     symbols because the line should look like a name that has not landed
+     yet, not like a counter or a row of daggers. */
+  var CHARS = 'kodbhqun';
 
   var REVEAL_MS = 85;   // per character; 13 characters lands near 1.2s
   var HOLD_MS   = 70;   // how long a noise glyph sits before rerolling
@@ -147,6 +147,12 @@
     }
     parked = document.createElement('span');
     parked.setAttribute('aria-hidden', 'true');
+    // Same locked box as the reveal itself. The font may not have arrived
+    // yet, in which case this measures the fallback and run() corrects it
+    // once EB Garamond is ready; without it this first state rendered 57px
+    // wider than every frame that follows.
+    parked.style.cssText = 'display:inline-block;text-align:left;white-space:pre;width:' +
+                           finalWidth().toFixed(2) + 'px';
     parked.textContent = buf.join('');
     el.textContent = '';
     el.appendChild(parked);
