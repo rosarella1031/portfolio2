@@ -58,11 +58,11 @@
      so it cannot affect the slot's x or anything beside it. */
   var NOISE_RISE = 0.17;   /* em, each way */
 
-  /* The site's lightest text token, the one the beat numbers and placeholder
-     labels already use — so the sparkles sit back from the greeting instead
-     of competing with it at full ink. Falls back to the literal value on any
+  /* A step back from the greeting's ink, not two. --text-3 (#AAA49C) put the
+     sparkles so far back they nearly vanished; this is the site's mid text
+     token, the one body copy uses. Falls back to the literal value on any
      page that does not define the variable. */
-  var NOISE_INK = 'var(--text-3, #AAA49C)';
+  var NOISE_INK = 'var(--text-2, #919191)';
 
   var REVEAL_MS = 85;   /* per character; thirteen of them lands near 1.2s */
   var HOLD_MS   = 70;   /* how long a symbol sits before rerolling */
