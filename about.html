@@ -340,18 +340,15 @@
       /* 315deg runs from the outer corner toward the crease, so the light end
          is the tip of the turned corner and the dark end is where it tucks
          under the sheet. */
-      /* Opaque, and the back of the sheet rather than a peek at the other
-         portrait. Filling it with the picture underneath was the first
-         attempt and it cannot work here: both portraits are near-white in
-         this corner, so the triangle was white on white and only a sliver of
-         shading by the crease ever showed. The turned corner now carries the
-         page's own card tone, darkening where it tucks under — 315deg runs
-         from the tip of the fold toward the crease. */
+      /* The white back of the sheet — no tint, no filled block. What makes
+         it legible against a white page is not its own colour but the shadow
+         the clipped sheet casts along the cut; the only shading here is the
+         faintest darkening where the corner tucks under, 315deg running from
+         the tip of the fold toward the crease. */
       background: linear-gradient(315deg,
-                  #F3F1EC 0%,
-                  #EAE6DE 42%,
-                  #D3CCC0 78%,
-                  #BCB4A6 100%);
+                  #FFFFFF 0%,
+                  #FDFDFC 58%,
+                  #F1EFEB 100%);
       transition: opacity 0.25s;
     }
     .peel-corner:hover::before,
@@ -364,9 +361,13 @@
       right: calc(var(--peel) * 0.62);
       bottom: calc(var(--peel) * 0.62);
       white-space: nowrap;
-      font-family: 'IBM Plex Sans Condensed', sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
+      /* The page's own label face — the one the beat numbers and the slot
+         labels are set in. Not uppercased with them, because this is a
+         sentence carrying a product name, and "GPT-5.6 SOL'S EYES" shouts. */
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.4;
+      letter-spacing: 0.06em;
       color: var(--text);
       background: rgba(252, 252, 252, 0.94);
       border: 1px solid var(--border);
