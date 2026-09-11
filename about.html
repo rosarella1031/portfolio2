@@ -277,6 +277,127 @@
       filter: drop-shadow(0 6px 16px rgba(26, 24, 23, 0.13));
     }
 
+    /* ===== The folded corner =====
+       The bottom-right corner of the portrait is turned up, and what shows
+       underneath is the other portrait — the same region of it, so the fold
+       reads as one sheet lying on another rather than as a decal.
+
+       The corner element is the full size of the picture and clipped to the
+       triangle, not a small box in the corner. That is what lets its
+       background be the other picture at the same scale and alignment; a
+       62px box would have to zoom its background 5x to fill. clip-path also
+       clips hit-testing, so despite covering the whole picture the button
+       only takes clicks inside the fold. */
+    .peel {
+      position: relative;
+      --peel: 4.2rem;
+      --fold: polygon(0 0, 100% 0, 100% calc(100% - var(--peel)),
+                      calc(100% - var(--peel)) 100%, 0 100%);
+    }
+    .peel-shot {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      clip-path: var(--fold);
+      /* The sheet is clipped, so a drop-shadow follows the cut and falls into
+         the triangle below it — a real edge shadow along the crease rather
+         than a painted-on line. Both portraits are near-white in that corner,
+         so without it the fold barely registered. */
+      filter: drop-shadow(3px 3px 5px rgba(26, 24, 23, 0.26));
+      transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* The second sits exactly over the first; only one is ever opaque. */
+    .peel-shot--b {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      object-fit: cover;
+    }
+    .peel[data-flipped="false"] .peel-shot--b,
+    .peel[data-flipped="true"]  .peel-shot--a { opacity: 0; }
+
+    .peel-corner {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      clip-path: polygon(100% calc(100% - var(--peel)), 100% 100%,
+                         calc(100% - var(--peel)) 100%);
+      border-radius: 4px;
+    }
+
+    /* The lift: a soft shade running off the fold line, and a hairline along
+       it, so the triangle reads as paper turned up rather than as a hole. */
+    .peel-corner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      clip-path: inherit;
+      /* 315deg runs from the outer corner toward the crease, so the light end
+         is the tip of the turned corner and the dark end is where it tucks
+         under the sheet. */
+      /* Opaque, and the back of the sheet rather than a peek at the other
+         portrait. Filling it with the picture underneath was the first
+         attempt and it cannot work here: both portraits are near-white in
+         this corner, so the triangle was white on white and only a sliver of
+         shading by the crease ever showed. The turned corner now carries the
+         page's own card tone, darkening where it tucks under — 315deg runs
+         from the tip of the fold toward the crease. */
+      background: linear-gradient(315deg,
+                  #F3F1EC 0%,
+                  #EAE6DE 42%,
+                  #D3CCC0 78%,
+                  #BCB4A6 100%);
+      transition: opacity 0.25s;
+    }
+    .peel-corner:hover::before,
+    .peel-corner:focus-visible::before { opacity: 0.72; }
+
+    /* The label sits outside the fold, up and to the left of it, so a corner
+       in the very corner of the picture still has somewhere to put its name. */
+    .peel-label {
+      position: absolute;
+      right: calc(var(--peel) * 0.62);
+      bottom: calc(var(--peel) * 0.62);
+      white-space: nowrap;
+      font-family: 'IBM Plex Sans Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      background: rgba(252, 252, 252, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem;
+      opacity: 0;
+      transform: translate(6px, 6px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    /* The label has to escape the triangle the button is clipped to, so it is
+       carried by a sibling layer that is not clipped. */
+    .peel-labels {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .peel[data-flipped="true"]  .peel-label[data-a],
+    .peel[data-flipped="false"] .peel-label[data-b] { display: none; }
+    /* Driven straight off the button's own hover and focus through the
+       sibling combinator, so the hint needs no script at all. */
+    .peel-corner:hover ~ .peel-labels .peel-label,
+    .peel-corner:focus-visible ~ .peel-labels .peel-label {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .peel-shot, .peel-label, .peel-corner::before { transition: none; }
+    }
+
     .about-links {
       display: flex;
       flex-wrap: wrap;
@@ -490,7 +611,24 @@
           <div class="about-beat about-beat--split reveal">
             <div class="about-beat-inner">
               <div class="about-split">
-                <div class="about-split-media"><img src="assets/profile.png" alt="Xuefei Wang" /></div>
+                <div class="about-split-media">
+                  <!-- Both portraits are in the page at once and crossfade, so
+                       the swap never waits on a download. The corner shows
+                       whichever one is currently underneath. -->
+                  <div class="peel" data-peel data-flipped="false">
+                    <img class="peel-shot peel-shot--a" src="assets/profile.png" alt="Xuefei Wang" />
+                    <img class="peel-shot peel-shot--b" src="assets/profile2.jpg" alt="Xuefei Wang, drawn" />
+                    <button class="peel-corner" type="button" aria-pressed="false"
+                            aria-label="See me through GPT-5.6 Sol’s eyes"></button>
+                    <!-- Outside the button on purpose: the button is clipped to
+                         the triangle, and anything inside it would be clipped
+                         away with it. -->
+                    <div class="peel-labels" aria-hidden="true">
+                      <span class="peel-label" data-a>See me through GPT-5.6 Sol’s eyes</span>
+                      <span class="peel-label" data-b>See original</span>
+                    </div>
+                  </div>
+                </div>
                 <div class="about-split-copy">
                   <div class="about-beat-head"><span class="about-beat-num">01</span> <span class="about-beat-title" data-e="1">Design is my thing.</span></div>
                   <p data-e="2">I’m Faye, a product designer working on AI products, tools, and interaction-heavy experiences.</p>
@@ -569,6 +707,26 @@
     </div>
   </main>
 
+
+  <script>
+  (function () {
+    /* Turning the corner swaps which portrait is on top. Both are already in
+       the page, so this only moves opacity around — nothing loads on click. */
+    var peel = document.querySelector('[data-peel]');
+    if (!peel) return;
+    var corner = peel.querySelector('.peel-corner');
+    var LABEL = {
+      'false': 'See me through GPT-5.6 Sol\u2019s eyes',
+      'true':  'See original'
+    };
+    corner.addEventListener('click', function () {
+      var next = peel.dataset.flipped === 'true' ? 'false' : 'true';
+      peel.dataset.flipped = next;
+      corner.setAttribute('aria-pressed', next);
+      corner.setAttribute('aria-label', LABEL[next]);
+    });
+  })();
+  </script>
   <script src="js/rail.js" defer></script>
   <!-- Copy editing, on ?edit only. See js/edit-prose.js. -->
   <script src="js/edit-prose.js" defer></script>
