@@ -460,8 +460,7 @@
       .band-head h2 { font-size: 1.35rem; }
       .band-copy { font-size: 0.875rem; line-height: 1.55; }
       .shot img, .shot video { max-height: 30vh; }
-    }
-  </style>
+    }  </style>
 
   <style>
     /* ===== Sticker cards (trial) =====
@@ -480,11 +479,14 @@
        the hand starts being cut off by .hero's overflow sooner: measured, the
        original spacing survives to 720px, 1.35 only to 860. Easing the spread
        back below 1000px hands those widths their old geometry. */
-    @media (max-width: 1000px) { .fan { --spread: 1.15; } }
-    @media (max-width: 880px)  { .fan { --spread: 1; } }
+    /* An extra push on the two ends only, so the hand opens at its edges
+       without loosening the middle. Added after the spread rather than
+       multiplied by it, so the two dials stay independent. */
+    .fan-card:first-child { --edge: -2.6rem; }
+    .fan-card:last-child  { --edge:  2.6rem; }
     .fan-card {
       transform: translateX(-50%)
-                 translateX(calc(var(--dx) * var(--spread)))
+                 translateX(calc(var(--dx) * var(--spread) + var(--edge, 0rem)))
                  translateY(var(--dy))
                  rotate(var(--rot));
     }
@@ -566,6 +568,29 @@
 
     @media (prefers-reduced-motion: reduce) {
       .fan-card .art img { filter: url(#sticker-edge); }
+    }
+  
+    /* ===== Narrow windows =====
+       Last in this sheet on purpose. --edge is set on .fan-card:first-child
+       at the same specificity as the override, so placed earlier the
+       override lost and the ends stayed pushed out — measured at 800px,
+       --edge was still -2.6rem with the query supposedly active.
+
+       --dx and --edge are both in rem, so a wider hand does not shrink with
+       the window and meets .hero's overflow sooner. Backing both off returns
+       these widths to the geometry they had before the fan was spread. */
+    @media (max-width: 1000px) {
+      .fan { --spread: 1.15; }
+      .fan-card:first-child { --edge: -1.3rem; }
+      .fan-card:last-child  { --edge:  1.3rem; }
+    }
+    @media (max-width: 880px) {
+      .fan { --spread: 1; }
+      .fan-card:first-child,
+      .fan-card:last-child { --edge: 0rem; }
+      /* the sticker's own overhang is the last thing making the hand wider
+         than the tile it replaced */
+      .fan-card .art img { max-width: 100%; }
     }
   </style>
 </head>
