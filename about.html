@@ -372,10 +372,15 @@
 
     /* The label sits outside the fold, up and to the left of it, so a corner
        in the very corner of the picture still has somewhere to put its name. */
+    /* The label rides the cursor. Position comes from --mx/--my, written on
+       .peel as the pointer moves, so it works the same whether the target is
+       the fold's triangle or, flipped, the whole picture. Only opacity is
+       transitioned — easing left/top would leave the label trailing behind
+       the pointer. */
     .peel-label {
       position: absolute;
-      right: calc(var(--peel) * 0.62);
-      bottom: calc(var(--peel) * 0.62);
+      left: var(--mx, 50%);
+      top: var(--my, 50%);
       white-space: nowrap;
       /* The page's own label face — the one the beat numbers and the slot
          labels are set in. Not uppercased with them, because this is a
@@ -390,8 +395,8 @@
       border-radius: 999px;
       padding: 0.3rem 0.7rem;
       opacity: 0;
-      transform: translate(6px, 6px);
-      transition: opacity 0.2s, transform 0.2s;
+      transform: translate(14px, 14px);
+      transition: opacity 0.16s;
       pointer-events: none;
     }
     /* The label has to escape the triangle the button is clipped to, so it is
@@ -406,10 +411,7 @@
     /* Driven straight off the button's own hover and focus through the
        sibling combinator, so the hint needs no script at all. */
     .peel-corner:hover ~ .peel-labels .peel-label,
-    .peel-corner:focus-visible ~ .peel-labels .peel-label {
-      opacity: 1;
-      transform: none;
-    }
+    .peel-corner:focus-visible ~ .peel-labels .peel-label { opacity: 1; }
 
     /* ===== Flipped =====
        The drawn portrait is cut out, so there is no sheet there to lose a
@@ -434,18 +436,15 @@
        lifting to 0.72 under the cursor, which is why the picture only showed
        through on hover. */
     .peel[data-flipped="true"] .peel-corner::before { display: none; }
-    /* With the target being the whole picture rather than one corner, the
-       label belongs in the middle of it. */
-    .peel[data-flipped="true"] .peel-label {
-      right: auto;
-      bottom: auto;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) scale(0.97);
-    }
-    .peel[data-flipped="true"] .peel-corner:hover ~ .peel-labels .peel-label,
-    .peel[data-flipped="true"] .peel-corner:focus-visible ~ .peel-labels .peel-label {
-      transform: translate(-50%, -50%);
+
+    /* Reached by keyboard there is no pointer to follow, so the label sits
+       where the fold is instead of wherever the mouse last happened to be. */
+    .peel-corner:focus-visible ~ .peel-labels .peel-label {
+      left: auto;
+      top: auto;
+      right: calc(var(--peel) * 0.62);
+      bottom: calc(var(--peel) * 0.62);
+      transform: none;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -775,6 +774,11 @@
       'false': 'See me through GPT-5.6 Sol\u2019s eyes',
       'true':  'See original'
     };
+    corner.addEventListener('pointermove', function (e) {
+      var r = peel.getBoundingClientRect();
+      peel.style.setProperty('--mx', (e.clientX - r.left).toFixed(1) + 'px');
+      peel.style.setProperty('--my', (e.clientY - r.top).toFixed(1) + 'px');
+    });
     corner.addEventListener('click', function () {
       var next = peel.dataset.flipped === 'true' ? 'false' : 'true';
       peel.dataset.flipped = next;
