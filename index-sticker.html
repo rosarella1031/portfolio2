@@ -517,12 +517,33 @@
       box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.06), 0 2px 6px rgba(90, 70, 45, 0.10);
     }
 
-    /* The open state sets its own box-shadow at a higher specificity than
-       the rule above, which on a now-transparent .shot drew a pale rectangle
-       floating behind the die-cut art. The chip carries the lift instead. */
-    .fan-card.is-open .shot { box-shadow: none; }
+    /* Every state that put a box-shadow on .shot drew a pale rectangle once
+       .shot went transparent — the open card, and hover and focus on top of
+       that, each at a higher specificity than the rule that clears it. All
+       of them are cleared here, and the chip carries the lift instead, so
+       the card still reads as rising without a ghost box behind the art. */
+    .fan-card .shot,
+    .fan-card:not(.is-open):hover .shot,
+    .fan-card:not(.is-open):focus-visible .shot,
+    .fan-card.is-open .shot,
+    .fan-card.is-open:hover .shot { box-shadow: none; }
+
     .fan-card.is-open .copy {
       box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.07), 0 14px 34px rgba(90, 70, 45, 0.16);
+    }
+    .fan-card:not(.is-open):hover .copy,
+    .fan-card:not(.is-open):focus-visible .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.08), 0 12px 26px rgba(90, 70, 45, 0.18);
+    }
+    .fan-card.is-open:hover .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.09), 0 20px 46px rgba(90, 70, 45, 0.20);
+    }
+
+    /* Now that there is no rectangle to cast one, the lift has to read on the
+       sticker itself — its own shadow deepens under the cursor. */
+    .fan-card:not(.is-open):hover .art img,
+    .fan-card:not(.is-open):focus-visible .art img {
+      filter: url(#sticker-edge) drop-shadow(0 10px 17px rgba(90, 70, 45, 0.26));
     }
 
     @media (prefers-reduced-motion: reduce) {
