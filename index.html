@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="noindex, nofollow" />
   <!-- Runs before anything paints. See js/gate.js. -->
   <script src="js/gate.js"></script>
   <script>
@@ -459,10 +460,158 @@
       .band-head h2 { font-size: 1.35rem; }
       .band-copy { font-size: 0.875rem; line-height: 1.55; }
       .shot img, .shot video { max-height: 30vh; }
+    }  </style>
+
+  <style>
+    /* ===== Sticker cards =====
+       The top of each card is the artwork's own silhouette rather than a
+       tinted rectangle: the art is a transparent PNG, so the cut is simply
+       its alpha. The tile shrinks to a rounded chip under it carrying the
+       title. Nothing here touches .fan-card, so the fan's hover, focus,
+       open/close and stacking all behave exactly as before. The card deck this
+       replaced is kept at index-cards.html. */
+
+    /* How far apart the hand is spread. Each card still carries its own --dx;
+       this scales all five at once, so the fan can be loosened or tightened
+       from one number instead of five hand-tuned offsets. 1 is the original
+       spacing. The rotations and the drop down the arc are untouched. */
+    .fan { --spread: 1.35; }
+    /* --dx is in rem, so a wider spread does not shrink with the window and
+       the hand starts being cut off by .hero's overflow sooner: measured, the
+       original spacing survives to 720px, 1.35 only to 860. Easing the spread
+       back below 1000px hands those widths their old geometry. */
+    /* An extra push on the two ends only, so the hand opens at its edges
+       without loosening the middle. Added after the spread rather than
+       multiplied by it, so the two dials stay independent. */
+    .fan-card:first-child { --edge: -2.6rem; }
+    .fan-card:last-child  { --edge:  2.6rem; }
+    .fan-card {
+      transform: translateX(-50%)
+                 translateX(calc(var(--dx) * var(--spread) + var(--edge, 0rem)))
+                 translateY(var(--dy))
+                 rotate(var(--rot));
+    }
+
+    /* The art has to be allowed past the card's edges, which is what the
+       rectangle was previously clipping it to. */
+    .fan-card .shot {
+      overflow: visible;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      justify-content: flex-end;
+    }
+
+    .fan-card .art {
+      flex: 1;
+      display: grid;
+      place-items: end center;
+      min-height: 0;
+      /* room for the outline and for the art to rise past the chip */
+      padding: 0 0.35rem 0.55rem;
+    }
+    .fan-card .art img {
+      display: block;
+      width: auto;
+      max-width: 112%;          /* a little wider than the chip, so it reads die-cut */
+      max-height: 100%;
+      object-fit: contain;
+      /* One SVG pass rather than eight stacked drop-shadows: feMorphology
+         dilates the alpha into a true outline, which is both cheaper to
+         animate and actually follows the silhouette. */
+      filter: url(#sticker-edge) drop-shadow(0 5px 9px rgba(90, 70, 45, 0.20));
+    }
+
+    /* The art rises past the chip's top edge, which is what makes it read as
+       die-cut rather than pasted inside a box — but it was covering the
+       title by 82px in the open state. Stacking the chip above it keeps the
+       overlap and the readable title: the graphic comes out of the label,
+       the way a sticker does. */
+    .fan-card .art { position: relative; z-index: 1; }
+    .fan-card .copy { position: relative; z-index: 2; }
+
+    /* what is left of the tile: a chip under the art, holding the title */
+    .fan-card .copy {
+      background: var(--tile);
+      border-radius: 12px;
+      padding: 0.6rem 0.85rem 0.7rem;
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.06), 0 2px 6px rgba(90, 70, 45, 0.10);
+    }
+
+    /* Every state that put a box-shadow on .shot drew a pale rectangle once
+       .shot went transparent — the open card, and hover and focus on top of
+       that, each at a higher specificity than the rule that clears it. All
+       of them are cleared here, and the chip carries the lift instead, so
+       the card still reads as rising without a ghost box behind the art. */
+    .fan-card .shot,
+    .fan-card:not(.is-open):hover .shot,
+    .fan-card:not(.is-open):focus-visible .shot,
+    .fan-card.is-open .shot,
+    .fan-card.is-open:hover .shot { box-shadow: none; }
+
+    .fan-card.is-open .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.07), 0 14px 34px rgba(90, 70, 45, 0.16);
+    }
+    .fan-card:not(.is-open):hover .copy,
+    .fan-card:not(.is-open):focus-visible .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.08), 0 12px 26px rgba(90, 70, 45, 0.18);
+    }
+    .fan-card.is-open:hover .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.09), 0 20px 46px rgba(90, 70, 45, 0.20);
+    }
+
+    /* Now that there is no rectangle to cast one, the lift has to read on the
+       sticker itself — its own shadow deepens under the cursor. */
+    .fan-card:not(.is-open):hover .art img,
+    .fan-card:not(.is-open):focus-visible .art img {
+      filter: url(#sticker-edge) drop-shadow(0 10px 17px rgba(90, 70, 45, 0.26));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fan-card .art img { filter: url(#sticker-edge); }
+    }
+  
+    /* ===== Narrow windows =====
+       Last in this sheet on purpose. --edge is set on .fan-card:first-child
+       at the same specificity as the override, so placed earlier the
+       override lost and the ends stayed pushed out — measured at 800px,
+       --edge was still -2.6rem with the query supposedly active.
+
+       --dx and --edge are both in rem, so a wider hand does not shrink with
+       the window and meets .hero's overflow sooner. Backing both off returns
+       these widths to the geometry they had before the fan was spread. */
+    @media (max-width: 1000px) {
+      .fan { --spread: 1.15; }
+      .fan-card:first-child { --edge: -1.3rem; }
+      .fan-card:last-child  { --edge:  1.3rem; }
+    }
+    @media (max-width: 880px) {
+      .fan { --spread: 1; }
+      .fan-card:first-child,
+      .fan-card:last-child { --edge: 0rem; }
+      /* the sticker's own overhang is the last thing making the hand wider
+         than the tile it replaced */
+      .fan-card .art img { max-width: 100%; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Outline for the sticker art. feMorphology dilates the alpha, the flood
+       paints that white, and the original is merged back on top. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false"
+       style="position:absolute;pointer-events:none">
+    <filter id="sticker-edge" x="-12%" y="-12%" width="124%" height="124%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="thick" />
+      <feFlood flood-color="#ffffff" result="white" />
+      <feComposite in="white" in2="thick" operator="in" result="edge" />
+      <feMerge>
+        <feMergeNode in="edge" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </svg>
+
 
   <section class="hero">
     <div class="hero-rule"></div>
@@ -472,48 +621,39 @@
     </div>
 
     <div class="fan" id="fan" style="--fan-lift: 5rem">
-      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-12.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
+      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-9.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
         <div class="shot">
-          <div class="ph">Placeholder</div>
+          <div class="art"><img src="assets/snail.png" alt="" /></div>
           <div class="copy">
-            <h2>AI experiences</h2>
+            <h2>AI-native</h2>
             <p>Agentic tools where the interface has to make an uncertain model checkable.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-6.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
+      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-3.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
         <div class="shot">
-          <div class="ph">Placeholder</div>
+          <div class="art"><img src="assets/about1.png" alt="" /></div>
           <div class="copy">
-            <h2>Complex systems</h2>
+            <h2>Systems</h2>
             <p>Untangling workflows that grew by accretion, and giving them a spine again.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.4rem; --dx:0rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
+      <button class="fan-card" type="button" style="--w:12.4rem; --dx:3.3rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
         <div class="shot">
-          <div class="ph">Placeholder</div>
+          <div class="art"><img src="assets/brix-avatar.png" alt="" /></div>
           <div class="copy">
-            <h2>0 &rarr; 1</h2>
+            <h2>Craft</h2>
             <p>Founding design: research, system, and the first shipped thing.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.2rem; --dx:6.1rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
+      <button class="fan-card" type="button" style="--w:12.2rem; --dx:9.9rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
         <div class="shot">
-          <div class="ph">Placeholder</div>
+          <div class="art"><img src="assets/snail.png" alt="" /></div>
           <div class="copy">
-            <h2>Design systems</h2>
+            <h2>Prototype x code</h2>
             <p>Patterns built to hold for the screens nobody has drawn yet.</p>
-          </div>
-        </div>
-      </button>
-      <button class="fan-card" type="button" style="--w:13.1rem; --dx:13.1rem;  --dy:188px; --rot:5deg;  --z:5; --tile:#EDEAE4">
-        <div class="shot">
-          <div class="ph">Placeholder</div>
-          <div class="copy">
-            <h2>Play</h2>
-            <p>Small things built for fun, which is where most of the ideas start.</p>
           </div>
         </div>
       </button>
