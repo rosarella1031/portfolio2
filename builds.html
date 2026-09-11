@@ -518,10 +518,13 @@
         <div class="item-desc">Red Dot winner. Branding, guidelines and motion.</div>
       </a>
 
+      <!-- --ar is the device's own ratio, not 16/9: the preview is cropped to
+           the iPad, and object-fit: cover in a 16/9 slot would have taken the
+           top and bottom edges of the frame back off again. -->
       <a class="item" href="?p=heartie" data-order="4"
-         style="--w: 340px; --ar: 16/9; left: 400px; top: 220px;">
+         style="--w: 340px; --ar: 560/396; left: 400px; top: 220px;">
         <div class="item-media">
-          <img src="assets/heartie.gif" alt="Heartie" />
+          <video src="assets/heartie.webm" autoplay loop muted playsinline></video>
         </div>
         <div class="item-name">Heartie</div>
         <div class="item-desc">Red Dot winner. A companion for kids with heart conditions.</div>
