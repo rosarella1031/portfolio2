@@ -428,6 +428,12 @@
       background: none;
       filter: none;
     }
+    /* And the flap's shading with it. ::before takes clip-path: inherit, so
+       the moment the button stopped being a triangle this gradient stopped
+       being one too and covered the whole portrait — opaque at rest, and
+       lifting to 0.72 under the cursor, which is why the picture only showed
+       through on hover. */
+    .peel[data-flipped="true"] .peel-corner::before { display: none; }
     /* With the target being the whole picture rather than one corner, the
        label belongs in the middle of it. */
     .peel[data-flipped="true"] .peel-label {
