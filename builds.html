@@ -80,6 +80,20 @@
     .item:hover .item-media img,
     .item:hover .item-media video { transform: scale(1.03); }
 
+    /* Heartie's preview is a screen recording cropped to the iPad, so its
+       four corners still carry whatever was sitting behind the device's
+       rounded bezel. Rounding the slot to the bezel's own radius takes them
+       off. Measured on the source: the corner arc is 28px in a 560x396
+       frame, which is why the radius is written as a per-cent pair rather
+       than a length - it then tracks the card at whatever size it is placed,
+       and because this slot is locked to the device's own ratio the two
+       per-cents describe the same circle the bezel does. The placeholder
+       fill goes with it, so the cut corners are page, not grey. */
+    .item-media--device {
+      border-radius: 5% / 7.07%;
+      background: none;
+    }
+
     /* "Try live" — a label that follows the pointer over any card marked
        data-try-live, mirroring js/hero-label.js on the case study pages.
        Those cards are plain external links, so without this there is
@@ -523,7 +537,7 @@
            top and bottom edges of the frame back off again. -->
       <a class="item" href="?p=heartie" data-order="4"
          style="--w: 340px; --ar: 560/396; left: 400px; top: 220px;">
-        <div class="item-media">
+        <div class="item-media item-media--device">
           <video src="assets/heartie.webm" autoplay loop muted playsinline></video>
         </div>
         <div class="item-name">Heartie</div>
