@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="noindex, nofollow" />
+  <!-- Runs before anything paints. See js/gate.js. -->
+  <script src="js/gate.js"></script>
+  <script>
+    /* Paired with js/hero-scramble.js — see .hero-hold above. Self-clearing,
+       so if that script never arrives the greeting still shows. */
+    (function () {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var d = document.documentElement;
+      d.classList.add('hero-hold');
+      setTimeout(function () { d.classList.remove('hero-hold'); }, 1500);
+    })();
+  </script>
+  <title>Work (sticker cards trial) — Xuefei Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <!-- Safari ignores SVG icons; same glyph, rasterised. -->
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/rail.css" />
+  <style>
+    :root {
+      --tab-h: 40px;
+      --tab-w: 15rem;
+      --gap:   clamp(2rem, 5vh, 3.5rem);   /* dot grid left showing above the deck */
+      --pad-x: clamp(1.5rem, 3vw, 3rem);
+      --left: calc(var(--rail-w) + var(--pad-x));
+    }
+    /* the dot ground the cards ride on */
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, rgba(26,24,23,.16) 1px, transparent 1px);
+      background-size: 22px 22px;
+      font-family: var(--ff-body);
+      margin: 0;
+    }
+
+    /* ── the deck ─────────────────────────────────────────────────────
+       Each band is sticky at the top, so the next one rides up and covers
+       the one before it. Nothing is animated: the stacking is the layout. */
+    .stack {
+      position: relative;
+      z-index: 1;              /* the deck rides over the outro below it */
+      /* the first card starts where every later card pins, so its own tab has
+         somewhere to sit and the dot ground shows from the very first frame */
+      padding-top: calc(var(--gap) + var(--tab-h));
+    }
+    .band {
+      /* Every card rests on the same line, and the strip above it is a place
+         no card's box ever reaches — which is why a parked tab is never
+         painted over, without needing any height trickery. */
+      --top: calc(var(--gap) + var(--tab-h));
+      position: sticky;
+      top: var(--top);
+      min-height: calc(100vh - var(--top));
+      background: var(--band);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* The tab is part of its own card, hanging above the card's top edge. */
+    /* A real element, not padding: the sticky constraint is the container's
+       content box, so padding-bottom does not buy the last card any pinned
+       time — every card unsticks together the moment the content ends. */
+    .stack-run-out { height: 45vh; }
+
+    .band-tab {
+      position: absolute;
+      /* One tab tall, sitting directly on its own card. Tabs separate by
+         moving sideways, never by growing. */
+      top: calc(-1 * var(--tab-h));
+      height: var(--tab-h);
+      left: calc(var(--rail-w) + var(--i) * var(--tab-w));
+      width: var(--tab-w);
+      background: var(--band);
+      border: 0;
+      cursor: pointer;
+      display: block;
+      text-align: left;
+      padding-left: var(--pad-x);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      /* a one-tab-tall line box, so every label sits on the same row no
+         matter how tall its tab has grown */
+      line-height: var(--tab-h);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      /* the angled right edge is the whole signature of the shape */
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
+    }
+
+    /* Same strip, same shape, mirrored — it belongs to the first card, so it
+       stays put for as long as that card is pinned. */
+    .see-all {
+      position: absolute;
+      top: calc(-1 * var(--tab-h));
+      right: 0;
+      height: var(--tab-h);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--pad-x) 0 2.25rem;
+      /* not a project colour — one step down from the dot ground, so it reads
+         as a different kind of thing from the four card tabs */
+      background: var(--bg-card);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text);
+      clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+      transition: background .15s cubic-bezier(.33,1,.68,1);
+    }
+    .see-all:hover { background: #E4E0D8; }
+
+    /* ── hero ─────────────────────────────────────────────────────────
+       Type at the top, a hand of cards fanned underneath. The cards overlap
+       and each is rotated a few degrees; hovering one straightens it, lifts
+       it and brings it to the front. */
+    .hero {
+      position: relative;
+      height: calc(100vh - var(--gap) - var(--tab-h));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Symmetric, not offset by the rail: the hero centres on the window.
+         The rail is a fixed overlay at the edge and the centred column never
+         reaches it, so there is nothing to clear. */
+      padding: clamp(3rem, 8vh, 5.5rem) var(--pad-x) 0;
+      overflow: hidden;
+    }
+    /* the rule is gone but its space is not — removing the element would pull
+       the whole hero up, and nothing else is meant to move */
+    .hero-rule {
+      width: 80px; height: 1px;
+      background: none;
+      margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+    }
+    .hero-intro {
+      max-width: 34rem;
+      text-align: center;
+      font-family: var(--ff-body);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+    .hero-intro p + p { margin-top: 0.75rem; }
+    .hero-intro p:first-child {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.125rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .hero-intro-highlight { font-weight: 500; color: var(--text); }
+
+    /* Held for the few frames between first paint and js/hero-scramble.js
+       running, so the greeting is never seen before it decodes itself.
+       visibility keeps its space, so nothing below shifts. */
+    .hero-hold .hero-intro p:first-child { visibility: hidden; }
+
+    .fan {
+      position: relative;
+      width: min(46rem, 100%);
+      /* a block of its own height, not the leftover space — with flex:1 the
+         cards anchored to the bottom of the hero and sank far below the type */
+      flex: 1;
+      margin-top: clamp(1.5rem, 7vh, 5rem);
+      transform: scale(0.8) translateY(120px);
+      opacity: 0;
+      transition: transform .9s cubic-bezier(.16, 1, .3, 1),
+                  opacity .7s cubic-bezier(.16, 1, .3, 1);
+    }
+    .fan.is-in { transform: none; opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .fan { transform: none; opacity: 1; transition: none; }
+    }
+
+    /* One card is always open, centred and square-on above the others; the
+       rest stay fanned along the bottom, each showing just its name. */
+    .fan-card {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: var(--w);
+      aspect-ratio: 5 / 6;
+      border: 0;
+      padding: 0;
+      /* A button does not inherit the page font. Without this the card copy
+         came out in the browser's default Arial — the heading only looked
+         right because it names its own face. */
+      font-family: inherit;
+      background: none;
+      cursor: pointer;
+      transform: translateX(-50%) translateX(var(--dx)) translateY(var(--dy)) rotate(var(--rot));
+      transform-origin: 50% 100%;
+      transition: transform .5s cubic-bezier(.33, 1, .68, 1),
+                  opacity .3s cubic-bezier(.33, 1, .68, 1);
+      z-index: var(--z);
+    }
+    .fan-card .shot {
+      width: 100%; height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--tile);
+      box-shadow: 0 0 0 1px rgba(26,24,23,.06), 0 2px 6px rgba(90,70,45,.07);
+      display: flex;
+      flex-direction: column;
+      /* Timing lifted off interfacecraft.dev, which drives its cards with a
+         spring rather than a transition. Sampled at 60fps, hover in and out
+         both settle at ~385ms, and the curve fits cubic-bezier(.2, 0, .4, 1)
+         to within 1% — the slow start is the spring winding up. */
+      transition: transform .38s cubic-bezier(.2, 0, .4, 1),
+                  box-shadow .38s cubic-bezier(.2, 0, .4, 1);
+    }
+
+    /* Hovering lifts a card clear of the fan so it is obvious which one a
+       click would open. Same 8px and 1.03 the reference uses. The lift rides
+       on .shot rather than on the card's own transform: that transform is what
+       the open/close animation drives, and borrowing it here would force the
+       hover to share its timing. */
+    .fan-card:not(.is-open):hover { z-index: 20; }
+    .fan-card:not(.is-open):hover .shot,
+    .fan-card:not(.is-open):focus-visible .shot {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 0 0 1px rgba(26,24,23,.08), 0 12px 26px rgba(90,70,45,.15);
+    }
+    /* the open card is already forward; it just firms up under the cursor */
+    .fan-card.is-open:hover .shot {
+      box-shadow: 0 0 0 1px rgba(26,24,23,.09), 0 22px 52px rgba(90,70,45,.17);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fan-card .shot { transition: box-shadow .26s; }
+      .fan-card:not(.is-open):hover .shot,
+      .fan-card:not(.is-open):focus-visible .shot { transform: none; }
+    }
+    /* a finger has no hover — the lift would stick after a tap */
+    @media (hover: none) {
+      .fan-card:not(.is-open):hover .shot { transform: none; }
+    }
+    .fan-card .ph {
+      flex: 1;
+      display: grid; place-items: center;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    /* name on the closed cards, full copy only once open */
+    .fan-card .copy {
+      padding: 0 0.85rem 0.85rem;
+      text-align: left;
+    }
+    .fan-card .copy h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: 0.95rem;
+      line-height: 1.15;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0;
+    }
+    .fan-card .copy p {
+      margin: 0.4rem 0 0;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      color: #747474;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .4s cubic-bezier(.33,1,.68,1), opacity .3s;
+    }
+
+    /* the open one */
+    .fan-card.is-open {
+      top: 0;
+      transform-origin: 50% 0;
+      transform: translateX(-50%) rotate(0deg) scale(1.4);
+      z-index: 30;
+    }
+    .fan-card.is-open .shot {
+      box-shadow: 0 0 0 1px rgba(26,24,23,.07), 0 18px 44px rgba(90,70,45,.14);
+    }
+    .fan-card.is-open .copy h2 { font-size: 1.35rem; }
+    .fan-card.is-open .copy p { max-height: 8rem; opacity: 1; }
+
+    /* ── head row ─────────────────────────────────────────────────────── */
+    .band-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 2rem;
+      padding: clamp(1.75rem, 4vh, 3rem) var(--pad-x) clamp(1.25rem, 3vh, 2rem) var(--left);
+      border-bottom: 1px dashed rgba(26, 24, 23, 0.28);
+    }
+    .band-head h2 {
+      font-family: 'EB Garamond', serif;
+      font-weight: 400;
+      font-size: clamp(1.9rem, 4vw, 3.1rem);
+      line-height: 1.1;
+      letter-spacing: -0.008em;
+      color: var(--text);
+      margin: 0;
+    }
+    .band-meta {
+      text-align: right;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .band-meta .tags {
+      margin-top: 0.75rem;
+      display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;
+    }
+    .band-meta .tags span {
+      background: rgba(26, 24, 23, 0.07);
+      padding: 0.25rem 0.5rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── body row ─────────────────────────────────────────────────────── */
+    .band-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+      padding: clamp(1.25rem, 3vh, 2rem) var(--pad-x) clamp(1.5rem, 4vh, 2.5rem) var(--left);
+      align-items: start;
+    }
+    .band-copy {
+      font-family: var(--ff-body);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .band-copy a {
+      display: inline-block;
+      margin-top: 1.75rem;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 2px;
+      transition: opacity 0.15s cubic-bezier(.33,1,.68,1);
+    }
+    .band-copy a:hover { opacity: 0.55; }
+
+    /* No fixed ratio and no cover: the media keeps its own proportions and
+       the box takes their shape. Height is capped instead of cropped, so a
+       4:3 preview and a 1.6:1 video both fit the card without losing edges. */
+    .shot { display: flex; align-items: center; justify-content: center; }
+    .shot img, .shot video {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 56vh;
+    }
+
+    .band--wip .band-copy a { pointer-events: none; opacity: 0.4; }
+
+    /* The outro is pulled up under the end of the deck and runs a screen
+       longer than the panel inside it. That extra screen is the travel: the
+       ground is already pinned when the last card starts moving, so the card
+       slides off it instead of towing it along. */
+    .outro {
+      position: relative;
+      z-index: 0;
+      margin-top: -100vh;
+      height: 200vh;
+    }
+    .tail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 1px 1px,
+                        rgba(26, 24, 23, 0.16) 1px, transparent 0);
+      background-size: 22px 22px;
+      background-position: -1px -1px;
+      color: var(--text);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 4rem var(--pad-x) 4rem var(--left);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .tail h2 {
+      font-family: 'EB Garamond', serif; font-weight: 400; text-transform: none;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); letter-spacing: -0.008em; margin: 0 0 1rem;
+    }
+
+    /* Same strip, same shape, mirrored — it belongs to the first card, so it
+       stays put for as long as that card is pinned. */
+    .see-all {
+      position: absolute;
+      top: calc(-1 * var(--tab-h));
+      right: 0;
+      height: var(--tab-h);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--pad-x) 0 2.25rem;
+      /* not a project colour — one step down from the dot ground, so it reads
+         as a different kind of thing from the four card tabs */
+      background: var(--bg-card);
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text);
+      clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%);
+      transition: background .15s cubic-bezier(.33,1,.68,1);
+    }
+    .see-all:hover { background: #E4E0D8; }
+
+    @media (max-width: 900px) {
+      /* The deck still stacks — the change is that tabs no longer step
+         sideways. Every tab sits at the same left edge, so the arriving card
+         and its tab cover the one before them completely, which is the only
+         thing that works when there is no room for four tabs in a row. */
+      :root { --left: var(--pad-x); }
+
+      .band-tab {
+        left: var(--pad-x);
+        width: auto;
+        min-width: 11rem;
+        padding-right: 2rem;
+      }
+
+      .band-head {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding-top: 1.5rem;
+        padding-bottom: 1rem;
+      }
+      .band-head h2 { font-size: 1.6rem; }
+      .band-meta { text-align: left; }
+      .band-meta .tags { justify-content: flex-start; }
+
+      .band-body {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding-top: 1.25rem;
+      }
+      .shot { justify-content: flex-start; }
+      .shot img, .shot video { max-height: 34vh; }
+
+      /* one card, one tab, one job — the outro already links to builds */
+      .see-all { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .band-head h2 { font-size: 1.35rem; }
+      .band-copy { font-size: 0.875rem; line-height: 1.55; }
+      .shot img, .shot video { max-height: 30vh; }
+    }
+  </style>
+
+  <style>
+    /* ===== Sticker cards (trial) =====
+       The top of each card is the artwork's own silhouette rather than a
+       tinted rectangle: the art is a transparent PNG, so the cut is simply
+       its alpha. The tile shrinks to a rounded chip under it carrying the
+       title. Nothing here touches .fan-card, so the fan's hover, focus,
+       open/close and stacking all behave exactly as before. */
+
+    /* The art has to be allowed past the card's edges, which is what the
+       rectangle was previously clipping it to. */
+    .fan-card .shot {
+      overflow: visible;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      justify-content: flex-end;
+    }
+
+    .fan-card .art {
+      flex: 1;
+      display: grid;
+      place-items: end center;
+      min-height: 0;
+      /* room for the outline and for the art to rise past the chip */
+      padding: 0 0.35rem 0.55rem;
+    }
+    .fan-card .art img {
+      display: block;
+      width: auto;
+      max-width: 112%;          /* a little wider than the chip, so it reads die-cut */
+      max-height: 100%;
+      object-fit: contain;
+      /* One SVG pass rather than eight stacked drop-shadows: feMorphology
+         dilates the alpha into a true outline, which is both cheaper to
+         animate and actually follows the silhouette. */
+      filter: url(#sticker-edge) drop-shadow(0 5px 9px rgba(90, 70, 45, 0.20));
+    }
+
+    /* The art rises past the chip's top edge, which is what makes it read as
+       die-cut rather than pasted inside a box — but it was covering the
+       title by 82px in the open state. Stacking the chip above it keeps the
+       overlap and the readable title: the graphic comes out of the label,
+       the way a sticker does. */
+    .fan-card .art { position: relative; z-index: 1; }
+    .fan-card .copy { position: relative; z-index: 2; }
+
+    /* what is left of the tile: a chip under the art, holding the title */
+    .fan-card .copy {
+      background: var(--tile);
+      border-radius: 12px;
+      padding: 0.6rem 0.85rem 0.7rem;
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.06), 0 2px 6px rgba(90, 70, 45, 0.10);
+    }
+
+    /* The open state sets its own box-shadow at a higher specificity than
+       the rule above, which on a now-transparent .shot drew a pale rectangle
+       floating behind the die-cut art. The chip carries the lift instead. */
+    .fan-card.is-open .shot { box-shadow: none; }
+    .fan-card.is-open .copy {
+      box-shadow: 0 0 0 1px rgba(26, 24, 23, 0.07), 0 14px 34px rgba(90, 70, 45, 0.16);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fan-card .art img { filter: url(#sticker-edge); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Outline for the sticker art. feMorphology dilates the alpha, the flood
+       paints that white, and the original is merged back on top. -->
+  <svg width="0" height="0" aria-hidden="true" focusable="false"
+       style="position:absolute;pointer-events:none">
+    <filter id="sticker-edge" x="-12%" y="-12%" width="124%" height="124%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="thick" />
+      <feFlood flood-color="#ffffff" result="white" />
+      <feComposite in="white" in2="thick" operator="in" result="edge" />
+      <feMerge>
+        <feMergeNode in="edge" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </svg>
+
+
+  <section class="hero">
+    <div class="hero-rule"></div>
+    <div class="hero-intro">
+      <p>Hi, I'm Faye!</p>
+      <p>I'm a product designer with 3 years of experience, focused on <span class="hero-intro-highlight">AI experiences</span> and <span class="hero-intro-highlight">complex systems</span>.</p>
+    </div>
+
+    <div class="fan" id="fan" style="--fan-lift: 5rem">
+      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-12.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
+        <div class="shot">
+          <div class="art"><img src="assets/snail.png" alt="" /></div>
+          <div class="copy">
+            <h2>AI experiences</h2>
+            <p>Agentic tools where the interface has to make an uncertain model checkable.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-6.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
+        <div class="shot">
+          <div class="art"><img src="assets/about1.png" alt="" /></div>
+          <div class="copy">
+            <h2>Complex systems</h2>
+            <p>Untangling workflows that grew by accretion, and giving them a spine again.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.4rem; --dx:0rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
+        <div class="shot">
+          <div class="art"><img src="assets/brix-avatar.png" alt="" /></div>
+          <div class="copy">
+            <h2>0 &rarr; 1</h2>
+            <p>Founding design: research, system, and the first shipped thing.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:12.2rem; --dx:6.1rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
+        <div class="shot">
+          <div class="art"><img src="assets/nextstep-img1.png" alt="" /></div>
+          <div class="copy">
+            <h2>Design systems</h2>
+            <p>Patterns built to hold for the screens nobody has drawn yet.</p>
+          </div>
+        </div>
+      </button>
+      <button class="fan-card" type="button" style="--w:13.1rem; --dx:13.1rem;  --dy:188px; --rot:5deg;  --z:5; --tile:#EDEAE4">
+        <div class="shot">
+          <div class="art"><img src="assets/opus-next-2.png" alt="" /></div>
+          <div class="copy">
+            <h2>Play</h2>
+            <p>Small things built for fun, which is where most of the ideas start.</p>
+          </div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <div class="stack">
+
+    <section class="band" style="--i:0; --band:#EFEDF9">
+      <button class="band-tab">Featured work 01</button>
+      <a class="see-all" href="builds.html">See builds &rarr;</a>
+      <div class="band-head">
+        <h2>Brix AI Agentic Talent Search</h2>
+        <div class="band-meta">
+          2025<br />AI Agent
+          <div class="tags"><span>B2B SaaS</span><span>Design System</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Turning rule-based candidate search into two agents — one that helps recruiters define what they are looking for, one that searches against it and learns from their feedback.
+          <br /><a href="work/brix.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><video src="assets/brix-challenge1-video2.webm" poster="assets/brix-challenge1-poster.jpg" autoplay loop muted playsinline></video></div>
+      </div>
+    </section>
+
+    <section class="band" style="--i:1; --band:#EDE6E5">
+      <button class="band-tab">Featured work 02</button>
+      <div class="band-head">
+        <h2>OpusClip AI Video Clipping</h2>
+        <div class="band-meta">
+          2025<br />Mobile MVP
+          <div class="tags"><span>Mobile</span><span>Creator Tool</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Bringing an AI clipping tool to mobile, where the editing model that worked on desktop no longer fits the screen.
+          <br /><a href="work/opusclip.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/opuspreview.png" alt="" /></div>
+      </div>
+    </section>
+
+    <section class="band" style="--i:2; --band:#E9E1E5">
+      <button class="band-tab">Featured work 03</button>
+      <div class="band-head">
+        <h2>FitX Lab Fit Intelligence</h2>
+        <div class="band-meta">
+          2026<br />0 &rarr; 1
+          <div class="tags"><span>Consumer Hardware</span><span>AI</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          A body-scanning fit system built from scratch — from hardware capture through to the recommendation itself.
+          <br /><a href="work/fitx.html">View project &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/fitxpreview.png" alt="" /></div>
+      </div>
+    </section>
+
+    <section class="band band--wip" style="--i:3; --band:#E3F1EE">
+      <button class="band-tab">Featured work 04</button>
+      <div class="band-head">
+        <h2>Moka HR Interview Scheduling</h2>
+        <div class="band-meta">
+          2024<br />Enterprise
+          <div class="tags"><span>Enterprise SaaS</span></div>
+        </div>
+      </div>
+      <div class="band-body">
+        <div class="band-copy">
+          Scheduling and coordination for interview loops that span several teams and time zones.
+          <br /><a href="work/moka.html">In progress &rarr;</a>
+        </div>
+        <div class="shot shot-main"><img src="assets/mokapreview.png" alt="" /></div>
+      </div>
+    </section>
+
+    <div class="stack-run-out"></div>
+
+  </div>
+
+  <div class="outro">
+  <div class="tail">
+    <h2>Things I build (not just) for fun</h2>
+    <a href="builds.html" style="border-bottom:1px solid currentColor; padding-bottom:2px; align-self:flex-start">Builds &rarr;</a>
+  </div>
+  </div>
+
+  <script>
+  (function () {
+    /* One card is always open. Clicking another hands it over; there is no
+       closed state, which is what keeps the hero from ever looking empty. */
+    const fan = document.getElementById('fan');
+    if (fan) {
+      requestAnimationFrame(() => requestAnimationFrame(() => fan.classList.add('is-in')));
+      setTimeout(() => fan.classList.add('is-in'), 400);   // rAF is paused in some viewers
+
+      const cards = [...fan.querySelectorAll('.fan-card')];
+      const clear = () => cards.forEach(o => o.classList.remove('is-open'));
+      cards.forEach(c => c.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = c.classList.contains('is-open');
+        clear();
+        if (!open) c.classList.add('is-open');
+      }));
+      addEventListener('click', clear);
+      addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
+    }
+  })();
+  </script>
+
+  <script>
+  (function () {
+    const bands = [...document.querySelectorAll('.band')];
+
+    // Where the card would sit if it were not pinned. offsetTop is no help —
+    // Chrome folds the sticky shift into it, so a pinned card reports the
+    // current scroll position instead of its place in the document. Dropping
+    // sticky for the length of one measurement is the only exact way.
+    const naturalTop = el => {
+      const prev = el.style.position;
+      el.style.position = 'static';
+      const y = el.getBoundingClientRect().top + scrollY;
+      el.style.position = prev;
+      return y;
+    };
+
+    // Scroll to where this card is the last one pinned — everything stacked
+    // on top of it slides back off as you travel there.
+    bands.forEach(b => {
+      const tab = b.querySelector('.band-tab');
+      if (!tab) return;
+      tab.addEventListener('click', () => {
+        const pin = parseFloat(getComputedStyle(b).top) || 0;
+        scrollTo({ top: Math.max(0, naturalTop(b) - pin), behavior: 'smooth' });
+      });
+    });
+  })();
+  </script>
+
+  <script src="js/rail.js"></script>
+  <!-- The greeting decodes itself in. See js/hero-scramble.js. -->
+  <script src="js/hero-scramble.js" defer></script>
+</body>
+</html>
