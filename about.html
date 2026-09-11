@@ -294,11 +294,20 @@
       --fold: polygon(0 0, 100% 0, 100% calc(100% - var(--peel)),
                       calc(100% - var(--peel)) 100%, 0 100%);
     }
+    /* clip-path replaces border-radius rather than combining with it, so the
+       fold was squaring off all four corners — the radius was still in the
+       computed style and simply never drawn. The rounding moves to a wrapper
+       and the fold stays on the image inside it, which is the one way the two
+       can both apply. */
+    .peel-sheet {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+    }
     .peel-shot {
       display: block;
       width: 100%;
       height: auto;
-      border-radius: 4px;
       clip-path: var(--fold);
       /* The sheet is clipped, so a drop-shadow follows the cut: offset into
          the hole, it lands on the page showing through and gives the diagonal
@@ -400,6 +409,37 @@
     .peel-corner:focus-visible ~ .peel-labels .peel-label {
       opacity: 1;
       transform: none;
+    }
+
+    /* ===== Flipped =====
+       The drawn portrait is cut out, so there is no sheet there to lose a
+       corner: the fold would be a flap and a shadow sitting on nothing. It
+       goes away, the picture keeps its own silhouette with no shadow of its
+       own, and the whole of it becomes the way back — clip-path is what was
+       holding the button to the triangle, so dropping it hands the button
+       the entire picture. */
+    .peel[data-flipped="true"] .peel-shot--b {
+      clip-path: none;
+      filter: none;
+      object-fit: contain;
+    }
+    .peel[data-flipped="true"] .peel-corner {
+      clip-path: none;
+      background: none;
+      filter: none;
+    }
+    /* With the target being the whole picture rather than one corner, the
+       label belongs in the middle of it. */
+    .peel[data-flipped="true"] .peel-label {
+      right: auto;
+      bottom: auto;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.97);
+    }
+    .peel[data-flipped="true"] .peel-corner:hover ~ .peel-labels .peel-label,
+    .peel[data-flipped="true"] .peel-corner:focus-visible ~ .peel-labels .peel-label {
+      transform: translate(-50%, -50%);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -624,8 +664,10 @@
                        the swap never waits on a download. The corner shows
                        whichever one is currently underneath. -->
                   <div class="peel" data-peel data-flipped="false">
-                    <img class="peel-shot peel-shot--a" src="assets/profile.png" alt="Xuefei Wang" />
-                    <img class="peel-shot peel-shot--b" src="assets/profile2.png" alt="Xuefei Wang, drawn" />
+                    <div class="peel-sheet">
+                      <img class="peel-shot peel-shot--a" src="assets/profile.png" alt="Xuefei Wang" />
+                      <img class="peel-shot peel-shot--b" src="assets/profile2.png" alt="Xuefei Wang, drawn" />
+                    </div>
                     <button class="peel-corner" type="button" aria-pressed="false"
                             aria-label="See me through GPT-5.6 Sol’s eyes"></button>
                     <!-- Outside the button on purpose: the button is clipped to
