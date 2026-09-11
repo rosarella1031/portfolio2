@@ -300,11 +300,6 @@
       height: auto;
       border-radius: 4px;
       clip-path: var(--fold);
-      /* The sheet is clipped, so a drop-shadow follows the cut and falls into
-         the triangle below it — a real edge shadow along the crease rather
-         than a painted-on line. Both portraits are near-white in that corner,
-         so without it the fold barely registered. */
-      filter: drop-shadow(3px 3px 5px rgba(26, 24, 23, 0.26));
       transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     }
     /* The second sits exactly over the first; only one is ever opaque. */
@@ -317,17 +312,23 @@
     .peel[data-flipped="false"] .peel-shot--b,
     .peel[data-flipped="true"]  .peel-shot--a { opacity: 0; }
 
+    /* The flap: the removed corner folded over onto the sheet. It is the hole
+       reflected in the crease, so where the hole is the lower-right triangle
+       of the corner square, the flap is the upper-left one — right angle at
+       the folded-over tip, hypotenuse lying along the crease. Drawing it in
+       the hole's own place was the earlier mistake, and it read as a corner
+       snipped off rather than turned up. The hole itself is left empty, so
+       the page shows through it the way it would behind a real sheet. */
     .peel-corner {
       position: absolute;
       inset: 0;
       border: 0;
       padding: 0;
       cursor: pointer;
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      clip-path: polygon(100% calc(100% - var(--peel)), 100% 100%,
+      background: none;
+      clip-path: polygon(calc(100% - var(--peel)) calc(100% - var(--peel)),
+                         100% calc(100% - var(--peel)),
                          calc(100% - var(--peel)) 100%);
-      border-radius: 4px;
     }
 
     /* The lift: a soft shade running off the fold line, and a hairline along
@@ -340,15 +341,17 @@
       /* 315deg runs from the outer corner toward the crease, so the light end
          is the tip of the turned corner and the dark end is where it tucks
          under the sheet. */
-      /* The white back of the sheet — no tint, no filled block. What makes
-         it legible against a white page is not its own colour but the shadow
-         the clipped sheet casts along the cut; the only shading here is the
-         faintest darkening where the corner tucks under, 315deg running from
-         the tip of the fold toward the crease. */
-      background: linear-gradient(315deg,
-                  #FFFFFF 0%,
-                  #FDFDFC 58%,
-                  #F1EFEB 100%);
+      /* The back of the sheet: white, with the faintest fall-off from the
+         crease out to the folded tip. 135deg runs from that tip toward the
+         crease. A soft shadow on all sides rather than one cast in a chosen
+         direction — the flap's free edges are its top and left, and any
+         single light direction either hides the shadow under the flap or
+         puts it in the hole. */
+      background: linear-gradient(135deg,
+                  #F4F2EE 0%,
+                  #FCFBFA 42%,
+                  #FFFFFF 100%);
+      filter: drop-shadow(0 1px 3px rgba(26, 24, 23, 0.22));
       transition: opacity 0.25s;
     }
     .peel-corner:hover::before,
