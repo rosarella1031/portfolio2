@@ -300,6 +300,10 @@
       height: auto;
       border-radius: 4px;
       clip-path: var(--fold);
+      /* The sheet is clipped, so a drop-shadow follows the cut: offset into
+         the hole, it lands on the page showing through and gives the diagonal
+         a cast edge rather than a drawn line. */
+      filter: drop-shadow(2px 2px 4px rgba(26, 24, 23, 0.24));
       transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     }
     /* The second sits exactly over the first; only one is ever opaque. */
@@ -621,7 +625,7 @@
                        whichever one is currently underneath. -->
                   <div class="peel" data-peel data-flipped="false">
                     <img class="peel-shot peel-shot--a" src="assets/profile.png" alt="Xuefei Wang" />
-                    <img class="peel-shot peel-shot--b" src="assets/profile2.jpg" alt="Xuefei Wang, drawn" />
+                    <img class="peel-shot peel-shot--b" src="assets/profile2.png" alt="Xuefei Wang, drawn" />
                     <button class="peel-corner" type="button" aria-pressed="false"
                             aria-label="See me through GPT-5.6 Sol’s eyes"></button>
                     <!-- Outside the button on purpose: the button is clipped to
