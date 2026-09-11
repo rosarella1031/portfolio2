@@ -471,6 +471,24 @@
        title. Nothing here touches .fan-card, so the fan's hover, focus,
        open/close and stacking all behave exactly as before. */
 
+    /* How far apart the hand is spread. Each card still carries its own --dx;
+       this scales all five at once, so the fan can be loosened or tightened
+       from one number instead of five hand-tuned offsets. 1 is the original
+       spacing. The rotations and the drop down the arc are untouched. */
+    .fan { --spread: 1.35; }
+    /* --dx is in rem, so a wider spread does not shrink with the window and
+       the hand starts being cut off by .hero's overflow sooner: measured, the
+       original spacing survives to 720px, 1.35 only to 860. Easing the spread
+       back below 1000px hands those widths their old geometry. */
+    @media (max-width: 1000px) { .fan { --spread: 1.15; } }
+    @media (max-width: 880px)  { .fan { --spread: 1; } }
+    .fan-card {
+      transform: translateX(-50%)
+                 translateX(calc(var(--dx) * var(--spread)))
+                 translateY(var(--dy))
+                 rotate(var(--rot));
+    }
+
     /* The art has to be allowed past the card's edges, which is what the
        rectangle was previously clipping it to. */
     .fan-card .shot {
