@@ -729,7 +729,23 @@
       .fan-card.is-open {
         transform: none;
         z-index: 30;
+        /* Instantly, not over the .5s the card transitions its transform in.
+           A transformed ancestor is the containing block for a fixed
+           descendant, so for as long as any of the tilt was left, .shot
+           centred itself inside the card rather than inside the window —
+           traced, it sat at x = -22 off the left edge for 500ms and only
+           snapped to the middle on the frame the transform finally computed
+           to none. Closing still eases: this rule is gone by then. */
+        transition: none;
       }
+      /* No transform transition on the card body here. The centred state
+         carries translate(-50%, -50%) on .shot, and letting that ease back
+         out on close brought the sticker in from 82px off the left edge —
+         exactly half its own width, which is what gave it away. This
+         transition only ever served the hover lift, and a phone has no
+         hover. */
+      .fan-card .shot { transition: box-shadow .38s cubic-bezier(.2, 0, .4, 1); }
+
       .fan-card.is-open .shot {
         --open-w: min(18rem, 76vw);
         position: fixed;
