@@ -55,3 +55,7 @@ work/__export_tmp*.html
 # 5MB 2x2 sheet the four hero stickers were cut out of. The four
 # assets/sticker-*.webp are what the page uses; the sheet stays local.
 assets/hero.png
+
+# The second sheet, higher-resolution and with a different green. The
+# AI-native sticker is cut out of this one; the other three are from hero.png.
+assets/hero2.png
