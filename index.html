@@ -556,6 +556,13 @@
       transform: translateX(-50%);
       width: 98%;               /* a little wider than the chip, so it reads die-cut */
       height: auto;
+      /* Explicit, because .shot is also the band previews' class and they
+         cap themselves at 34vh / 30vh below 900 and 560px. That rule used to
+         be shadowed by a max-height of its own here; without one it started
+         applying, and on a phone it squashed the open card's sticker into a
+         267x200 letterbox — the same box for all four, whatever their
+         shape. */
+      max-height: none;
       /* Only a shadow. The four graphics arrive with their own die-cut white
          border already drawn, so the feMorphology pass that used to add one
          was a second outline on top of the first: it thickened the edge
@@ -615,6 +622,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .fan-card .art img { filter: none; }
+      .fan-card.is-open .shot { animation: none; }
     }
   
     /* ===== Narrow windows =====
@@ -708,14 +716,64 @@
          stickers from touching in one row; in a grid the gap does that. */
       .fan-card .art img { width: 94%; }
 
-      /* There is no room to centre a card at 1.4x, and nothing to centre it
-         over. Opening one squares it up and lifts it where it stands; its
-         chip grows past the card's bottom edge over whatever is below,
-         which is what the z-index the open state already carries is for. */
+      /* Tapping a card brings it to the middle of the screen. What is fixed
+         is .shot, the card's inner block, not the card: the button stays in
+         its cell, so the other three do not reflow into the hole, and the
+         sticker reads as having been lifted off the sheet.
+
+         The card's own rotate has to go for this to work at all — a
+         transformed ancestor becomes the containing block for a fixed
+         descendant, so with the tilt still on, .shot would have centred
+         itself inside the card instead of inside the window. .fan is
+         already transform: none once it has animated in. */
       .fan-card.is-open {
-        transform: rotate(0deg) scale(1.04);
-        transform-origin: 50% 50%;
+        transform: none;
+        z-index: 30;
       }
+      .fan-card.is-open .shot {
+        --open-w: min(18rem, 76vw);
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: var(--open-w);
+        /* height auto, and the artwork's share made definite instead: .art
+           is flex: 1, and with the height of .shot no longer coming from the
+           card it had nothing to take a share of and collapsed to nothing.
+           Sized this way the chip's own height is whatever the description
+           needs, and the pair of them is what gets centred. */
+        height: auto;
+        /* static to fixed is not a change anything can transition, so the
+           card would otherwise arrive in the middle with no travel at all.
+           A short pop is the whole softener; it does not pretend to fly from
+           the cell it left. */
+        animation: fan-open-pop .28s cubic-bezier(.16, 1, .3, 1);
+      }
+      @keyframes fan-open-pop {
+        from { transform: translate(-50%, -50%) scale(0.88); }
+      }
+      .fan-card.is-open .art {
+        flex: 0 0 auto;
+        height: auto;
+      }
+      /* The sticker goes back in flow for the open card, so the art box is
+         exactly its height. Left absolute, the box kept a height of its own
+         and the slack above a short sticker — the art is anchored by its
+         bottom edge — pushed the card as much as 45px below the middle of
+         the screen, and by a different amount for each of the four. The
+         margin is what --sit was doing: the same overlap onto the chip. */
+      .fan-card.is-open .art img {
+        position: static;
+        transform: none;
+        margin: 0 auto calc(-1 * var(--sit));
+      }
+      /* The sheet steps back behind it. Without this the centred card reads
+         as having landed in a pile rather than been picked up out of one —
+         on a phone it covers the other three almost completely, where on
+         desktop the open card is 1.4x in the middle of a fan and the rest
+         are still beside it, not under it. The fade rides the opacity
+         transition .fan-card already carries. */
+      .fan:has(.is-open) .fan-card:not(.is-open) { opacity: 0.28; }
     }
   </style>
 </head>
