@@ -279,7 +279,12 @@
       margin: 0.4rem 0 0;
       font-size: 0.72rem;
       line-height: 1.5;
-      color: #747474;
+      /* A step darker than the #747474 this was, because the chips are no
+         longer near-white: against the brightest of the four tints this text
+         had fallen to 2.7:1, and the pink and purple are the ones that carry
+         the most colour. This puts the worst case back at 3.6:1, where it
+         was before the tints, and lifts the other three above it. */
+      color: #5E5E5E;
       max-height: 0;
       opacity: 0;
       overflow: hidden;
@@ -663,7 +668,7 @@
     </div>
 
     <div class="fan" id="fan" style="--fan-lift: 5rem">
-      <button class="fan-card" type="button" style="--dx:-9.9rem; --dy:0px;  --rot:-8deg; --z:1; --tile:#D4E5C1">
+      <button class="fan-card" type="button" style="--dx:-9.9rem; --dy:0px;  --rot:-8deg; --z:1; --tile:#D3FAAF">
         <div class="shot">
           <div class="art"><img src="assets/sticker-ai-native.webp" width="719" height="760" alt="" /></div>
           <div class="copy">
@@ -672,7 +677,7 @@
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--dx:-4.1rem; --dy:40px; --rot:4deg;  --z:2; --tile:#EBE0AF">
+      <button class="fan-card" type="button" style="--dx:-4.1rem; --dy:40px; --rot:4deg;  --z:2; --tile:#FBF49B">
         <div class="shot">
           <div class="art"><img src="assets/sticker-systems.webp" width="757" height="760" alt="" /></div>
           <div class="copy">
@@ -681,7 +686,7 @@
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--dx:4.1rem;  --dy:8px;  --rot:-2deg; --z:3; --tile:#FFD3E5">
+      <button class="fan-card" type="button" style="--dx:4.1rem;  --dy:8px;  --rot:-2deg; --z:3; --tile:#FBAAD5">
         <div class="shot">
           <div class="art"><img src="assets/sticker-craft.webp" width="760" height="731" alt="" /></div>
           <div class="copy">
@@ -690,7 +695,7 @@
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--dx:9.9rem;  --dy:48px; --rot:1deg;  --z:4; --tile:#EED8FB">
+      <button class="fan-card" type="button" style="--dx:10.4rem; --dy:34px; --rot:1deg;  --z:4; --tile:#E0BEFA">
         <div class="shot">
           <div class="art"><img src="assets/sticker-prototype-code.webp" width="760" height="680" alt="" /></div>
           <div class="copy">
