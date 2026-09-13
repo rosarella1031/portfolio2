@@ -51,3 +51,7 @@ assets/Negotiabbles_Explainer.mp4
 # what the page uses; this stays local (and in history before this).
 assets/alongtheway2.png
 work/__export_tmp*.html
+
+# 5MB 2x2 sheet the four hero stickers were cut out of. The four
+# assets/sticker-*.webp are what the page uses; the sheet stays local.
+assets/hero.png

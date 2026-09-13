@@ -465,17 +465,24 @@
   <style>
     /* ===== Sticker cards =====
        The top of each card is the artwork's own silhouette rather than a
-       tinted rectangle: the art is a transparent PNG, so the cut is simply
+       tinted rectangle: the art is a transparent WebP, so the cut is simply
        its alpha. The tile shrinks to a rounded chip under it carrying the
        title. Nothing here touches .fan-card, so the fan's hover, focus,
        open/close and stacking all behave exactly as before. The card deck this
        replaced is kept at index-cards.html. */
 
     /* How far apart the hand is spread. Each card still carries its own --dx;
-       this scales all five at once, so the fan can be loosened or tightened
-       from one number instead of five hand-tuned offsets. 1 is the original
-       spacing. The rotations and the drop down the arc are untouched. */
-    .fan { --spread: 1.35; }
+       this scales all four at once, so the fan can be loosened or tightened
+       from one number instead of four hand-tuned offsets. 1 is the spacing
+       the card deck had. The rotations and the drop down the arc are their
+       own numbers on each card.
+
+       1.75, up from 1.35, because the artwork changed shape: the four
+       stickers are roughly square where the placeholders were tall and
+       narrow, so at the old spacing each one covered its neighbour by
+       25-97px and ate the lettering underneath. Measured at 1440px, this
+       leaves the four just touching - a hand, not a pile. */
+    .fan { --spread: 1.75; }
     /* --dx is in rem, so a wider spread does not shrink with the window and
        the hand starts being cut off by .hero's overflow sooner: measured, the
        original spacing survives to 720px, 1.35 only to 860. Easing the spread
@@ -483,8 +490,14 @@
     /* An extra push on the two ends only, so the hand opens at its edges
        without loosening the middle. Added after the spread rather than
        multiplied by it, so the two dials stay independent. */
-    .fan-card:first-child { --edge: -2.6rem; }
-    .fan-card:last-child  { --edge:  2.6rem; }
+    .fan-card:first-child { --edge: -1.8rem; }
+    .fan-card:last-child  { --edge:  1.8rem; }
+    /* One width for all four, so it lives here rather than in each card's
+       inline style: the placeholders were different shapes and needed
+       different boxes, the sticker set is uniform. It also has to be here
+       for the narrow-window rules below to be able to reach it - an inline
+       custom property beats any stylesheet rule that is not !important. */
+    .fan-card { --w: 12.8rem; }
     .fan-card {
       transform: translateX(-50%)
                  translateX(calc(var(--dx) * var(--spread) + var(--edge, 0rem)))
@@ -513,13 +526,17 @@
     .fan-card .art img {
       display: block;
       width: auto;
-      max-width: 112%;          /* a little wider than the chip, so it reads die-cut */
+      max-width: 104%;          /* a little wider than the chip, so it reads die-cut */
       max-height: 100%;
       object-fit: contain;
-      /* One SVG pass rather than eight stacked drop-shadows: feMorphology
-         dilates the alpha into a true outline, which is both cheaper to
-         animate and actually follows the silhouette. */
-      filter: url(#sticker-edge) drop-shadow(0 5px 9px rgba(90, 70, 45, 0.20));
+      /* Only a shadow. The four graphics arrive with their own die-cut white
+         border already drawn, so the feMorphology pass that used to add one
+         was a second outline on top of the first: it thickened the edge
+         unevenly and, because it dilates the whole alpha channel, softened
+         the small shapes inside - the labels on the Systems sticker lost
+         their separation. Compared side by side at 1440px, the source's own
+         border is the crisper of the two. */
+      filter: drop-shadow(0 5px 9px rgba(90, 70, 45, 0.20));
     }
 
     /* The art rises past the chip's top edge, which is what makes it read as
@@ -564,11 +581,11 @@
        sticker itself — its own shadow deepens under the cursor. */
     .fan-card:not(.is-open):hover .art img,
     .fan-card:not(.is-open):focus-visible .art img {
-      filter: url(#sticker-edge) drop-shadow(0 10px 17px rgba(90, 70, 45, 0.26));
+      filter: drop-shadow(0 10px 17px rgba(90, 70, 45, 0.26));
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .fan-card .art img { filter: url(#sticker-edge); }
+      .fan-card .art img { filter: none; }
     }
   
     /* ===== Narrow windows =====
@@ -581,36 +598,37 @@
        the window and meets .hero's overflow sooner. Backing both off returns
        these widths to the geometry they had before the fan was spread. */
     @media (max-width: 1000px) {
-      .fan { --spread: 1.15; }
-      .fan-card:first-child { --edge: -1.3rem; }
-      .fan-card:last-child  { --edge:  1.3rem; }
+      .fan { --spread: 1.45; }
+      .fan-card:first-child { --edge: -0.8rem; }
+      .fan-card:last-child  { --edge:  0.8rem; }
+      .fan-card .art img { max-width: 90%; }
     }
     @media (max-width: 880px) {
-      .fan { --spread: 1; }
+      .fan { --spread: 1.28; }
       .fan-card:first-child,
       .fan-card:last-child { --edge: 0rem; }
       /* the sticker's own overhang is the last thing making the hand wider
          than the tile it replaced */
-      .fan-card .art img { max-width: 100%; }
+      .fan-card .art img { max-width: 84%; }
+    }
+    /* Below here the spread has nowhere left to give, so the stickers
+       themselves come down. The number that matters is the left edge of the
+       first one: the rail is a fixed 64-72px lane down that side until it
+       moves to the bottom at 640px, and measured, the hand slid under it at
+       780 and at 700 without these two steps. */
+    @media (max-width: 780px) {
+      .fan { --spread: 1.08; }
+      .fan-card { --w: 11.4rem; }
+      .fan-card .art img { max-width: 80%; }
+    }
+    @media (max-width: 640px) {
+      .fan { --spread: 0.95; }
+      .fan-card { --w: 10.2rem; }
+      .fan-card .art img { max-width: 82%; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Outline for the sticker art. feMorphology dilates the alpha, the flood
-       paints that white, and the original is merged back on top. -->
-  <svg width="0" height="0" aria-hidden="true" focusable="false"
-       style="position:absolute;pointer-events:none">
-    <filter id="sticker-edge" x="-12%" y="-12%" width="124%" height="124%">
-      <feMorphology in="SourceAlpha" operator="dilate" radius="3" result="thick" />
-      <feFlood flood-color="#ffffff" result="white" />
-      <feComposite in="white" in2="thick" operator="in" result="edge" />
-      <feMerge>
-        <feMergeNode in="edge" />
-        <feMergeNode in="SourceGraphic" />
-      </feMerge>
-    </filter>
-  </svg>
 
 
   <section class="hero">
@@ -621,36 +639,36 @@
     </div>
 
     <div class="fan" id="fan" style="--fan-lift: 5rem">
-      <button class="fan-card" type="button" style="--w:13.9rem; --dx:-9.9rem; --dy:0px;   --rot:-8deg; --z:1; --tile:#EFEDF9">
+      <button class="fan-card" type="button" style="--dx:-9.9rem; --dy:0px;  --rot:-8deg; --z:1; --tile:#EFEDF9">
         <div class="shot">
-          <div class="art"><img src="assets/snail.png" alt="" /></div>
+          <div class="art"><img src="assets/sticker-ai-native.webp" width="719" height="760" alt="" /></div>
           <div class="copy">
             <h2>AI-native</h2>
             <p>Agentic tools where the interface has to make an uncertain model checkable.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.9rem; --dx:-3.3rem;  --dy:35px;  --rot:4deg;  --z:2; --tile:#EDE6E5">
+      <button class="fan-card" type="button" style="--dx:-4.1rem; --dy:52px; --rot:4deg;  --z:2; --tile:#EDE6E5">
         <div class="shot">
-          <div class="art"><img src="assets/about1.png" alt="" /></div>
+          <div class="art"><img src="assets/sticker-systems.webp" width="757" height="760" alt="" /></div>
           <div class="copy">
             <h2>Systems</h2>
             <p>Untangling workflows that grew by accretion, and giving them a spine again.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.4rem; --dx:3.3rem;     --dy:1px;   --rot:-2deg; --z:3; --tile:#E9E1E5">
+      <button class="fan-card" type="button" style="--dx:4.1rem;  --dy:10px; --rot:-2deg; --z:3; --tile:#E9E1E5">
         <div class="shot">
-          <div class="art"><img src="assets/brix-avatar.png" alt="" /></div>
+          <div class="art"><img src="assets/sticker-craft.webp" width="760" height="731" alt="" /></div>
           <div class="copy">
             <h2>Craft</h2>
             <p>Founding design: research, system, and the first shipped thing.</p>
           </div>
         </div>
       </button>
-      <button class="fan-card" type="button" style="--w:12.2rem; --dx:9.9rem;   --dy:133px; --rot:1deg;  --z:4; --tile:#E3F1EE">
+      <button class="fan-card" type="button" style="--dx:9.9rem;  --dy:62px; --rot:1deg;  --z:4; --tile:#E3F1EE">
         <div class="shot">
-          <div class="art"><img src="assets/snail.png" alt="" /></div>
+          <div class="art"><img src="assets/sticker-prototype-code.webp" width="760" height="680" alt="" /></div>
           <div class="copy">
             <h2>Prototype x code</h2>
             <p>Patterns built to hold for the screens nobody has drawn yet.</p>
