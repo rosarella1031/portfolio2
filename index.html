@@ -622,7 +622,6 @@
 
     @media (prefers-reduced-motion: reduce) {
       .fan-card .art img { filter: none; }
-      .fan-card.is-open .shot { animation: none; }
     }
   
     /* ===== Narrow windows =====
@@ -642,8 +641,11 @@
     }
     @media (max-width: 880px) {
       .fan { --spread: 1.28; }
-      .fan-card:first-child,
       .fan-card:last-child { --edge: 0rem; }
+      /* Not 0 like the other end: the first card's own --dx carries an extra
+         0.6rem to the left, and at 640px that put its edge 75px in, against
+         a rail lane that is 64-72px wide. This gives that back. */
+      .fan-card:first-child { --edge: 0.55rem; }
       /* the sticker's own overhang is the last thing making the hand wider
          than the tile it replaced */
       .fan-card .art img { width: 79%; }
@@ -746,6 +748,12 @@
          hover. */
       .fan-card .shot { transition: box-shadow .38s cubic-bezier(.2, 0, .4, 1); }
 
+      /* The description arrives at full height rather than easing open. The
+         card's flight is measured against where it is going, and a chip
+         still growing under it moves that target for 400ms — the card would
+         have drifted the whole way in. Its fade stays. */
+      .fan-card .copy p { transition: opacity .25s; }
+
       .fan-card.is-open .shot {
         --open-w: min(18rem, 76vw);
         position: fixed;
@@ -759,19 +767,9 @@
            Sized this way the chip's own height is whatever the description
            needs, and the pair of them is what gets centred. */
         height: auto;
-        /* static to fixed is not a change anything can transition, so the
-           card would otherwise arrive in the middle with no travel at all.
-           This growth is the whole softener; it does not pretend to fly from
-           the cell it left.
-
-           .5s on a curve that spends its time in the middle, not .28s on a
-           hard ease-out. The old pair put the card at 95% of its size 37ms
-           in, so all the growth was over before the finger had left the
-           glass and what was left was a twitch. */
-        animation: fan-open-pop .5s cubic-bezier(.24, .62, .3, 1);
-      }
-      @keyframes fan-open-pop {
-        from { transform: translate(-50%, -50%) scale(0.8); }
+        /* The travel from the cell to the middle is animated in script —
+           see the fan's FLIP below. A position change is not something CSS
+           can tween, so nothing here tries to. */
       }
       .fan-card.is-open .art {
         flex: 0 0 auto;
@@ -809,7 +807,7 @@
     </div>
 
     <div class="fan" id="fan" style="--fan-lift: 5rem">
-      <button class="fan-card" type="button" style="--dx:-9.9rem; --dy:0px;  --rot:-8deg; --z:1; --tile:#B3F9C2">
+      <button class="fan-card" type="button" style="--dx:-10.5rem; --dy:14px; --rot:-8deg; --z:1; --tile:#B3F9C2">
         <div class="shot">
           <div class="art"><img src="assets/sticker-ai-native.webp" width="719" height="760" alt="" /></div>
           <div class="copy">
@@ -944,12 +942,63 @@
       setTimeout(() => fan.classList.add('is-in'), 400);   // rAF is paused in some viewers
 
       const cards = [...fan.querySelectorAll('.fan-card')];
-      const clear = () => cards.forEach(o => o.classList.remove('is-open'));
+
+      /* On a phone the open card is fixed in the middle of the window, and
+         going from a grid cell to that is a change of position, which is not
+         something CSS can tween — the card simply arrived. This is the usual
+         first / last / invert / play: read where the card is, let it become
+         the centred one, read where it now is, and start an animation from
+         the difference. The tilt goes into the invert as well, so the
+         sticker straightens on the way in rather than the instant the class
+         lands. Desktop is untouched: there the open state is a transform on
+         the card and the card's own transition already animates it. */
+      const phone = matchMedia('(max-width: 600px)');
+      const still = matchMedia('(prefers-reduced-motion: reduce)');
+
+      /* The card's own rotate, read off the computed matrix rather than off
+         --rot: the narrow-window rule scales the tilt down, and a closing
+         card is part way through easing its own back. The matrix is what is
+         actually on screen at the moment of measuring. */
+      const tilt = el => {
+        const m = getComputedStyle(el).transform;
+        if (!m || m === 'none') return 0;
+        const n = m.slice(m.indexOf('(') + 1, -1).split(',').map(parseFloat);
+        return Math.atan2(n[1], n[0]) * 180 / Math.PI;
+      };
+
+      /* `base` is the transform the card rests at once the class has landed:
+         the centred card carries translate(-50%, -50%), a card back in its
+         cell carries nothing. */
+      const move = (card, apply, base) => {
+        const shot = card.querySelector('.shot');
+        if (!phone.matches || still.matches || !shot.animate) { apply(); return; }
+        const from = shot.getBoundingClientRect();
+        const fromW = shot.offsetWidth;
+        const fromR = tilt(card);
+        apply();
+        const to = shot.getBoundingClientRect();
+        const dx = (from.left + from.width / 2) - (to.left + to.width / 2);
+        const dy = (from.top + from.height / 2) - (to.top + to.height / 2);
+        const s = fromW / (shot.offsetWidth || fromW);
+        const dr = fromR - tilt(card);
+        shot.animate([
+          { transform: base + 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)' +
+                       ' rotate(' + dr.toFixed(2) + 'deg) scale(' + s.toFixed(4) + ')' },
+          { transform: base || 'none' }
+        ], { duration: 460, easing: 'cubic-bezier(.24, .62, .3, 1)' });
+      };
+
+      const clear = () => cards.forEach(o => {
+        if (o.classList.contains('is-open')) {
+          move(o, () => o.classList.remove('is-open'), '');
+        }
+      });
+
       cards.forEach(c => c.addEventListener('click', e => {
         e.stopPropagation();
         const open = c.classList.contains('is-open');
         clear();
-        if (!open) c.classList.add('is-open');
+        if (!open) move(c, () => c.classList.add('is-open'), 'translate(-50%, -50%) ');
       }));
       addEventListener('click', clear);
       addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
