@@ -655,6 +655,68 @@
       .fan-card { --w: 10.2rem; }
       .fan-card .art img { width: 76%; }
     }
+
+    /* ===== Phones: two up, two down =====
+       A hand of four cannot survive a 390px screen. Measured there, it ran
+       from -43px to 448px: both ends were off the sides and the two middle
+       stickers were the only ones fully on screen. Below 600px the fan stops
+       being a hand and becomes a 2x2 sheet.
+
+       It does that by putting the cards back in normal flow inside a grid,
+       which is why nothing in here has to fight the per-card --dx and --dy
+       in the markup: those only feed the absolute transform, so in flow they
+       are simply unused. Reading order already runs AI-native, Systems,
+       Craft, Prototype, so the grid needs no explicit placement either. */
+    @media (max-width: 600px) {
+      /* The hero stops being exactly one screen here. Two rows of stickers
+         and the greeting do not both fit in a 667px-tall phone, and the
+         alternative — shrinking the sheet until they do — worked out at
+         57px-wide stickers on a 320px screen. A hero a little taller than
+         the window is what phones are for: the page scrolls, and the deck
+         below simply starts lower. overflow stays hidden, which now clips
+         nothing real but still contains the fan's entrance transform. */
+      .hero {
+        height: auto;
+        min-height: calc(100vh - var(--gap) - var(--tab-h));
+        /* The rail is docked along the bottom here and floats over the page,
+           which needs about 72px. The rest is for the open card: its chip
+           grows past the card's own edge, and on the bottom row that lands
+           in this padding rather than being clipped away. */
+        padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .fan {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.15rem 0.6rem;
+        align-content: start;
+        flex: 0 0 auto;
+        /* Capped, or a 600px-wide window gets two 290px cards. */
+        width: min(21rem, 100%);
+        /* Less air above than the hand needs: the sheet is twice as tall,
+           and this is what keeps it inside one screen on a 390x844 phone. */
+        margin-top: clamp(1.25rem, 4vh, 2.5rem);
+      }
+      .fan-card {
+        position: static;
+        width: auto;
+        /* The tilt survives, at two thirds: a full 8deg at this size swung a
+           sticker's top corner into the cell beside it. */
+        transform: rotate(calc(var(--rot) * 0.66));
+      }
+      /* Nearly the full cell. The percentages above exist to keep four
+         stickers from touching in one row; in a grid the gap does that. */
+      .fan-card .art img { width: 94%; }
+
+      /* There is no room to centre a card at 1.4x, and nothing to centre it
+         over. Opening one squares it up and lifts it where it stands; its
+         chip grows past the card's bottom edge over whatever is below,
+         which is what the z-index the open state already carries is for. */
+      .fan-card.is-open {
+        transform: rotate(0deg) scale(1.04);
+        transform-origin: 50% 50%;
+      }
+    }
   </style>
 </head>
 <body>
