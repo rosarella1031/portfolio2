@@ -134,6 +134,36 @@
        long page for six short paragraphs; taller reads as a bigger pause per
        beat but adds up fast across all six. */
     .about-beat { min-height: 220vh; position: relative; }
+    /* The first one is shorter, because it is the only beat a reader meets
+       already pinned. Every other beat spends 0.4 viewports rising into
+       place before its hold begins, so by the time it stops moving you have
+       watched it arrive; the first is at the top of the page and is
+       therefore motionless from the moment you land. Measured on a 913px
+       window, that was 1136px — one and a quarter screens — of scrolling
+       before anything on the page moved at all. 160 leaves it a 0.6-screen
+       hold and then it goes.
+
+       Only the track changes, so the rhythm between beats is untouched: the
+       fade-out still runs 0.4 viewports past the release and the next beat
+       still starts fading in 0.4 before its own track, which leaves the same
+       0.2-viewport gap between them that every other pair has.
+
+       The hold is an empty block after the sticky child, not a taller track.
+       A beat's hold is the excess of its track's CONTENT box over that
+       child, which rules out both of the obvious ways: padding under the
+       track buys nothing (measured — the sticky released on the very first
+       pixel of scroll), and a fixed track height leaves as the hold only
+       whatever happens to be left over. That matters here because this is
+       the one beat whose child is not always 100vh — the split stacks on a
+       narrow window and stands 960px tall on a 390px phone — so a 160vh
+       track gave 0.60 screens of hold at 1440x913 and 0.16 at 390x667. A
+       block of its own is 60vh on every screen.
+
+       Specificity is deliberately 0,2,0 — the same as [data-editing]
+       .about-beat below — so that, sitting above it, edit mode still wins
+       and flattens this like the rest. */
+    .about-beat:first-child { min-height: 0; }
+    .about-beat:first-child::after { content: ''; display: block; height: 60vh; }
     .about-beat-inner {
       position: sticky;
       top: 0;
@@ -214,6 +244,8 @@
       opacity: 1 !important;
       padding: 2.25rem 0;
     }
+    /* the first beat's hold block, which is scroll room and nothing else */
+    [data-editing] .about-beat::after { display: none; }
     [data-editing] .about-beat-inner {
       position: static;
       min-height: 0;
