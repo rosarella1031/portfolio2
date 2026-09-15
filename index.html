@@ -403,18 +403,24 @@
        guess and no top/left nudging: the video is inset: 0 and fills. Here the
        source is 540x1164 (0.464) against the frame's 0.461, so the crop is
        under half a percent — no visible bars, no visible trim. */
-    /* Two phones, side by side, wrapping to a stack only when the shot column
-       is too narrow to hold both. The gap is one value, named, because each
-       phone's width is derived from it: half the row less half the gap is
-       exactly the widest a phone can be and still leave room for its partner
-       and the gap between them. That 50% is the row's own width, so the pair
-       sizes itself to whatever the band gives the shot — no vw guesswork. */
+    /* Two phones, side by side. --w must stay a pure length: it feeds --radius
+       and --bezel, and border-radius resolves a percentage horizontally
+       against the element's width but vertically against its HEIGHT. A 50%
+       in here therefore turned every corner into an 18x40 ellipse on a
+       260x547 phone instead of a 40px circle — the shape was visibly wrong.
+       Percentages are fine for width itself, and for the max-width guard
+       below, because those resolve against the containing block only.
+
+       So the two-up fit is done with vw instead, measured rather than
+       guessed. Widest a phone can be and still leave room for its partner
+       plus the gap, as a share of the viewport: 0.229 at its tightest across
+       901-1600px (the two-column band), and 0.423 across 390-899px (where
+       the band goes single-column and the shot gets the full width). 22vw
+       and 41vw sit under both, and from 1280px up the 260px cap takes over —
+       which is exactly the size, and the corner, the single phone had. */
     .phones {
       --pgap: clamp(0.75rem, 2vw, 1.5rem);
-      /* A definite width so the phones' 50% below has something to resolve
-         against — .shot is shrink-to-fit, and without this the row, the
-         phones and their 50% width would all depend on each other and
-         collapse to zero. */
+      /* so justify-content has the whole shot column to centre the pair in */
       width: 100%;
       display: flex;
       flex-wrap: wrap;
@@ -422,13 +428,19 @@
       align-items: center;
       gap: var(--pgap);
     }
-    /* Each phone is the SAME size as the single one was — 260px — wherever
-       the row is wide enough for two. The second term is only a guard: half
-       the row less half the gap, so if the shot column is ever too narrow for
-       two 260px phones they shrink together to fit rather than overflow. It
-       plays exactly the role 60vw did on the lone phone; the 260 cap, and so
-       the shape and size, is unchanged. */
-    .phones .phone { --w: min(260px, calc(50% - var(--pgap) / 2)); }
+    .phones .phone {
+      --w: min(260px, 22vw);
+      /* Belt and braces, and safe here because max-width resolves against the
+         containing block, never against the element's own height: if the
+         column is ever narrower than the measurements above assume, the pair
+         clamps to fit instead of overflowing. It should never engage. */
+      max-width: calc(50% - var(--pgap) / 2);
+    }
+    @media (max-width: 900px) {
+      /* the band drops to one column here, so the shot column gets the full
+         width and the phones can be a much larger share of the viewport */
+      .phones .phone { --w: min(260px, 41vw); }
+    }
 
     .phone {
       --w: min(260px, 60vw);
