@@ -403,6 +403,27 @@
        guess and no top/left nudging: the video is inset: 0 and fills. Here the
        source is 540x1164 (0.464) against the frame's 0.461, so the crop is
        under half a percent — no visible bars, no visible trim. */
+    /* Two phones, side by side, wrapping to a stack only when the shot column
+       is too narrow to hold both. The gap is one value, named, because each
+       phone's width is derived from it: half the row less half the gap is
+       exactly the widest a phone can be and still leave room for its partner
+       and the gap between them. That 50% is the row's own width, so the pair
+       sizes itself to whatever the band gives the shot — no vw guesswork. */
+    .phones {
+      --pgap: clamp(0.75rem, 2vw, 1.5rem);
+      /* A definite width so the phones' 50% below has something to resolve
+         against — .shot is shrink-to-fit, and without this the row, the
+         phones and their 50% width would all depend on each other and
+         collapse to zero. */
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: var(--pgap);
+    }
+    .phones .phone { --w: min(215px, calc(50% - var(--pgap) / 2)); }
+
     .phone {
       --w: min(260px, 60vw);
       --bezel: calc(var(--w) * 0.028);
@@ -947,10 +968,18 @@
           <br /><a href="work/opusclip.html">View project &rarr;</a>
         </div>
         <div class="shot shot-main">
-          <div class="phone">
-            <div class="phone-screen">
-              <video src="assets/opus-screen-video.mp4" autoplay loop muted playsinline></video>
-              <div class="phone-island"></div>
+          <div class="phones">
+            <div class="phone">
+              <div class="phone-screen">
+                <video src="assets/opus-screen-video.mp4" autoplay loop muted playsinline></video>
+                <div class="phone-island"></div>
+              </div>
+            </div>
+            <div class="phone">
+              <div class="phone-screen">
+                <video src="assets/opus-screen-video-2.mp4" autoplay loop muted playsinline></video>
+                <div class="phone-island"></div>
+              </div>
             </div>
           </div>
         </div>
