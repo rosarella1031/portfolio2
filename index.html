@@ -369,14 +369,79 @@
 
     /* No fixed ratio and no cover: the media keeps its own proportions and
        the box takes their shape. Height is capped instead of cropped, so a
-       4:3 preview and a 1.6:1 video both fit the card without losing edges. */
+       4:3 preview and a 1.6:1 video both fit the card without losing edges.
+
+       Direct children only. This is for a bare <img>/<video> dropped straight
+       into a .shot; the phone mockup below puts its video two levels deeper,
+       inside .phone-screen, where it must fill the screen (width/height 100%,
+       object-fit: cover) rather than be capped and centred. Scoping to the
+       child keeps this rule off that nested video without an !important. */
     .shot { display: flex; align-items: center; justify-content: center; }
-    .shot img, .shot video {
+    .shot > img, .shot > video {
       display: block;
       width: auto;
       height: auto;
       max-width: 100%;
       max-height: 56vh;
+    }
+
+    /* ===== iPhone mockup =====
+       A front-on, minimal iPhone. Three nested parts, each with one job:
+
+         .phone         the shell — thin bezel, rounded corners, shadow, nothing else
+         .phone-screen  the glass — fixes the shape and clips whatever is inside it
+         video          the footage — fills the glass, cropped by the browser
+         .phone-island  a black Dynamic Island drawn on top (the video has none)
+
+       Everything scales from one number, --w. The bezel is a fraction of it,
+       and the screen's radius is the shell's radius minus the bezel, so the
+       two corners stay concentric at any size — resize by changing --w alone.
+
+       The screen's shape is aspect-ratio: 393 / 852 (an iPhone's own logical
+       size), NOT the video's. object-fit: cover lets the browser crop the
+       footage to that shape at render time, so there is no baked-in offset to
+       guess and no top/left nudging: the video is inset: 0 and fills. Here the
+       source is 540x1164 (0.464) against the frame's 0.461, so the crop is
+       under half a percent — no visible bars, no visible trim. */
+    .phone {
+      --w: min(260px, 60vw);
+      --bezel: calc(var(--w) * 0.028);
+      --radius: calc(var(--w) * 0.155);
+      width: var(--w);
+      box-sizing: border-box;
+      padding: var(--bezel);
+      background: #0d0d0f;
+      border-radius: var(--radius);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.30),
+                  inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+    .phone-screen {
+      position: relative;
+      aspect-ratio: 393 / 852;
+      overflow: hidden;
+      border-radius: calc(var(--radius) - var(--bezel));
+      background: #000;
+    }
+    .phone-screen video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Pure black, pill-shaped, sized off --w so it never needs a magic height.
+       Sitting the same --bezel down from the top of the glass is what keeps
+       it in the status-bar band without any per-video tuning. */
+    .phone-island {
+      position: absolute;
+      top: var(--bezel);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30%;
+      aspect-ratio: 3 / 1;
+      background: #000;
+      border-radius: 999px;
     }
 
     .band--wip .band-copy a { pointer-events: none; opacity: 0.4; }
@@ -462,7 +527,7 @@
         padding-top: 1.25rem;
       }
       .shot { justify-content: flex-start; }
-      .shot img, .shot video { max-height: 34vh; }
+      .shot > img, .shot > video { max-height: 34vh; }
 
       /* one card, one tab, one job — the outro already links to builds */
       .see-all { display: none; }
@@ -471,7 +536,7 @@
     @media (max-width: 560px) {
       .band-head h2 { font-size: 1.35rem; }
       .band-copy { font-size: 0.875rem; line-height: 1.55; }
-      .shot img, .shot video { max-height: 30vh; }
+      .shot > img, .shot > video { max-height: 30vh; }
     }  </style>
 
   <style>
@@ -881,7 +946,14 @@
           Bringing an AI clipping tool to mobile, where the editing model that worked on desktop no longer fits the screen.
           <br /><a href="work/opusclip.html">View project &rarr;</a>
         </div>
-        <div class="shot shot-main"><img src="assets/opuspreview.png" alt="" /></div>
+        <div class="shot shot-main">
+          <div class="phone">
+            <div class="phone-screen">
+              <video src="assets/opus-screen-video.mp4" autoplay loop muted playsinline></video>
+              <div class="phone-island"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
