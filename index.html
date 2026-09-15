@@ -422,7 +422,13 @@
       align-items: center;
       gap: var(--pgap);
     }
-    .phones .phone { --w: min(215px, calc(50% - var(--pgap) / 2)); }
+    /* Each phone is the SAME size as the single one was — 260px — wherever
+       the row is wide enough for two. The second term is only a guard: half
+       the row less half the gap, so if the shot column is ever too narrow for
+       two 260px phones they shrink together to fit rather than overflow. It
+       plays exactly the role 60vw did on the lone phone; the 260 cap, and so
+       the shape and size, is unchanged. */
+    .phones .phone { --w: min(260px, calc(50% - var(--pgap) / 2)); }
 
     .phone {
       --w: min(260px, 60vw);
